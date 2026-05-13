@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DroneFall v2 — Sky Defense</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   DRONEFALL v2 — DESIGN SYSTEM
+   Cyberpunk Military / Night Vision
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* Colors */
+  --bg:#04080f;
+  --panel:rgba(4,12,24,0.96);
+  --green:#00e676;--green2:#00c853;
+  --cyan:#00e5ff;--blue:#2979ff;
+  --gold:#ffd740;--amber:#ffab00;
+  --red:#ff1744;--orange:#ff6d00;
+  --purple:#e040fb;
+  --border:rgba(0,230,118,0.2);
+  --border-bright:rgba(0,230,118,0.6);
+  --text:#c8f0dc;--text-dim:rgba(200,240,220,0.5);
+  /* Fonts */
+  --hud:'Orbitron',monospace;
+  --body:'Rajdhani',sans-serif;
+  /* Rarity colors */
+  --common:#78909c;--rare:#29b6f6;
+  --epic:#ce93d8;--legendary:#ffd740;
+}
+
+html,body{height:100%;overflow:hidden;font-family:var(--body)}
+body{background:var(--bg);color:var(--text)}
+
+/* ── SCANLINE EFFECT ─────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
+  animation:scanline 8s linear infinite;
+}
+@keyframes scanline{from{background-position:0 0}to{background-position:0 100px}}
+
+/* ── MAP ─────────────────────────────────── */
+#map{width:100vw;height:100vh;background:#04080f}
+.leaflet-container{background:#04080f!important}
+
+/* ── PRE-MENU ────────────────────────────── */
+#preMenu{
+  position:fixed;inset:0;z-index:5000;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 80% 70% at 50% 40%,rgba(0,60,30,0.6),rgba(4,8,15,0.97));
+}
+.menu-frame{
+  width:min(460px,92vw);
+  background:linear-gradient(145deg,rgba(4,16,32,0.98),rgba(2,8,16,0.99));
+  border:1px solid var(--border-bright);
+  border-radius:16px;
+  padding:36px 30px 28px;
+  box-shadow:0 0 60px rgba(0,230,118,0.15),0 0 120px rgba(0,0,0,0.8),inset 0 0 30px rgba(0,230,118,0.03);
+  position:relative;overflow:hidden;
+}
+.menu-frame::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);
+  animation:scanTop 3s ease-in-out infinite;
+}
+@keyframes scanTop{0%,100%{opacity:.3}50%{opacity:1}}
+
+.menu-badge{
+  font-family:var(--hud);font-size:9px;letter-spacing:3px;
+  color:var(--green);text-transform:uppercase;text-align:center;
+  margin-bottom:12px;opacity:.7;
+}
+.menu-title{
+  font-family:var(--hud);font-size:2.6rem;font-weight:900;
+  text-align:center;line-height:1;margin-bottom:4px;
+  background:linear-gradient(135deg,#fff 0%,var(--green) 50%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.menu-sub{
+  font-family:var(--hud);font-size:.65rem;letter-spacing:5px;
+  color:var(--gold);text-align:center;margin-bottom:28px;opacity:.9;
+}
+
+.menu-section-label{
+  font-family:var(--hud);font-size:9px;letter-spacing:3px;
+  color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;
+}
+
+/* Mode selector */
+.mode-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.mode-btn{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;border-radius:10px;
+  border:1px solid rgba(0,230,118,0.12);
+  background:rgba(0,230,118,0.03);
+  cursor:pointer;transition:all .2s ease;
+  text-align:left;
+}
+.mode-btn:hover{border-color:rgba(0,230,118,0.4);background:rgba(0,230,118,0.08)}
+.mode-btn.active{border-color:var(--green);background:rgba(0,230,118,0.12);box-shadow:0 0 16px rgba(0,230,118,0.15)}
+.mode-icon{
+  width:40px;height:40px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  background:rgba(255,255,255,0.04);
+}
+.mode-name{font-family:var(--hud);font-size:.9rem;font-weight:700;color:#fff;display:block}
+.mode-desc{font-size:.78rem;color:var(--text-dim);display:block;margin-top:2px}
+.mode-chip{
+  margin-left:auto;font-family:var(--hud);font-size:8px;letter-spacing:1px;
+  padding:4px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+}
+.chip-std{background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.3)}
+.chip-hard{background:rgba(255,109,0,0.1);color:var(--orange);border:1px solid rgba(255,109,0,0.3)}
+.chip-rank{background:rgba(255,215,64,0.1);color:var(--gold);border:1px solid rgba(255,215,64,0.3)}
+
+.start-btn{
+  width:100%;padding:16px;border-radius:10px;border:none;cursor:pointer;
+  font-family:var(--hud);font-size:1rem;font-weight:700;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--green2),#00897b);
+  color:#010d06;text-transform:uppercase;
+  box-shadow:0 0 30px rgba(0,230,118,0.3);
+  transition:all .25s ease;
+}
+.start-btn:hover{box-shadow:0 0 50px rgba(0,230,118,0.5);transform:translateY(-2px)}
+.start-btn:active{transform:translateY(0)}
+
+/* ── HUD ─────────────────────────────────── */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  pointer-events:none;display:none;
+}
+#hud.active{display:block}
+
+/* Top panel */
+#hudTop{
+  position:absolute;top:12px;left:12px;
+  display:flex;align-items:center;gap:10px;
+  pointer-events:auto;
+}
+
+.hud-panel{
+  display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:8px 14px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 4px 24px rgba(0,0,0,0.6),0 0 12px rgba(0,230,118,0.08);
+}
+
+.hud-stat{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:48px;
+}
+.hud-stat-label{
+  font-family:var(--hud);font-size:7px;letter-spacing:2px;
+  color:var(--text-dim);text-transform:uppercase;
+}
+.hud-stat-value{
+  font-family:var(--hud);font-size:1.1rem;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.hud-stat-value.green{color:var(--green)}
+.hud-stat-value.cyan{color:var(--cyan)}
+.hud-stat-value.red{color:var(--red)}
+.hud-divider{width:1px;height:32px;background:rgba(0,230,118,0.15)}
+
+/* HUD wave banner */
+#waveBanner{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:2000;pointer-events:none;
+  font-family:var(--hud);font-size:2rem;font-weight:900;
+  color:var(--red);text-align:center;
+  text-shadow:0 0 30px rgba(255,23,68,.8);
+  opacity:0;transition:opacity .3s;
+}
+#waveBanner.show{opacity:1}
+
+/* HUD right controls */
+#hudControls{
+  position:fixed;top:12px;right:12px;z-index:1001;
+  display:none;flex-direction:column;gap:8px;
+  pointer-events:auto;
+}
+#hudControls.active{display:flex}
+
+.ctrl-btn{
+  width:44px;height:44px;border-radius:10px;border:1px solid var(--border);
+  background:var(--panel);color:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;
+  transition:all .2s;backdrop-filter:blur(12px);
+}
+.ctrl-btn:hover{border-color:var(--green);box-shadow:0 0 16px rgba(0,230,118,0.2)}
+.ctrl-btn.paused{color:var(--gold);border-color:var(--amber)}
+
+/* Notification */
+#notification{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%);
+  z-index:2001;font-family:var(--hud);font-size:.75rem;letter-spacing:1px;
+  padding:8px 20px;border-radius:8px;
+  background:rgba(4,12,24,0.95);border:1px solid var(--green);
+  color:var(--green);white-space:nowrap;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+  text-shadow:0 0 8px rgba(0,230,118,.5);
+}
+#notification.show{opacity:1}
+#notification.alert{border-color:var(--red);color:var(--red);text-shadow:0 0 8px rgba(255,23,68,.5)}
+
+/* ── SIDE PANEL (ППО SHOP) ───────────────── */
+#sidePanel{
+  position:fixed;bottom:0;left:0;right:0;z-index:1001;
+  display:none;
+  background:var(--panel);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  box-shadow:0 -4px 40px rgba(0,0,0,.7);
+}
+#sidePanel.active{display:block}
+
+.side-panel-inner{
+  max-width:100%;overflow-x:auto;
+  display:flex;gap:8px;padding:10px 12px;
+  scrollbar-width:thin;scrollbar-color:var(--green) transparent;
+}
+
+.pvo-card{
+  flex-shrink:0;width:80px;
+  background:rgba(0,230,118,0.04);
+  border:1px solid rgba(0,230,118,0.12);
+  border-radius:10px;padding:8px 6px;
+  text-align:center;cursor:pointer;
+  transition:all .2s ease;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.pvo-card:hover{border-color:rgba(0,230,118,0.4);background:rgba(0,230,118,0.08)}
+.pvo-card.selected{border-color:var(--green);background:rgba(0,230,118,0.15);box-shadow:0 0 16px rgba(0,230,118,0.2)}
+.pvo-card.disabled{opacity:.35;pointer-events:none}
+.pvo-card-icon{font-size:1.4rem;width:38px;height:38px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.05)}
+.pvo-card-name{font-family:var(--hud);font-size:7.5px;letter-spacing:.5px;color:#fff;font-weight:700;line-height:1.2}
+.pvo-card-price{font-family:var(--hud);font-size:8px;color:var(--gold)}
+.pvo-rarity-bar{position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 10px 10px}
+
+/* Sell/upgrade panel (shown when PPO selected) */
+#actionPanel{
+  display:none;
+  flex-direction:column;gap:6px;
+  padding:10px 12px;min-width:220px;flex-shrink:0;
+  border-right:1px solid var(--border);
+}
+#actionPanel.active{display:flex}
+
+.action-title{
+  font-family:var(--hud);font-size:.8rem;font-weight:700;
+  color:var(--green);letter-spacing:1px;
+}
+.action-row{display:flex;gap:6px}
+.action-btn{
+  flex:1;padding:8px 6px;border-radius:8px;border:1px solid;
+  font-family:var(--hud);font-size:9px;letter-spacing:1px;
+  cursor:pointer;transition:all .2s;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  background:transparent;
+}
+.btn-sell{border-color:rgba(255,23,68,.4);color:var(--red)}
+.btn-sell:hover{background:rgba(255,23,68,.12);box-shadow:0 0 12px rgba(255,23,68,.2)}
+.btn-upgrade{border-color:rgba(0,229,255,.4);color:var(--cyan)}
+.btn-upgrade:hover{background:rgba(0,229,255,.1);box-shadow:0 0 12px rgba(0,229,255,.2)}
+.btn-upgrade:disabled{opacity:.35;pointer-events:none}
+
+.upgrade-list{display:flex;flex-direction:column;gap:4px}
+.upg-row{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 8px;border-radius:6px;
+  background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.08);
+  cursor:pointer;transition:all .15s;
+}
+.upg-row:hover:not(.maxed):not(.cant){background:rgba(0,230,118,0.1);border-color:rgba(0,230,118,0.3)}
+.upg-row.maxed{opacity:.4;cursor:default}
+.upg-row.cant{opacity:.4;cursor:not-allowed}
+.upg-icon{font-size:.85rem;width:18px;text-align:center;color:var(--green)}
+.upg-name{flex:1;font-size:.75rem;color:var(--text)}
+.upg-levels{display:flex;gap:2px}
+.upg-pip{width:6px;height:6px;border-radius:2px;background:rgba(255,255,255,.1);border:1px solid rgba(0,230,118,.2)}
+.upg-pip.filled{background:var(--green);border-color:var(--green);box-shadow:0 0 4px rgba(0,230,118,.5)}
+.upg-cost{font-family:var(--hud);font-size:8px;color:var(--gold);white-space:nowrap}
+
+/* HP bars on map */
+.hp-wrap{pointer-events:none}
+.hp-outer{width:50px;height:5px;background:rgba(0,0,0,.5);border-radius:3px;overflow:hidden;margin:0 auto}
+.hp-inner{height:100%;border-radius:3px;transition:width .2s}
+
+/* ── ENEMY HEALTH BAR ────────────────────── */
+.enemy-hp{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  width:30px;height:3px;background:rgba(0,0,0,.4);border-radius:2px;
+}
+.enemy-hp-fill{height:100%;background:#f44;border-radius:2px;transition:width .1s}
+
+/* ── WAVE PROGRESS ───────────────────────── */
+#waveProgress{
+  position:fixed;bottom:130px;left:50%;transform:translateX(-50%);
+  z-index:999;display:none;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:20px;padding:6px 20px;
+  font-family:var(--hud);font-size:9px;letter-spacing:2px;color:var(--text-dim);
+  display:flex;align-items:center;gap:12px;backdrop-filter:blur(12px);
+}
+.wave-track{width:140px;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.wave-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .3s}
+
+/* ── MODALS ──────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:3000;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-box{
+  background:linear-gradient(145deg,rgba(4,16,32,0.99),rgba(2,8,16,.99));
+  border:1px solid var(--border-bright);border-radius:16px;
+  padding:28px;max-width:440px;width:90%;
+  box-shadow:0 0 60px rgba(0,230,118,.12);
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.modal-title{
+  font-family:var(--hud);font-size:1.3rem;font-weight:900;
+  color:var(--green);margin-bottom:16px;text-align:center;
+}
+.modal-score{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;
+}
+.score-item{
+  background:rgba(0,230,118,.05);border:1px solid var(--border);
+  border-radius:10px;padding:12px;text-align:center;
+}
+.score-val{font-family:var(--hud);font-size:1.4rem;font-weight:900;color:var(--gold);display:block}
+.score-lbl{font-size:.8rem;color:var(--text-dim);display:block;margin-top:3px}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{
+  flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;
+  font-family:var(--hud);font-size:.85rem;font-weight:700;letter-spacing:1px;
+  transition:all .2s;
+}
+.btn-primary-modal{background:linear-gradient(135deg,var(--green2),#00695c);color:#010d06}
+.btn-secondary-modal{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+.btn-primary-modal:hover{box-shadow:0 0 24px rgba(0,230,118,.3)}
+
+/* ── PLACING CURSOR ──────────────────────── */
+#map.placing{cursor:crosshair}
+
+/* ── FPS ─────────────────────────────────── */
+#fps{
+  position:fixed;bottom:8px;right:8px;z-index:999;
+  font-family:var(--hud);font-size:9px;letter-spacing:1px;
+  color:rgba(0,230,118,.3);pointer-events:none;
+}
+
+/* ── CRUISER HEALTH ──────────────────────── */
+#cruiserHud{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%);
+  z-index:999;display:none;
+  background:var(--panel);border:1px solid rgba(255,109,0,.4);
+  border-radius:10px;padding:8px 18px;
+  font-family:var(--hud);font-size:9px;letter-spacing:2px;
+  color:var(--orange);backdrop-filter:blur(12px);
+  box-shadow:0 0 20px rgba(255,109,0,.15);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{height:3px;width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--green2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- PRE-MENU -->
+<div id="preMenu">
+  <div class="menu-frame">
+    <div class="menu-badge">// TACTICAL AIR DEFENSE //</div>
+    <div class="menu-title">DRONEFALL</div>
+    <div class="menu-sub">SKY DEFENSE · v2.0</div>
+
+    <div class="menu-section-label">// SELECT MODE</div>
+    <div class="mode-grid" id="modeGrid">
+      <div class="mode-btn active" data-mode="standard" onclick="selectMode(this)">
+        <div class="mode-icon" style="color:#00e676">🛡</div>
+        <div>
+          <span class="mode-name">STANDARD DEFENSE</span>
+          <span class="mode-desc">Класична кругова оборона • 20 хвиль</span>
+        </div>
+        <span class="mode-chip chip-std">NORMAL</span>
+      </div>
+      <div class="mode-btn" data-mode="eastern" onclick="selectMode(this)">
+        <div class="mode-icon" style="color:#ff1744">⚡</div>
+        <div>
+          <span class="mode-name">EASTERN FRONT</span>
+          <span class="mode-desc">Атака зі сходу • Більше хвиль</span>
+        </div>
+        <span class="mode-chip chip-hard">HARD</span>
+      </div>
+      <div class="mode-btn" data-mode="blitz" onclick="selectMode(this)">
+        <div class="mode-icon" style="color:#ffd740">🔥</div>
+        <div>
+          <span class="mode-name">BLITZ MODE</span>
+          <span class="mode-desc">Нон-стоп хвилі • Режим виживання</span>
+        </div>
+        <span class="mode-chip chip-rank">EXTREME</span>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">
+      <i class="fas fa-play"></i> &nbsp;LAUNCH DEFENSE
+    </button>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="hudTop">
+    <div class="hud-panel">
+      <div class="hud-stat">
+        <span class="hud-stat-label">FUNDS</span>
+        <span class="hud-stat-value" id="hudMoney">5000</span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-stat-label">WAVE</span>
+        <span class="hud-stat-value green" id="hudWave">0</span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-stat-label">KILLS</span>
+        <span class="hud-stat-value cyan" id="hudKills">0</span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-stat-label">TARGETS</span>
+        <span class="hud-stat-value red" id="hudTargets">0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div id="hudControls">
+  <div class="ctrl-btn" id="btnPause" title="Пауза" onclick="togglePause()"><i class="fas fa-pause"></i></div>
+  <div class="ctrl-btn" id="btnSpeed" title="Швидкість" onclick="cycleSpeed()"><span id="speedTxt" style="font-family:var(--hud);font-size:11px">1×</span></div>
+  <div class="ctrl-btn" title="Меню" onclick="showExitConfirm()"><i class="fas fa-sign-out-alt"></i></div>
+</div>
+
+<!-- Wave banner -->
+<div id="waveBanner"></div>
+
+<!-- Notification -->
+<div id="notification"></div>
+
+<!-- Wave progress -->
+<div id="waveProgress">
+  <span id="waveProgressLabel">WAVE 1 INCOMING</span>
+  <div class="wave-track"><div class="wave-fill" id="waveProgressFill" style="width:0%"></div></div>
+  <span id="waveProgressCount">0 / 0</span>
+</div>
+
+<!-- Cruiser HUD -->
+<div id="cruiserHud">
+  🚢 CRUISER HP: <span id="cruiserHp">100</span>
+</div>
+
+<!-- Side panel -->
+<div id="sidePanel">
+  <div style="display:flex;overflow:hidden">
+    <div id="actionPanel">
+      <div class="action-title" id="actionTitle">— SELECT PPO —</div>
+      <div class="action-row">
+        <button class="action-btn btn-sell" id="btnSell" onclick="sellSelected()"><i class="fas fa-coins"></i> SELL</button>
+      </div>
+      <div class="upgrade-list" id="upgradeList"></div>
+    </div>
+    <div class="side-panel-inner" id="shopGrid"></div>
+  </div>
+</div>
+
+<!-- FPS -->
+<div id="fps">FPS: --</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DRONEFALL v2 — FULL GAME ENGINE
+//  New design · New balance · New logic
+// ═══════════════════════════════════════════════════════
+
+// ── CONSTANTS & CONFIG ──────────────────────────────────
+const MAP_W = 4000, MAP_H = 2829;
+const imageBounds = [[0,0],[MAP_H,MAP_W]];
+
+const RARITY = {
+  common:   {color:'#78909c',glow:'rgba(120,144,156,.4)'},
+  rare:     {color:'#29b6f6',glow:'rgba(41,182,246,.4)'},
+  epic:     {color:'#ce93d8',glow:'rgba(206,147,216,.4)'},
+  legendary:{color:'#ffd740',glow:'rgba(255,215,64,.5)'}
+};
+
+// ── PPO CATALOG ─────────────────────────────────────────
+const PPO_CATALOG = {
+  machineGun:{
+    name:'Machine Gun',ua:'Кулемет',icon:'🔫',
+    price:350,damage:18,cd:400,radius:130,
+    hitChance:.58,projSpeed:.9,isBullet:true,
+    canTarget:['shahed','heavyDrone'],rarity:'common',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5]}
+  },
+  madt:{
+    name:'MADT',ua:'MADT',icon:'⚙️',
+    price:550,damage:45,cd:1800,radius:155,
+    hitChance:.60,projSpeed:.80,isBullet:true,
+    canTarget:['heavyDrone'],rarity:'common',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5]}
+  },
+  reb:{
+    name:'EW System',ua:'РЕБ',icon:'📡',
+    price:500,radius:190,isREB:true,
+    slowFactor:.52,knockdownChance:.08,
+    canTarget:['shahed','heavyDrone','rocket','kalibr'],rarity:'rare',
+    upgrades:{radius:[0,5]}
+  },
+  crotale:{
+    name:'Crotale 90M',ua:'Crotale 90M',icon:'🚀',
+    price:950,damage:50,cd:1600,radius:160,
+    hitChance:.62,projSpeed:.95,
+    canTarget:['shahed','heavyDrone'],rarity:'rare',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5],accuracy:[0,3]}
+  },
+  irist:{
+    name:'IRIS-T SML',ua:'IRIS-T SML',icon:'💫',
+    price:1050,damage:40,cd:2000,radius:170,
+    hitChance:.62,projSpeed:.85,
+    canTarget:['shahed','rocket'],rarity:'rare',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5],accuracy:[0,3]}
+  },
+  kub:{
+    name:'2K12 KUB',ua:'2K12 KUB',icon:'🛡',
+    price:1150,damage:32,cd:2200,radius:175,
+    hitChance:.65,projSpeed:.75,
+    canTarget:['shahed','heavyDrone','rocket'],rarity:'epic',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5],accuracy:[0,4]}
+  },
+  patriot:{
+    name:'Patriot',ua:'Patriot',icon:'🦅',
+    price:2500,damage:55,cd:1000,radius:205,
+    hitChance:.65,projSpeed:.88,
+    canTarget:['rocket','kalibr'],rarity:'epic',
+    upgrades:{damage:[0,5],reload:[0,5],radius:[0,5],accuracy:[0,4]}
+  },
+  kilchen:{
+    name:'Kilchen',ua:'Кільчень',icon:'⭐',
+    price:1900,damage:85,cd:850,radius:180,
+    hitChance:.72,projSpeed:.95,
+    canTarget:['shahed','heavyDrone','rocket','kalibr'],rarity:'legendary',
+    upgrades:{damage:[0,8],reload:[0,8],radius:[0,6],accuracy:[0,5]}
+  },
+  f16:{
+    name:'F-16',ua:'F-16',icon:'✈️',
+    price:3800,damage:320,cd:700,radius:310,
+    hitChance:.72,projSpeed:1.4,isPlane:true,
+    canTarget:['shahed','heavyDrone','rocket','kalibr'],rarity:'legendary',
+    upgrades:{damage:[0,6],radius:[0,4]}
+  }
+};
+
+// ── UPGRADE SYSTEM ──────────────────────────────────────
+const UPGRADE_CONFIG = {
+  damage: {
+    icon:'⚔️',label:'Damage',
+    costMult:0.18,
+    apply:(pvo) => pvo.damage = Math.floor(pvo.baseDamage*(1+pvo.upgs.damage*0.12))
+  },
+  reload: {
+    icon:'⚡',label:'Reload',
+    costMult:0.14,
+    apply:(pvo) => pvo.cd = Math.floor(pvo.baseCd*(1-pvo.upgs.reload*0.09))
+  },
+  radius: {
+    icon:'🔭',label:'Range',
+    costMult:0.12,
+    apply:(pvo) => {
+      pvo.radius = Math.floor(pvo.baseRadius*(1+pvo.upgs.radius*0.10));
+      if(pvo.circle) pvo.circle.setRadius(pvo.radius);
+    }
+  },
+  accuracy:{
+    icon:'🎯',label:'Accuracy',
+    costMult:0.22,
+    apply:(pvo) => pvo.hitChance = Math.min(0.97, pvo.baseHit+pvo.upgs.accuracy*0.06)
+  }
+};
+
+// ── WAVE BALANCE ────────────────────────────────────────
+// Returns {shaheds, heavyDrones, rockets, kalibrs} for wave N
+function getWaveComposition(wave, mode) {
+  const hard = mode === 'eastern' || mode === 'blitz';
+  const mult = hard ? 1.35 : 1;
+  
+  // Base scaling curves
+  const shaheds   = Math.floor((4 + wave*3.5 + Math.pow(wave,1.15)) * mult);
+  const heavy     = Math.floor((wave >= 3 ? (wave-2)*1.8 : 0) * mult);
+  const rockets   = Math.floor((wave >= 6 ? (wave-5)*1.2 : 0) * mult);
+  const kalibrs   = wave >= 12 ? Math.floor((wave-11)*0.8 * mult) : 0;
+  
+  // Blitz: scale faster
+  if(mode === 'blitz') {
+    return {
+      shaheds: shaheds + Math.floor(wave * 2),
+      heavyDrones: heavy + Math.floor(wave * 1),
+      rockets: rockets + Math.floor(wave * 0.5),
+      kalibrs: kalibrs + Math.floor(Math.max(0,wave-8) * 0.3)
+    };
+  }
+  
+  return {shaheds, heavyDrones: heavy, rockets, kalibrs};
+}
+
+// Money reward per kill
+const KILL_REWARD = {shahed:90, heavyDrone:180, rocket:240, kalibr:380};
+
+// Wave clear bonus
+const WAVE_BONUS = (wave) => 300 + wave * 80;
+
+// Enemy stats per wave
+function enemyStats(type, wave) {
+  const BASE = {
+    shahed:    {hp:22, speed:0.28},
+    heavyDrone:{hp:85, speed:0.38},
+    rocket:    {hp:160, speed:0.55},
+    kalibr:    {hp:130, speed:0.70}
+  };
+  const b = BASE[type];
+  const hpScale = 1 + (wave-1)*0.22;
+  const spScale = 1 + (wave-1)*0.04;
+  return {hp: Math.floor(b.hp*hpScale), speed: b.speed*spScale};
+}
+
+// ── GAME STATE ──────────────────────────────────────────
+let G = {
+  map: null, mode: 'standard',
+  money: 5000, wave: 0, kills: 0,
+  isPlaying: false, paused: false, speed: 1,
+  gameOver: false,
+  pvoList: [], enemies: [], projectiles: [],
+  targets: [],  // defense points
+  selectedPvo: null, placingType: null,
+  purchaseCounts: {},
+  waveInProgress: false, waveEnemyTotal: 0, waveEnemyLeft: 0,
+  nextWaveAt: 0,       // game time when next wave starts
+  gameTime: 0,
+  lastFrame: 0,
+  frameCount: 0, fps: 0, fpsTimer: 0,
+  // spawn queues
+  spawnQueue: [],      // [{type, delay, spawned}]
+  spawnTimer: 0,
+};
+
+// ── MAP & GAME INIT ─────────────────────────────────────
+let map;
+let mapCanvas, mapCtx;
+
+function initMap() {
+  map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -3, maxZoom: 1,
+    zoomControl: false,
+    attributionControl: false
+  });
+  L.imageOverlay('assets/map.png', imageBounds).addTo(map);
+  map.fitBounds(imageBounds);
+  map.setMaxBounds([[-500,-500],[MAP_H+500,MAP_W+500]]);
+  G.map = map;
+
+  // Pixel-perfect map check
+  const img = new Image();
+  img.src = 'assets/map.png';
+  img.onload = () => {
+    mapCanvas = document.createElement('canvas');
+    mapCanvas.width = img.naturalWidth;
+    mapCanvas.height = img.naturalHeight;
+    mapCtx = mapCanvas.getContext('2d');
+    mapCtx.drawImage(img, 0, 0);
+  };
+
+  // Click handler
+  map.on('click', onMapClick);
+}
+
+function isOnMap(lat, lng) {
+  if (!mapCanvas || !mapCtx) return true; // fallback allow
+  const x = Math.floor((lng/MAP_W)*mapCanvas.width);
+  const y = Math.floor((1-lat/MAP_H)*mapCanvas.height);
+  if (x<0||x>=mapCanvas.width||y<0||y>=mapCanvas.height) return false;
+  const p = mapCtx.getImageData(x,y,1,1).data;
+  return p[3]>10;
+}
+
+// ── MODE & START ────────────────────────────────────────
+function selectMode(el) {
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  G.mode = el.dataset.mode;
+}
+
+function startGame() {
+  document.getElementById('preMenu').style.display='none';
+  document.getElementById('hud').classList.add('active');
+  document.getElementById('hudControls').classList.add('active');
+  document.getElementById('sidePanel').classList.add('active');
+
+  G.isPlaying = true;
+  G.money = G.mode === 'blitz' ? 4000 : 5000;
+  G.wave = 0;
+  G.kills = 0;
+  G.gameOver = false;
+  G.nextWaveAt = 8; // First wave in 8s
+
+  initMap();
+  spawnInitialTargets();
+  buildShop();
+  updateHUD();
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ── TARGET SPAWNING ─────────────────────────────────────
+// Real Ukrainian city coordinates (in map pixel space)
+const CITY_COORDS = [
+  [1720, 1820],  // Kyiv
+  [1380, 1640],  // Vinnytsia
+  [1460, 2380],  // Kremenchuk
+  [840,  2100],  // Mykolaiv
+  [1690, 3005],  // Kharkiv
+  [1920, 655],   // Lviv
+];
+
+let targetIconCycle = 0;
+const TARGET_ICONS = ['assets/tet.png','assets/gas.png','assets/zawod.png'];
+
+function spawnInitialTargets() {
+  const count = G.mode === 'blitz' ? 3 : 4;
+  const shuffled = [...CITY_COORDS].sort(()=>Math.random()-.5);
+  for(let i=0;i<count;i++) spawnTarget(shuffled[i]);
+}
+
+function spawnTarget(coords) {
+  const [lat, lng] = coords;
+  const iconUrl = TARGET_ICONS[targetIconCycle++ % TARGET_ICONS.length];
+
+  const icon = L.icon({iconUrl, iconSize:[52,52], iconAnchor:[26,40]});
+  const marker = L.marker([lat,lng],{icon}).addTo(map);
+
+  const hpDiv = document.createElement('div');
+  hpDiv.className = 'hp-wrap';
+  hpDiv.innerHTML = `<div class="hp-outer"><div class="hp-inner" style="width:100%;background:#00e676"></div></div>`;
+  const hpMarker = L.marker([lat,lng],{
+    icon: L.divIcon({html:hpDiv,className:'',iconSize:[50,6],iconAnchor:[25,-24]})
+  }).addTo(map);
+
+  const noBuild = L.circle([lat,lng],{radius:100,color:'#ff1744',fillColor:'#ff1744',fillOpacity:.12,dashArray:'5,5',interactive:false}).addTo(map);
+
+  const t = {lat,lng,marker,hpMarker,noBuild,hp:100,maxHp:100,alive:true};
+  G.targets.push(t);
+
+  marker.on('click', e=>{
+    e.originalEvent?.stopPropagation();
+    if(!G.selectedPvo) return;
+    // Let map click handle
+  });
+
+  return t;
+}
+
+function getTargetHpColor(pct) {
+  if(pct>0.66) return '#00e676';
+  if(pct>0.33) return '#ffd740';
+  return '#ff1744';
+}
+
+function updateTargetHP(t) {
+  const el = t.hpMarker?.getElement();
+  if(!el) return;
+  const bar = el.querySelector('.hp-inner');
+  if(!bar) return;
+  const pct = Math.max(0, t.hp/t.maxHp);
+  bar.style.width = (pct*100)+'%';
+  bar.style.background = getTargetHpColor(pct);
+  if(pct<=0 && t.alive) destroyTarget(t);
+}
+
+function destroyTarget(t) {
+  if(!t.alive) return;
+  t.alive = false;
+  try {
+    t.marker.setIcon(L.divIcon({html:'<div style="font-size:24px">💥</div>',className:'',iconSize:[30,30],iconAnchor:[15,15]}));
+    map.removeLayer(t.hpMarker);
+    map.removeLayer(t.noBuild);
+  } catch(e){}
+  
+  notify('⚠ TARGET DESTROYED!', true);
+  checkGameOver();
+}
+
+function checkGameOver() {
+  const alive = G.targets.filter(t=>t.alive).length;
+  document.getElementById('hudTargets').textContent = alive;
+  if(!alive && G.isPlaying) {
+    G.gameOver = true;
+    setTimeout(showGameOver, 800);
+  }
+}
+
+// ── WAVE SYSTEM ─────────────────────────────────────────
+const MAX_WAVES = {standard:20, eastern:30, blitz:999};
+
+function startWave() {
+  if(G.gameOver) return;
+  G.wave++;
+  G.waveInProgress = true;
+
+  const comp = getWaveComposition(G.wave, G.mode);
+  const total = comp.shaheds + comp.heavyDrones + comp.rockets + comp.kalibrs;
+  G.waveEnemyTotal = total;
+  G.waveEnemyLeft = total;
+
+  // Build spawn queue
+  G.spawnQueue = [];
+  G.spawnTimer = 0;
+
+  let delay = 0;
+  // Shaheds arrive first, then heavier units
+  for(let i=0;i<comp.shaheds;i++,delay+=0.28)    G.spawnQueue.push({type:'shahed',delay});
+  for(let i=0;i<comp.heavyDrones;i++,delay+=0.55) G.spawnQueue.push({type:'heavyDrone',delay});
+  for(let i=0;i<comp.rockets;i++,delay+=0.8)     G.spawnQueue.push({type:'rocket',delay});
+  for(let i=0;i<comp.kalibrs;i++,delay+=1.2)     G.spawnQueue.push({type:'kalibr',delay});
+
+  // Shuffle so types interleave slightly
+  G.spawnQueue.sort((a,b)=>a.delay-b.delay);
+
+  // Show banner
+  showWaveBanner(G.wave, total);
+  updateHUD();
+
+  // Next wave timer
+  const baseInterval = G.mode==='blitz' ? 25 : 40;
+  G.nextWaveAt = G.gameTime + baseInterval + G.wave * (G.mode==='blitz'?2:3.5);
+
+  // Wave money bonus
+  if(G.wave > 1) {
+    const bonus = WAVE_BONUS(G.wave-1);
+    G.money += bonus;
+    notify(`+₴${bonus} WAVE CLEARED`, false);
+    updateHUD();
+  }
+}
+
+function showWaveBanner(wave, count) {
+  const el = document.getElementById('waveBanner');
+  const maxW = MAX_WAVES[G.mode];
+  el.innerHTML = `<div style="font-size:1.4rem">⚠ WAVE ${wave}/${maxW===999?'∞':maxW}</div><div style="font-size:.9rem;color:var(--text-dim);font-family:var(--body)">${count} enemies incoming</div>`;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+function processSpawnQueue(dt) {
+  if(!G.spawnQueue.length) return;
+  G.spawnTimer += dt;
+  
+  while(G.spawnQueue.length && G.spawnTimer >= G.spawnQueue[0].delay) {
+    const item = G.spawnQueue.shift();
+    spawnEnemy(item.type);
+  }
+}
+
+// ── ENEMY SPAWNING ──────────────────────────────────────
+function getSpawnPoint(type) {
+  const m = G.mode;
+  // Eastern front: spawn from right side
+  if(m === 'eastern') {
+    const lat = Math.random()*MAP_H;
+    const lng = MAP_W + 100 + Math.random()*200;
+    return [lat,lng];
+  }
+  // Standard/blitz: all directions, weighted by wave
+  const dirs = ['right'];
+  if(G.wave>=4) dirs.push('bottom');
+  if(G.wave>=7) dirs.push('top');
+  if(G.wave>=12) dirs.push('left');
+  const dir = dirs[Math.floor(Math.random()*dirs.length)];
+  
+  if(dir==='right')  return [Math.random()*MAP_H, MAP_W+150];
+  if(dir==='left')   return [Math.random()*MAP_H, -150];
+  if(dir==='top')    return [-150, Math.random()*MAP_W];
+  return [MAP_H+150, Math.random()*MAP_W];
+}
+
+function getTarget(type) {
+  const alive = G.targets.filter(t=>t.alive);
+  if(!alive.length) return null;
+  // Rockets more likely to hit specific targets, drones spread
+  const pvo_chance = type==='rocket'||type==='kalibr' ? 0.15 : 0.25;
+  if(Math.random()<pvo_chance && G.pvoList.length) {
+    const p = G.pvoList[Math.floor(Math.random()*G.pvoList.length)];
+    if(p&&p.latlng) return [p.latlng.lat, p.latlng.lng, p, 'pvo'];
+  }
+  const t = alive[Math.floor(Math.random()*alive.length)];
+  return [t.lat, t.lng, t, 'target'];
+}
+
+function controlPoint(s, e) {
+  const mx = (s[0]+e[0])/2, my = (s[1]+e[1])/2;
+  const dx = e[0]-s[0], dy = e[1]-s[1];
+  const len = Math.hypot(dx,dy)||1;
+  const perp = [-dy/len, dx/len];
+  const off = (Math.random()*0.4+0.05)*len*(Math.random()<.5?1:-1);
+  return [mx+perp[0]*off, my+perp[1]*off];
+}
+
+function bezier(p0,p1,p2,t) {
+  const u=1-t;
+  return [u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0], u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]];
+}
+function bezierLen(p0,p1,p2,seg=12) {
+  let l=0,prev=bezier(p0,p1,p2,0);
+  for(let i=1;i<=seg;i++){const c=bezier(p0,p1,p2,i/seg);l+=Math.hypot(c[0]-prev[0],c[1]-prev[1]);prev=c;}
+  return l;
+}
+
+function spawnEnemy(type) {
+  const tgt = getTarget(type);
+  if(!tgt) return;
+
+  const spawn = getSpawnPoint(type);
+  const stats = enemyStats(type, G.wave);
+
+  // For rockets/kalibrs: straight line; drones: bezier
+  const isBezier = type==='shahed'||type==='heavyDrone';
+  const ctrl = isBezier ? controlPoint(spawn,[tgt[0],tgt[1]]) : null;
+  const totalLen = isBezier ? bezierLen(spawn,ctrl,[tgt[0],tgt[1]]) : Math.hypot(tgt[0]-spawn[0],tgt[1]-spawn[1]);
+
+  // Icon HTML
+  const icons = {shahed:'🛸',heavyDrone:'🤖',rocket:'🚀',kalibr:'💥'};
+  const sizes = {shahed:28,heavyDrone:36,rocket:30,kalibr:34};
+  const sz = sizes[type];
+
+  const divIcon = L.divIcon({
+    className:'',
+    html:`<div style="position:relative;width:${sz}px;height:${sz}px">
+      <span style="font-size:${sz-4}px;line-height:${sz}px">${icons[type]}</span>
+      <div class="enemy-hp"><div class="enemy-hp-fill" style="width:100%"></div></div>
+    </div>`,
+    iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
+  });
+
+  const marker = L.marker(spawn, {icon:divIcon,interactive:false,zIndexOffset:500}).addTo(map);
+
+  const enemy = {
+    type, marker,
+    position:[...spawn],
+    start:[...spawn],
+    control: ctrl,
+    target:[tgt[0],tgt[1]],
+    targetObj: tgt[2],
+    targetType: tgt[3],
+    hp: stats.hp, maxHp: stats.hp,
+    speed: stats.speed,
+    t: 0,
+    totalLen,
+    alive: true,
+    slowed: false,
+    slowedTimer: 0,
+    isKnockedDown: false,
+    pvoTargeting: null, // which pvo is targeting this
+  };
+  G.enemies.push(enemy);
+}
+
+function updateEnemyHP(e) {
+  const el = e.marker?.getElement();
+  if(!el) return;
+  const fill = el.querySelector('.enemy-hp-fill');
+  if(fill) fill.style.width = (Math.max(0,e.hp/e.maxHp)*100)+'%';
+}
+
+// ── PPO PLACEMENT ───────────────────────────────────────
+function buildShop() {
+  const grid = document.getElementById('shopGrid');
+  grid.innerHTML = '';
+
+  Object.entries(PPO_CATALOG).forEach(([id,cfg])=>{
+    const r = RARITY[cfg.rarity];
+    const div = document.createElement('div');
+    div.className = 'pvo-card';
+    div.dataset.id = id;
+    const price = getPrice(id);
+    div.innerHTML = `
+      <div class="pvo-card-icon" style="font-size:1.3rem">${cfg.icon}</div>
+      <div class="pvo-card-name">${cfg.ua}</div>
+      <div class="pvo-card-price">₴${price}</div>
+      <div class="pvo-rarity-bar" style="background:${r.color}"></div>
+    `;
+    div.onclick = () => selectShopItem(id, div);
+    grid.appendChild(div);
+  });
+}
+
+function getPrice(id) {
+  const base = PPO_CATALOG[id].price;
+  const n = G.purchaseCounts[id]||0;
+  return Math.floor(base * Math.pow(1.18, n));
+}
+
+function updateShopPrices() {
+  document.querySelectorAll('.pvo-card').forEach(card=>{
+    const id = card.dataset.id;
+    if(!id) return;
+    const price = getPrice(id);
+    const priceEl = card.querySelector('.pvo-card-price');
+    if(priceEl) priceEl.textContent = `₴${price}`;
+    
+    const cfg = PPO_CATALOG[id];
+    card.classList.toggle('disabled', G.money < price && G.placingType !== id);
+  });
+}
+
+let selectedShopCard = null;
+
+function selectShopItem(id, el) {
+  if(G.selectedPvo) deselectPvo();
+  
+  const price = getPrice(id);
+  if(G.money < price) {
+    notify(`⚠ INSUFFICIENT FUNDS — need ₴${price}`, true);
+    return;
+  }
+
+  document.querySelectorAll('.pvo-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedShopCard = el;
+  G.placingType = id;
+  document.getElementById('map').classList.add('placing');
+  notify(`📍 Click on the map to place ${PPO_CATALOG[id].ua}`, false);
+}
+
+function cancelPlacing() {
+  G.placingType = null;
+  if(selectedShopCard) selectedShopCard.classList.remove('selected');
+  selectedShopCard = null;
+  document.getElementById('map').classList.remove('placing');
+}
+
+// ── MAP CLICK ───────────────────────────────────────────
+function onMapClick(e) {
+  const lat = e.latlng.lat, lng = e.latlng.lng;
+
+  // Placing mode
+  if(G.placingType) {
+    if(!isOnMap(lat,lng)) { notify('⚠ OUTSIDE MAP BOUNDARY', true); return; }
+    
+    // Check near target
+    const nearTarget = G.targets.some(t=>t.alive&&Math.hypot(t.lat-lat,t.lng-lng)<110);
+    if(nearTarget) { notify('⚠ TOO CLOSE TO TARGET', true); return; }
+    
+    placePvo(G.placingType, lat, lng);
+    cancelPlacing();
+    return;
+  }
+
+  // Select existing PPO
+  let nearest = null, minD = Infinity;
+  G.pvoList.forEach(p=>{
+    if(!p.latlng) return;
+    const d = Math.hypot(p.latlng.lat-lat, p.latlng.lng-lng);
+    if(d<p.radius&&d<minD){nearest=p;minD=d;}
+  });
+
+  if(nearest) { selectPvo(nearest); return; }
+  
+  // Deselect
+  if(G.selectedPvo) { deselectPvo(); return; }
+}
+
+// ── PPO PLACEMENT ───────────────────────────────────────
+function placePvo(id, lat, lng) {
+  const cfg = PPO_CATALOG[id];
+  const price = getPrice(id);
+  if(G.money < price) return;
+  G.money -= price;
+  G.purchaseCounts[id] = (G.purchaseCounts[id]||0)+1;
+
+  const r = RARITY[cfg.rarity];
+  const latlng = L.latLng(lat,lng);
+
+  // Zone circle
+  const circleColor = cfg.isREB ? '#e040fb' : cfg.rarity==='legendary' ? '#ffd740' : '#00e676';
+  const circle = L.circle(latlng, {
+    radius: cfg.radius,
+    color: circleColor,
+    fillColor: circleColor,
+    fillOpacity: cfg.isREB ? 0.06 : 0.08,
+    weight: 1,
+    interactive: false
+  }).addTo(map);
+
+  // Marker
+  const sz = 48;
+  const markerIcon = L.divIcon({
+    className:'',
+    html:`<div style="width:${sz}px;height:${sz}px;background:rgba(4,12,24,.85);border:2px solid ${r.color};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:${sz-12}px;box-shadow:0 0 12px ${r.glow},0 0 24px ${r.glow}40">${cfg.icon}</div>`,
+    iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
+  });
+  const marker = L.marker(latlng,{icon:markerIcon,zIndexOffset:1000}).addTo(map);
+
+  const pvo = {
+    id, cfg, latlng, circle, marker,
+    price: price,
+    damage: cfg.damage||0,   baseDamage: cfg.damage||0,
+    cd: cfg.cd||0,            baseCd: cfg.cd||0,
+    radius: cfg.radius,       baseRadius: cfg.radius,
+    hitChance: cfg.hitChance||0, baseHit: cfg.hitChance||0,
+    lastShot: 0,
+    upgs: {damage:0,reload:0,radius:0,accuracy:0},
+    // plane state
+    planeTarget: null, planeAngle: 0, planeSpeed: 0,
+  };
+
+  marker.on('click', e=>{
+    e.originalEvent?.stopPropagation();
+    if(G.placingType) return;
+    selectPvo(pvo);
+  });
+
+  G.pvoList.push(pvo);
+  updateHUD();
+  updateShopPrices();
+  return pvo;
+}
+
+// ── PPO SELECTION ───────────────────────────────────────
+function selectPvo(pvo) {
+  G.selectedPvo = pvo;
+  document.getElementById('actionPanel').classList.add('active');
+  document.getElementById('actionTitle').textContent = pvo.cfg.ua;
+  
+  const sellVal = Math.floor((pvo.price+totalUpgCost(pvo))*.72);
+  const btn = document.getElementById('btnSell');
+  btn.innerHTML = `<i class="fas fa-coins"></i> SELL +₴${sellVal}`;
+  btn.dataset.val = sellVal;
+
+  renderUpgrades(pvo);
+}
+
+function totalUpgCost(pvo) {
+  let total = 0;
+  Object.keys(pvo.upgs).forEach(stat=>{
+    const cfg = UPGRADE_CONFIG[stat]; if(!cfg) return;
+    for(let i=0;i<pvo.upgs[stat];i++) total += Math.floor(pvo.price*cfg.costMult*(i+1));
+  });
+  return total;
+}
+
+function deselectPvo() {
+  G.selectedPvo = null;
+  document.getElementById('actionPanel').classList.remove('active');
+}
+
+function sellSelected() {
+  if(!G.selectedPvo) return;
+  const val = parseInt(document.getElementById('btnSell').dataset.val)||0;
+  G.money += val;
+  const p = G.selectedPvo;
+  try{map.removeLayer(p.marker);}catch(e){}
+  try{map.removeLayer(p.circle);}catch(e){}
+  G.pvoList = G.pvoList.filter(x=>x!==p);
+  G.selectedPvo = null;
+  document.getElementById('actionPanel').classList.remove('active');
+  updateHUD();
+  updateShopPrices();
+}
+
+// ── UPGRADE UI ──────────────────────────────────────────
+function renderUpgrades(pvo) {
+  const ul = document.getElementById('upgradeList');
+  ul.innerHTML = '';
+  
+  const availStats = Object.keys(pvo.cfg.upgrades||{});
+  if(!availStats.length){ul.innerHTML='<div style="color:var(--text-dim);font-size:.8rem;padding:4px">No upgrades</div>';return;}
+
+  availStats.forEach(stat=>{
+    const ucfg = UPGRADE_CONFIG[stat]; if(!ucfg) return;
+    const maxLvl = pvo.cfg.upgrades[stat][1];
+    const curLvl = pvo.upgs[stat]||0;
+    const maxed = curLvl>=maxLvl;
+    const cost = maxed ? 0 : Math.floor(pvo.price*ucfg.costMult*(curLvl+1));
+    const canAfford = G.money>=cost;
+    
+    const row = document.createElement('div');
+    row.className = 'upg-row'+(maxed?' maxed':(!canAfford?' cant':''));
+    
+    const pips = Array.from({length:maxLvl},(_,i)=>`<div class="upg-pip${i<curLvl?' filled':''}"></div>`).join('');
+    
+    row.innerHTML = `
+      <span class="upg-icon">${ucfg.icon}</span>
+      <span class="upg-name">${ucfg.label}</span>
+      <div class="upg-levels">${pips}</div>
+      <span class="upg-cost">${maxed?'MAX':canAfford?`₴${cost}`:`₴${cost}`}</span>
+    `;
+    if(!maxed) row.onclick = () => doUpgrade(pvo, stat, cost);
+    ul.appendChild(row);
+  });
+}
+
+function doUpgrade(pvo, stat, cost) {
+  if(G.money < cost) { notify('⚠ INSUFFICIENT FUNDS', true); return; }
+  G.money -= cost;
+  pvo.upgs[stat]++;
+  UPGRADE_CONFIG[stat]?.apply(pvo);
+  updateHUD();
+  updateShopPrices();
+  renderUpgrades(pvo);
+}
+
+// ── GAME LOOP ───────────────────────────────────────────
+function gameLoop(ts) {
+  if(!G.isPlaying) return;
+  requestAnimationFrame(gameLoop);
+
+  const raw = Math.min((ts - G.lastFrame)/1000, 0.1); // cap at 100ms
+  G.lastFrame = ts;
+  const dt = G.paused ? 0 : raw * G.speed;
+
+  // FPS
+  G.frameCount++;
+  G.fpsTimer += raw;
+  if(G.fpsTimer>=1) {
+    G.fps = Math.round(G.frameCount/G.fpsTimer);
+    G.frameCount=0; G.fpsTimer=0;
+    document.getElementById('fps').textContent = `FPS: ${G.fps}`;
+  }
+
+  if(G.paused) return;
+
+  G.gameTime += dt;
+
+  // Wave scheduling
+  if(!G.gameOver) {
+    const maxW = MAX_WAVES[G.mode];
+    if(G.wave < maxW && G.gameTime >= G.nextWaveAt) {
+      startWave();
+    }
+    // Victory check
+    if(G.wave >= maxW && !G.waveInProgress && !G.gameOver) {
+      const waveCleared = G.enemies.length === 0 && G.spawnQueue.length === 0;
+      if(waveCleared) showVictory();
+    }
+  }
+
+  // Spawn queue
+  processSpawnQueue(dt);
+
+  // Move enemies
+  moveEnemies(dt, ts);
+
+  // Shoot
+  shootPVO(ts);
+
+  // Move projectiles
+  moveProjectiles(dt, ts);
+
+  // Wave completion
+  checkWaveComplete();
+
+  // Wave progress UI
+  updateWaveProgress();
+}
+
+// ── ENEMY MOVEMENT ──────────────────────────────────────
+function moveEnemies(dt, ts) {
+  for(let i=G.enemies.length-1;i>=0;i--) {
+    const e = G.enemies[i];
+    if(!e.alive) { G.enemies.splice(i,1); continue; }
+
+    // REB slow
+    let effectiveSpeed = e.speed;
+    if(e.slowed) {
+      effectiveSpeed *= 0.52;
+      e.slowedTimer -= dt;
+      if(e.slowedTimer<=0) e.slowed=false;
+    }
+
+    const step = effectiveSpeed * G.speed;
+
+    if(e.control) {
+      // Bezier movement
+      const inc = (step / Math.max(e.totalLen, 1)) * dt;
+      e.t = Math.min(e.t + inc, 1);
+      const pos = bezier(e.start, e.control, e.target, e.t);
+      e.position = pos;
+      e.marker.setLatLng(pos);
+
+      // Rotate icon
+      if(e.t<0.99) {
+        const dt2 = Math.min(e.t+0.01,1);
+        const p2 = bezier(e.start,e.control,e.target,dt2);
+        const ang = Math.atan2(p2[1]-pos[1],p2[0]-pos[0])*180/Math.PI;
+        const el = e.marker.getElement()?.querySelector('span');
+        if(el) el.style.transform = `rotate(${ang}deg)`;
+      }
+
+      if(e.t>=1) { enemyHit(e); continue; }
+    } else {
+      // Straight movement
+      const dx = e.target[0]-e.position[0], dy = e.target[1]-e.position[1];
+      const dist = Math.hypot(dx,dy);
+      if(dist<8) { enemyHit(e); continue; }
+      const nx=dx/dist, ny=dy/dist;
+      e.position[0] += nx*step*dt;
+      e.position[1] += ny*step*dt;
+      e.marker.setLatLng(e.position);
+      const ang = Math.atan2(ny,nx)*180/Math.PI;
+      const el = e.marker.getElement()?.querySelector('span');
+      if(el) el.style.transform = `rotate(${ang}deg)`;
+    }
+
+    updateEnemyHP(e);
+  }
+}
+
+// ── ENEMY HIT ───────────────────────────────────────────
+function enemyHit(enemy) {
+  if(!enemy.alive) return;
+  enemy.alive = false;
+
+  // Damage target
+  const t = enemy.targetObj;
+  if(t && t.alive !== false) {
+    const dmg = {shahed:16,heavyDrone:28,rocket:80,kalibr:55}[enemy.type] + Math.floor(Math.random()*10);
+    if(t.hp !== undefined) {
+      t.hp = Math.max(0, t.hp - dmg);
+      updateTargetHP(t);
+    } else if(t && t.latlng) {
+      // Hit PPO — destroy it
+      destroyPvo(t);
+    }
+  }
+
+  // Explosion
+  showExplosion(enemy.position[0], enemy.position[1]);
+  try{map.removeLayer(enemy.marker);}catch(e){}
+}
+
+function destroyPvo(pvo) {
+  try{map.removeLayer(pvo.marker);}catch(e){}
+  try{map.removeLayer(pvo.circle);}catch(e){}
+  G.pvoList = G.pvoList.filter(p=>p!==pvo);
+  if(G.selectedPvo===pvo) deselectPvo();
+}
+
+function showExplosion(lat, lng) {
+  const el = L.marker([lat,lng],{
+    icon:L.divIcon({html:'<div style="font-size:28px;animation:boom .5s ease-out forwards">💥</div>',className:'',iconSize:[30,30],iconAnchor:[15,15]}),
+    interactive:false
+  }).addTo(map);
+  setTimeout(()=>{try{map.removeLayer(el);}catch(e){}}, 550);
+}
+
+// ── PPO SHOOTING ────────────────────────────────────────
+function shootPVO(ts) {
+  G.pvoList.forEach(pvo=>{
+    const cfg = pvo.cfg;
+    if(cfg.isREB) { processREB(pvo); return; }
+
+    // Find target
+    const now = ts;
+    if(now - pvo.lastShot < pvo.cd / G.speed) return;
+
+    let bestTarget = null, bestDist = pvo.radius+1;
+    G.enemies.forEach(e=>{
+      if(!e.alive) return;
+      if(!cfg.canTarget.includes(e.type)) return;
+      const d = Math.hypot(e.position[0]-pvo.latlng.lat, e.position[1]-pvo.latlng.lng);
+      if(d<pvo.radius && d<bestDist) { bestDist=d; bestTarget=e; }
+    });
+
+    if(!bestTarget) return;
+    pvo.lastShot = now;
+    fireProjectile(pvo, bestTarget);
+  });
+}
+
+function processREB(pvo) {
+  G.enemies.forEach(e=>{
+    if(!e.alive) return;
+    const d = Math.hypot(e.position[0]-pvo.latlng.lat, e.position[1]-pvo.latlng.lng);
+    if(d<pvo.radius) {
+      e.slowed = true;
+      e.slowedTimer = 0.5; // refresh every frame
+      // Chance to knock down
+      if(!e.lastRebCheck || performance.now()-e.lastRebCheck > 1000) {
+        e.lastRebCheck = performance.now();
+        const kd = pvo.upgs.radius ? pvo.cfg.knockdownChance + pvo.upgs.radius*0.01 : pvo.cfg.knockdownChance;
+        if(Math.random() < kd) { killEnemy(e, 'reb'); }
+      }
+    }
+  });
+}
+
+// ── PROJECTILES ──────────────────────────────────────────
+function fireProjectile(pvo, target) {
+  const cfg = pvo.cfg;
+  const willHit = Math.random() < pvo.hitChance;
+  const damage = pvo.damage;
+  const speed = (cfg.projSpeed||0.8) * (1+((pvo.upgs.reload||0)*0.05));
+
+  // Visual: line flash for now (simple & fast)
+  const fromLat = pvo.latlng.lat, fromLng = pvo.latlng.lng;
+  const toLat = target.position[0], toLng = target.position[1];
+
+  G.projectiles.push({
+    fromLat, fromLng,
+    lat: fromLat, lng: fromLng,
+    toLat, toLng,
+    target, willHit, damage,
+    speed: speed * 3,
+    t: 0,
+    done: false,
+    isBullet: cfg.isBullet||false,
+    color: cfg.rarity==='legendary'?'#ffd740':cfg.isPlane?'#00e5ff':'#00e676'
+  });
+}
+
+const PROJ_COLORS = {common:'#78909c',rare:'#29b6f6',epic:'#ce93d8',legendary:'#ffd740'};
+
+function moveProjectiles(dt, ts) {
+  for(let i=G.projectiles.length-1;i>=0;i--) {
+    const p = G.projectiles[i];
+    if(p.done) { G.projectiles.splice(i,1); continue; }
+
+    p.t += p.speed * dt;
+    if(p.t>=1) {
+      p.done = true;
+      if(p.willHit && p.target.alive) {
+        p.target.hp -= p.damage;
+        if(p.target.hp<=0) killEnemy(p.target, 'shot');
+      }
+      G.projectiles.splice(i,1);
+    }
+  }
+}
+
+function killEnemy(e, source) {
+  if(!e.alive) return;
+  e.alive = false;
+  G.kills++;
+  G.money += KILL_REWARD[e.type]||100;
+  G.waveEnemyLeft--;
+
+  showExplosion(e.position[0], e.position[1]);
+  try{map.removeLayer(e.marker);}catch(ex){}
+
+  // Track stats
+  updateHUD();
+  updateShopPrices();
+}
+
+// ── WAVE COMPLETE ───────────────────────────────────────
+function checkWaveComplete() {
+  if(!G.waveInProgress) return;
+  if(G.spawnQueue.length > 0) return;
+  if(G.enemies.some(e=>e.alive)) return;
+
+  G.waveInProgress = false;
+  document.getElementById('waveProgress').style.display='none';
+
+  const maxW = MAX_WAVES[G.mode];
+  if(G.wave>=maxW) {
+    setTimeout(showVictory, 1000);
+  }
+}
+
+function updateWaveProgress() {
+  const bar = document.getElementById('waveProgress');
+  if(!G.waveInProgress) { bar.style.display='none'; return; }
+  bar.style.display='flex';
+  const alive = G.enemies.filter(e=>e.alive).length + G.spawnQueue.length;
+  const total = G.waveEnemyTotal;
+  const killed = total - alive;
+  const pct = total>0 ? (killed/total)*100 : 100;
+  document.getElementById('waveProgressFill').style.width = pct+'%';
+  document.getElementById('waveProgressLabel').textContent = `WAVE ${G.wave} — CLEAR INCOMING`;
+  document.getElementById('waveProgressCount').textContent = `${killed}/${total}`;
+}
+
+// ── HUD ─────────────────────────────────────────────────
+function updateHUD() {
+  document.getElementById('hudMoney').textContent = '₴'+G.money.toLocaleString();
+  document.getElementById('hudWave').textContent = G.wave+'/'+(MAX_WAVES[G.mode]===999?'∞':MAX_WAVES[G.mode]);
+  document.getElementById('hudKills').textContent = G.kills;
+  document.getElementById('hudTargets').textContent = G.targets.filter(t=>t.alive).length;
+}
+
+function notify(msg, isAlert, dur=3500) {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.className = 'show' + (isAlert?' alert':'');
+  clearTimeout(notify._t);
+  notify._t = setTimeout(()=>el.classList.remove('show'), dur);
+}
+
+// ── CONTROLS ────────────────────────────────────────────
+function togglePause() {
+  G.paused = !G.paused;
+  const btn = document.getElementById('btnPause');
+  btn.innerHTML = G.paused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+  btn.classList.toggle('paused', G.paused);
+}
+
+function cycleSpeed() {
+  const speeds = [1,2,3];
+  const idx = speeds.indexOf(G.speed);
+  G.speed = speeds[(idx+1)%speeds.length];
+  document.getElementById('speedTxt').textContent = G.speed+'×';
+}
+
+function showExitConfirm() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title" style="color:var(--red)">⚠ EXIT MISSION?</div>
+      <p style="text-align:center;color:var(--text-dim);margin-bottom:20px">Your progress will be lost.</p>
+      <div class="modal-btns">
+        <button class="modal-btn btn-primary-modal" onclick="location.reload()">EXIT</button>
+        <button class="modal-btn btn-secondary-modal" onclick="this.closest('.modal-overlay').remove();togglePause()">CANCEL</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  if(!G.paused) togglePause();
+}
+
+// ── GAME OVER / VICTORY ──────────────────────────────────
+function showGameOver() {
+  G.isPlaying = false;
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title" style="color:var(--red);font-size:1.6rem">MISSION FAILED</div>
+      <div class="modal-score">
+        <div class="score-item"><span class="score-val">${G.wave}</span><span class="score-lbl">Waves survived</span></div>
+        <div class="score-item"><span class="score-val">${G.kills}</span><span class="score-lbl">Enemies destroyed</span></div>
+        <div class="score-item"><span class="score-val">₴${G.money.toLocaleString()}</span><span class="score-lbl">Funds remaining</span></div>
+        <div class="score-item"><span class="score-val">${G.targets.filter(t=>t.alive).length}/${G.targets.length}</span><span class="score-lbl">Targets surviving</span></div>
+      </div>
+      <div class="modal-btns">
+        <button class="modal-btn btn-primary-modal" onclick="location.reload()"><i class="fas fa-redo"></i> TRY AGAIN</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function showVictory() {
+  if(G.gameOver) return;
+  G.isPlaying = false;
+  const alive = G.targets.filter(t=>t.alive).length;
+  const rating = alive===G.targets.length?'S':alive>=G.targets.length-1?'A':alive>=G.targets.length-2?'B':'C';
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title" style="font-size:1.6rem">🏆 UKRAINE DEFENDED</div>
+      <div style="text-align:center;font-family:var(--hud);font-size:3rem;color:var(--gold);margin:12px 0;text-shadow:0 0 30px rgba(255,215,64,.6)">${rating}</div>
+      <div class="modal-score">
+        <div class="score-item"><span class="score-val">${G.wave}</span><span class="score-lbl">Waves cleared</span></div>
+        <div class="score-item"><span class="score-val">${G.kills}</span><span class="score-lbl">Enemies destroyed</span></div>
+        <div class="score-item"><span class="score-val">${alive}/${G.targets.length}</span><span class="score-lbl">Targets intact</span></div>
+        <div class="score-item"><span class="score-val">₴${G.money.toLocaleString()}</span><span class="score-lbl">Funds remaining</span></div>
+      </div>
+      <div class="modal-btns">
+        <button class="modal-btn btn-primary-modal" onclick="location.reload()"><i class="fas fa-redo"></i> PLAY AGAIN</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+// ── KEY BINDINGS ─────────────────────────────────────────
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') { cancelPlacing(); if(G.selectedPvo) deselectPvo(); }
+  if(e.key===' ') { e.preventDefault(); togglePause(); }
+  if(e.key==='1'||e.key==='2'||e.key==='3') cycleSpeed();
+});
+
+// ── LEAFLET RENDERING HACK (visual projectiles) ──────────
+// We draw projectile lines directly on Leaflet canvas layer for performance
+// Simple approach: use temporary markers with opacity fade
+(function patchRenderer(){
+  const origReq = window.requestAnimationFrame;
+  let renderScheduled = false;
+  function scheduleRender(){
+    if(renderScheduled) return;
+    renderScheduled = true;
+    origReq(()=>{renderScheduled=false; renderProjectileLines();});
+  }
+  window._scheduleRender = scheduleRender;
+})();
+
+let projLines = [];
+function renderProjectileLines(){
+  // Clean old lines
+  projLines.forEach(l=>{try{map?.removeLayer(l);}catch(e){}});
+  projLines=[];
+
+  if(!map||!G.isPlaying||G.paused) return;
+
+  G.projectiles.forEach(p=>{
+    const fromLat = p.fromLat + (p.toLat-p.fromLat)*p.t*.7;
+    const fromLng = p.fromLng + (p.toLng-p.fromLng)*p.t*.7;
+    const toLat = p.fromLat + (p.toLat-p.fromLat)*Math.min(p.t,1);
+    const toLng = p.fromLng + (p.toLng-p.fromLng)*Math.min(p.t,1);
+
+    const line = L.polyline([[fromLat,fromLng],[toLat,toLng]],{
+      color: p.color||'#00e676',weight:2,opacity:.8,interactive:false
+    }).addTo(map);
+    projLines.push(line);
+  });
+
+  window._scheduleRender?.();
+}
+
+// Kick off render loop
+setInterval(renderProjectileLines, 50);
+
+</script>
+</body>
+</html>

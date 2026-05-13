@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <script src="translations.js?v=75"></script>
+  <script src="language-updater.js?v=75"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-translate-title="title" data-section="shop">Магазин - Dronefall</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Header */
+                        .page-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-header-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        .page-icon-btn {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: default;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+
+        .back-btn {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .back-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 3px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .page-header-placeholder {
+            width: 42px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .page-header-title { font-size: 1.25rem; }
+            .page-icon-btn { width: 36px; height: 36px; font-size: 1rem; }
+            .page-header-placeholder { width: 36px; }
+        }
+
+        /* Currency */
+        .currency-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 8px 8px;
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #FFD700;
+            line-height: 1;
+        }
+
+        .currency-display img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .currency-display span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            color: #FFD700;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Free Chest Section */
+        .free-chest-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .free-chest-icon {
+            width: 190px;
+            height: 190px;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .free-chest-icon:hover  { transform: scale(1.1); }
+        .free-chest-icon:active { transform: scale(1.03); }
+
+        .lb-dot {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 16px;
+            height: 16px;
+            background: #f44336;
+            border-radius: 50%;
+            border: 2px solid #0d0d1a;
+            box-shadow: 0 0 8px rgba(244, 67, 54, 0.8);
+            z-index: 5;
+        }
+        .lb-dot.visible { display: block; }
+
+        .free-chest-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 25px rgba(76, 175, 80, 0.5));
+        }
+        
+        .free-chest-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+        
+        .free-chest-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+        
+        .free-chest-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+        
+        .free-chest-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .free-chest-btn .timer-text {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Рядок з таймером та кнопкою нотифікацій */
+        .timer-row {
+            display: flex;
+            gap: 1%;
+            align-items: stretch;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .timer-row .free-chest-btn {
+            flex: 0 0 83%; /* Таймер займає більше місця */
+            min-width: 0;
+        }
+        
+        .timer-row .notify-btn {
+            flex: 0 0 16%;
+            padding: 12px 8px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 12px;
+            color: #1a1a2e;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timer-row .notify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* Shop Grid */
+        /* ── CODE PACKS + SUBSECTION LABEL ─────────────── */
+        .subsection-lbl {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .subsection-lbl img { width:15px; height:15px; }
+
+        .code-packs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        /* ── CODE PACKS CAROUSEL (mobile) ── */
+        @media (max-width: 600px) {
+            .code-packs-grid { display: none !important; }
+            .code-carousel-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
+        }
+        @media (min-width: 601px) {
+            .code-carousel-wrapper { display: none !important; }
+        }
+        .code-carousel-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .code-carousel-card { flex: 1; min-width: 0; }
+        .code-nav-btn {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+            color: #fff; font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .code-nav-btn:active { background: rgba(255,215,0,0.2); border-color: #FFD700; }
+        .code-nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        .code-carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+        .code-carousel-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+        .code-carousel-dot.active { background: #FFD700; transform: scale(1.3); }
+
+        /* Ліміт залишку — верхній лівий кут */
+        .shop-item-limit {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 9px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.45);
+        }
+
+        /* ── SHOP GRID (compact 3-column) ──────────────── */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .shop-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        
+        .shop-item.rarity-common {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .shop-item.rarity-rare {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .shop-item.rarity-epic {
+            border-color: #f44336;
+            box-shadow: 0 0 25px rgba(244, 67, 54, 0.5);
+        }
+
+        .shop-item.rarity-code {
+            border-color: #9c27b0;
+            box-shadow: 0 0 18px rgba(156, 39, 176, 0.35);
+        }
+
+        .shop-item-rarity {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .shop-item-rarity.common {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        
+        .shop-item-rarity.rare {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .shop-item-rarity.epic {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+        
+        .shop-item-image {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            margin: 12px auto;
+            display: block;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+        }
+
+        .shop-item-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .shop-item-quantity {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .shop-buy-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 3px 3px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 9px;
+            color: #1a1a2e;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shop-buy-btn img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        .shop-buy-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .shop-buy-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+        }
+        
+        .shop-sold {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .shop-sold-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 68, 68, 0.9);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(255, 68, 68, 0.6);
+            z-index: 10;
+        }
+        
+        .empty-shop {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+        }
+        
+        .refresh-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        .top-sections {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .top-sections .section {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Advent Calendar */
+        .advent-calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .advent-days {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .advent-day {
+            width: 85px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .advent-day .day-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .advent-day .day-icon-wrapper {
+            position: relative;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .advent-day .day-lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.3rem;
+            color: #FFD700;
+            z-index: 10;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .advent-day .day-icon img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .advent-day .day-icon i {
+            font-size: 2.2rem;
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .advent-day .day-quantity {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Claimed days - вже отримані */
+        .advent-day.claimed {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: #4CAF50;
+        }
+
+        .advent-day.claimed .day-title {
+            color: #4CAF50;
+        }
+
+        .advent-day.claimed .day-lock {
+            display: none;
+        }
+
+        .advent-day.claimed .day-icon img,
+        .advent-day.claimed .day-icon i {
+            opacity: 0.6;
+            filter: grayscale(0%);
+        }
+
+        .advent-day.claimed .day-quantity {
+            color: #4CAF50;
+        }
+
+        /* Current day - можна забрати */
+        .advent-day.current {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: advent-pulse 2s infinite;
+        }
+
+        .advent-day.current .day-title {
+            color: #FFD700;
+        }
+
+        .advent-day.current .day-lock {
+            display: none;
+        }
+
+        .advent-day.current .day-icon img,
+        .advent-day.current .day-icon i {
+            opacity: 1;
+            filter: grayscale(0%) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+        }
+
+        .advent-day.current .day-quantity {
+            color: #FFD700;
+        }
+
+        @keyframes advent-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.8); }
+        }
+
+        /* Advent claim button - зелена як free-chest-btn */
+        .advent-claim-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+
+        .advent-claim-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+
+        .advent-claim-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        /* Рядок з кнопкою календаря та нотифікацій */
+        .advent-calendar .timer-row {
+            display: flex;
+            gap: 1%;
+            align-items: stretch;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto 0;
+        }
+        
+        .advent-calendar .timer-row .advent-claim-btn {
+            flex: 0 0 83%;
+            min-width: 0;
+        }
+        
+        .advent-calendar .timer-row .notify-btn {
+            flex: 0 0 16%;
+        }
+
+        .advent-claim-btn .timer-text {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .top-sections {
+                flex-direction: column;
+            }
+            
+            .advent-days {
+                gap: 8px;
+            }
+            
+            .advent-day {
+                width: 80px;
+                height: 115px;
+            }
+            
+            .advent-day .day-title {
+                font-size: 0.7rem;
+            }
+            
+            .advent-day .day-icon-wrapper {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .advent-day .day-icon img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .advent-day .day-icon i {
+                font-size: 1.8rem;
+            }
+            
+            .advent-day .day-quantity {
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .advent-days {
+                gap: 6px;
+            }
+
+            .advent-day {
+                width: 62px;
+                height: 100px;
+                padding: 7px 4px;
+            }
+
+            .advent-day .day-title {
+                font-size: 0.6rem;
+                margin-bottom: 5px;
+            }
+
+            .advent-day .day-icon-wrapper {
+                width: 38px;
+                height: 38px;
+                margin-bottom: 5px;
+            }
+
+            .advent-day .day-icon img {
+                width: 34px;
+                height: 34px;
+            }
+
+            .advent-day .day-icon i {
+                font-size: 1.6rem;
+            }
+
+            .advent-day .day-lock {
+                font-size: 1.1rem;
+            }
+
+            .advent-day .day-quantity {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* МОДАЛЬНЕ ВІКНО */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.6);
+            animation: modalAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: visible;
+        }
+        
+        @keyframes modalAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        /* АНІМАЦІЯ СУНДУКА */
+        .modal-icon img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            animation: chestBounce 0.8s ease;
+            filter: drop-shadow(0 10px 30px rgba(76, 175, 80, 0.8));
+        }
+        
+        @keyframes chestBounce {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+            70% {
+                transform: scale(0.9) rotate(-5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        
+        /* ЧАСТИНКИ НАВКОЛО СУНДУКА */
+        .modal-particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: particleFloat 1.5s ease-out forwards;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .modal-icon.success {
+            color: #4CAF50;
+        }
+        
+        .modal-icon.error {
+            color: #f44336;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .modal-message {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: #fff;
+            line-height: 1.5;
+        }
+        
+        .modal-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 12px;
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+        
+        .modal-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Mobile */
+        @media (max-width: 600px) {
+            .header-title { font-size: 1.4rem; }
+            .currency-display {
+                font-size: 1.2rem;
+                padding: 8px 15px;
+            }
+            .currency-display img {
+                width: 25px;
+                height: 25px;
+            }
+            .free-chest-icon {
+                width: 130px;
+                height: 130px;
+            }
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
+            .shop-item-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* ===== BATTLE QUESTS ===== */
+        .section-title {
+            position: relative;
+        }
+        .quest-reset-info {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            font-weight: 400;
+            margin-left: auto;
+        }
+        .quests-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        @media (max-width: 520px) {
+            .quests-list { grid-template-columns: 1fr; }
+        }
+        .quest-loading {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.4);
+            grid-column: 1 / -1;
+        }
+        .quest-item {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .quest-item.claimed {
+            opacity: 0.5;
+        }
+        .quest-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .quest-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .quest-bar-wrap {
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            height: 6px;
+            margin-bottom: 4px;
+        }
+        .quest-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.4s ease;
+        }
+        .quest-progress-text {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .quest-reward {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .quest-reward img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        .quest-claim-btn {
+            padding: 7px 12px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .quest-claim-btn:disabled {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
+        }
+        .quest-claim-btn:not(:disabled):hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+        }
+
+        /* ===== WEEKLY LOYALTY ===== */
+        .loyalty-hint-btn {
+            width: 18px;
+            height: 18px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 6px;
+            position: relative;
+        }
+        .loyalty-hint-tooltip {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: #1e2a45;
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.8);
+            width: 230px;
+            z-index: 100;
+            line-height: 1.5;
+        }
+        .loyalty-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .loyalty-streak {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        .loyalty-progress-bar {
+            position: relative;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+        .loyalty-progress-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.5s ease;
+            max-width: 100%;
+        }
+        .loyalty-milestones {
+            position: absolute;
+            top: -18px;
+            left: 0;
+            right: 0;
+        }
+        .loyalty-milestones span {
+            position: absolute;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .loyalty-rewards {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+        .loyalty-reward-item {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 8px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.6);
+        }
+        .loyalty-reward-item.reached {
+            border: 1px solid rgba(255,215,0,0.4);
+        }
+        .loyalty-reward-item .lrd {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        .loyalty-reward-item img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+        .loyalty-claim-btn {
+            width: 100%;
+            padding: 6px 4px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 7px;
+            color: #1a1a2e;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .loyalty-claim-btn:disabled {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.25);
+            cursor: not-allowed;
+        }
+        .loyalty-claim-btn:not(:disabled):hover {
+            transform: scale(1.04);
+        }
+        /* ===== PPO картка (як в лідерборді) ===== */
+        .ppo-card-reward {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+        .ppo-card-reward img { width: 100%; height: 100%; object-fit: contain; }
+        .ppo-card-reward.common   { border: 2px solid #4CAF50; background: rgba(76,175,80,0.2); }
+        .ppo-card-reward.rare     { border: 2px solid #FFD700; background: rgba(255,215,0,0.2); }
+        .ppo-card-reward.epic     { border: 2px solid #f44336; background: rgba(244,67,54,0.2); }
+        .ppo-card-reward.legendary{ border: 2px solid #FFD700; background: linear-gradient(135deg,rgba(255,215,0,0.25),rgba(33,150,243,0.25)); box-shadow: 0 0 6px rgba(255,215,0,0.3); }
+
+        /* Quest layout */
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quest-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .quest-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .quest-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+        /* Reward row with images */
+        /* Нагороди: іконка + кількість, по центру */
+        .reward-img-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        .reward-img-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.85);
+            font-weight: 700;
+        }
+        .reward-img-item img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            display: block;
+        }
+        .reward-img-item .ppo-card-reward {
+            width: 45px;
+            height: 45px;
+        }
+        /* Loyalty reward cards */
+        .loyalty-reward-card {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .loyalty-reward-card.ready  { border-color: rgba(255,215,0,0.5); }
+        .loyalty-reward-card.claimed{ opacity: 0.5; }
+        .loyalty-reward-day {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        .loyalty-reward-imgs {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 10px;
+            width: 100%;
+        }
+        .loyalty-reward-imgs .reward-img-item {
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8rem;
+        }
+        .loyalty-reward-imgs .reward-img-item img {
+            width: 45px;
+            height: 45px;
+        }
+        .loyalty-reward-imgs .reward-img-item .ppo-card-reward {
+            width: 45px;
+            height: 45px;
+        }
+
+        /* ===== МОБІЛЬНА КАРУСЕЛЬ ===== */
+        @media (max-width: 600px) {
+            /* Ховаємо кнопки Забрати всередині карток на мобільному */
+            .loyalty-rewards-mobile-hidden .loyalty-claim-btn {
+                display: none;
+            }
+
+            /* Обгортка каруселі */
+            .loyalty-carousel-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            /* Рядок: стрілка ліво | картка | стрілка право */
+            .loyalty-carousel-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* Кнопки-стрілки */
+            .loyalty-nav-btn {
+                flex-shrink: 0;
+                width: 36px;
+                height: 36px;
+                background: rgba(255,255,255,0.08);
+                border: 2px solid rgba(255,255,255,0.15);
+                border-radius: 50%;
+                color: #fff;
+                font-size: 1rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+            .loyalty-nav-btn:active {
+                background: rgba(255,215,0,0.2);
+                border-color: #FFD700;
+            }
+            .loyalty-nav-btn:disabled {
+                opacity: 0.25;
+                cursor: not-allowed;
+            }
+
+            /* Картка в каруселі займає весь простір між стрілками */
+            .loyalty-carousel-card {
+                flex: 1;
+                min-width: 0;
+            }
+
+            /* Dot-індикатори */
+            .loyalty-carousel-dots {
+                display: flex;
+                justify-content: center;
+                gap: 6px;
+            }
+            .loyalty-carousel-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.2);
+                transition: all 0.2s;
+            }
+            .loyalty-carousel-dot.active {
+                background: #FFD700;
+                transform: scale(1.3);
+            }
+
+            /* Єдина кнопка Забрати внизу */
+            .loyalty-carousel-claim-btn {
+                width: 100%;
+                padding: 13px;
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                border: none;
+                border-radius: 10px;
+                color: #1a1a2e;
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .loyalty-carousel-claim-btn:disabled {
+                background: rgba(255,255,255,0.08);
+                color: rgba(255,255,255,0.25);
+                cursor: not-allowed;
+            }
+            .loyalty-carousel-claim-btn.claimed-state {
+                background: rgba(76,175,80,0.2);
+                color: #4CAF50;
+                border: 1px solid rgba(76,175,80,0.4);
+            }
+        }
+
+        /* На десктопі ховаємо елементи каруселі */
+        @media (min-width: 601px) {
+            .loyalty-carousel-wrapper { display: none !important; }
+        }
+        /* На мобільному ховаємо десктопну сітку */
+        @media (max-width: 600px) {
+            #loyaltyRewards { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="page-header-center">
+            <div class="page-icon-btn"><i class="fas fa-store"></i></div>
+            <div class="page-header-title"><span data-translate="title" data-section="shop">Магазин</span></div>
+        </div>
+        <div style="width:42px;flex-shrink:0;"></div>
+    </div>
+
+            <!-- Currency -->
+    <div class="currency-container">
+        <div class="currency-display">
+            <img src="assets/hryvnya.png" alt="₴">
+            <span id="currencyBalance">0</span>
+        </div>
+    </div>
+    
+    <!-- Top Sections: Free Chest + Advent Calendar -->
+<div class="top-sections">
+    <!-- Lucky Box Section -->
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-gift"></i> Lucky Box
+        </div>
+        <div class="free-chest-container">
+            <div class="free-chest-icon" style="cursor:pointer" onclick="window.location.href='lucky_box.html'">
+                <div class="lb-dot" id="lbDot"></div>
+                <img src="assets/luckybox.png" alt="Lucky Box" style="filter:drop-shadow(0 8px 25px rgba(255,215,0,0.4))">
+            </div>
+            <div class="timer-row">
+                <button class="free-chest-btn" id="freeChestBtn" onclick="claimFreeChest()">
+                    <span class="timer-text" id="freeChestText">Секретний код</span>
+                </button>
+                <button class="notify-btn" id="notifyFreeChestBtn" onclick="toggleFreeChestNotification()" title="Нагадування">
+                    <i class="fas fa-bell" id="notifyFreeChestIcon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Advent Calendar Section -->
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-calendar-alt"></i> <span data-translate="adventCalendar" data-section="shop">Щоденні нагороди</span>
+        </div>
+        <div class="advent-calendar">
+            <div class="advent-days" id="adventDays">
+                <!-- Динамічно заповнюється -->
+            </div>
+            <div class="timer-row">
+                <button class="advent-claim-btn" id="adventClaimBtn" onclick="claimAdvent()" disabled>
+                    <span class="timer-text" id="adventClaimText">Забрати</span>
+                </button>
+                <button class="notify-btn" id="notifyDailyRewardBtn" onclick="toggleDailyRewardNotification()" title="Нагадування про щоденну нагороду">
+                    <i class="fas fa-bell" id="notifyDailyRewardIcon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <!-- Battle Quests + Weekly Loyalty -->
+    <div class="top-sections">
+        <!-- Battle Quests -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-crosshairs"></i> <span data-translate="battleQuests" data-section="shop">Бойові завдання</span>
+                <span class="quest-reset-info" data-translate="questResetsAt" data-section="shop">Оновлення о 00:00</span>
+            </div>
+            <div class="quests-list" id="questsList">
+                <div class="quest-loading"><i class="fas fa-spinner fa-spin"></i></div>
+            </div>
+        </div>
+
+        <!-- Weekly Loyalty -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-fire"></i> <span data-translate="weeklyLoyalty" data-section="shop">Тижнева вірність</span>
+                <span class="loyalty-hint-btn" id="loyaltyHintBtn" title="">?</span>
+                <div class="loyalty-hint-tooltip" id="loyaltyHintTooltip" style="display:none" data-translate="loyaltyHint" data-section="shop"></div>
+            </div>
+            <div class="loyalty-container" id="loyaltyContainer">
+                <div class="loyalty-streak" id="loyaltyStreak">0 / 28</div>
+                <div class="loyalty-progress-bar">
+                    <div class="loyalty-progress-fill" id="loyaltyProgressFill" style="width:0%"></div>
+                    <div class="loyalty-milestones">
+                        <span style="left:25%">7</span>
+                        <span style="left:50%">14</span>
+                        <span style="left:75%">21</span>
+                        <span style="left:100%">28</span>
+                    </div>
+                </div>
+                <div class="loyalty-rewards" id="loyaltyRewards">
+                    <!-- заповнюється JS -->
+                </div>
+
+                <!-- МОБІЛЬНА КАРУСЕЛЬ (видима тільки на телефоні) -->
+                <div class="loyalty-carousel-wrapper" id="loyaltyCarousel" style="display:none">
+                    <div class="loyalty-carousel-row">
+                        <button class="loyalty-nav-btn" id="loyaltyPrev" onclick="loyaltyCarouselNav(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="loyalty-carousel-card" id="loyaltyCarouselCard"></div>
+                        <button class="loyalty-nav-btn" id="loyaltyNext" onclick="loyaltyCarouselNav(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="loyalty-carousel-dots" id="loyaltyDots"></div>
+                    <button class="loyalty-carousel-claim-btn" id="loyaltyCarouselClaimBtn" onclick="loyaltyCarouselClaim()">
+                        Забрати
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Section -->
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-shopping-cart"></i> <span data-translate="dailyOffers" data-section="shop">Щоденні пропозиції</span>
+        </div>
+
+        <!-- Code packs -->
+        <div class="subsection-lbl">
+            <img src="assets/secretcode.png" alt=""> Секретні коди
+        </div>
+        <div class="code-packs-grid" id="codePacksGrid">
+            <!-- Динамічно заповнюється -->
+        </div>
+
+        <!-- Карусель для мобільних -->
+        <div class="code-carousel-wrapper" id="codeCarousel">
+            <div class="code-carousel-row">
+                <button class="code-nav-btn" id="codePrevBtn" onclick="codeCarouselPrev()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="code-carousel-card" id="codeCarouselCard"></div>
+                <button class="code-nav-btn" id="codeNextBtn" onclick="codeCarouselNext()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="code-carousel-dots" id="codeCarouselDots"></div>
+        </div>
+
+        <!-- PPO cards -->
+        <div class="subsection-lbl">
+            <i class="fas fa-shield-alt"></i> Картки ППО
+        </div>
+        <div class="shop-grid" id="shopGrid">
+            <!-- Динамічно заповнюється -->
+        </div>
+
+        <div class="refresh-info">
+            <i class="fas fa-sync-alt"></i> <span data-translate="refreshInfo" data-section="shop">Асортимент оновлюється щодня о 00:00</span>
+        </div>
+    </div>
+    
+    <!-- МОДАЛЬНЕ ВІКНО -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">✅</div>
+            <div class="modal-title" id="modalTitle">Успіх!</div>
+            <div class="modal-message" id="modalMessage">Операція виконана</div>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+    
+    <script>
+    // АЕРОДРОМ - це будівля, НЕ ППО! Не включаємо в список карт!
+    const PPO_CARDS = [
+        { id: 'kulemet', name: 'Кулемет', img: 'assets/kulemet.png', rarity: 'common' },
+        { id: 'madt', name: 'MADT', img: 'assets/madt.png', rarity: 'common' },
+        { id: 'radar', name: 'Радар', img: 'assets/radar.png', rarity: 'common' },
+        { id: 'crotale90m', name: 'Crotale 90M', img: 'assets/crotale90m.png', rarity: 'rare' },
+        { id: 'iristsml', name: 'IRIS-T SML', img: 'assets/iristsml.png', rarity: 'rare' },
+        { id: 'reb', name: 'РЕБ', img: 'assets/reb.png', rarity: 'rare' },
+        { id: 'mig29', name: 'МіГ-29', img: 'assets/mig29.png', rarity: 'rare' },
+        { id: '2k12kub', name: '2K12 KUB', img: 'assets/2k12kub.png', rarity: 'epic' },
+        { id: 'patriot', name: 'Patriot', img: 'assets/patriot.png', rarity: 'epic' },
+        { id: 'su27', name: 'Су-27', img: 'assets/su27.png', rarity: 'epic' },
+        { id: 'kilchen', name: 'Кільчень', img: 'assets/kilchen.png', rarity: 'legendary' },
+        { id: 'f16', name: 'F-16', img: 'assets/f16.png', rarity: 'legendary' }
+    ];
+    
+    // Функція для отримання лейблу рарності
+    function getRarityLabel(rarity) {
+        if (typeof translate === 'function') {
+            return translate(rarity, 'rarity');
+        }
+        const fallback = { common: 'Звичайний', rare: 'Рідкісний', epic: 'Епічний' };
+        return fallback[rarity] || rarity;
+    }
+    
+    let nextClaimTime = null;
+    let shopItems = [];
+    let userCurrency = 0;
+    
+    function goBack() {
+        window.location.href = '/';
+    }
+    
+    // МОДАЛЬНЕ ВІКНО
+    function showModal(type, title, message) {
+        const modal = document.getElementById('modal');
+        const icon = document.getElementById('modalIcon');
+        const titleEl = document.getElementById('modalTitle');
+        const messageEl = document.getElementById('modalMessage');
+        
+        if (type === 'success') {
+            icon.innerHTML = '<div class="modal-particles" id="particles"></div><img src="assets/secretcode.png" alt="Секретний код">';
+            icon.className = 'modal-icon success';
+            
+            // Додати частинки
+            setTimeout(() => createParticles(), 100);
+        } else {
+            icon.innerHTML = '❌';
+            icon.className = 'modal-icon error';
+        }
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        modal.classList.add('show');
+    }
+    
+    function createParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+        
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Випадкові координати розльоту
+            const angle = (360 / particleCount) * i;
+            const distance = 80 + Math.random() * 40;
+            const tx = Math.cos(angle * Math.PI / 180) * distance;
+            const ty = Math.sin(angle * Math.PI / 180) * distance;
+            
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            particle.style.animationDelay = `${i * 0.02}s`;
+            
+            // Випадковий колір
+            const colors = ['#FFD700', '#FFA500', '#4CAF50', '#FF6B6B'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            container.appendChild(particle);
+        }
+        
+        // Видалити частинки після анімації
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 2000);
+    }
+    
+    function closeModal() {
+        document.getElementById('modal').classList.remove('show');
+    }
+    
+    // Завантажити дані
+    window.addEventListener('load', function() {
+        loadShopData();
+        loadQuests();
+        loadLoyalty();
+        setInterval(updateFreeChestTimer, 1000);
+    });
+    
+    async function loadShopData() {
+        try {
+            const response = await fetch('get_shop.php');
+            const data = await response.json();
+            
+            
+            if (data.success) {
+                nextClaimTime = data.next_claim_time;
+                shopItems = data.shop_items || [];
+                userCurrency = data.currency || 0;
+                
+                // Завантажити налаштування нотифікацій (оновити іконки)
+                const freeChestIcon = document.getElementById('notifyFreeChestIcon');
+                const dailyRewardIcon = document.getElementById('notifyDailyRewardIcon');
+                
+                if (freeChestIcon) {
+                    const isEnabled = data.notify_free_chest === 1;
+                    freeChestIcon.className = isEnabled ? 'fas fa-bell' : 'fas fa-bell-slash';
+                }
+                
+                if (dailyRewardIcon) {
+                    const isEnabled = data.notify_daily_reward === 1;
+                    dailyRewardIcon.className = isEnabled ? 'fas fa-bell' : 'fas fa-bell-slash';
+                }
+                
+                
+                document.getElementById('currencyBalance').textContent = userCurrency.toLocaleString();
+
+                const lbDot = document.getElementById('lbDot');
+                if (lbDot) lbDot.classList.toggle('visible', (data.secret_codes || 0) > 0);
+
+                renderShop();
+                renderCodePacks(data.code_purchases || {});
+                updateFreeChestTimer();
+                await loadAdventCalendar();
+            }
+        } catch (error) {
+            console.error('Load error:', error);
+        }
+    }
+    
+    function updateFreeChestTimer() {
+        const btn  = document.getElementById('freeChestBtn');
+        const text = document.getElementById('freeChestText');
+
+        if (!nextClaimTime) {
+            btn.disabled     = false;
+            text.textContent = 'Секретний код';
+            text.style.color = '#fff';
+            return;
+        }
+
+        const now  = Math.floor(Date.now() / 1000);
+        const diff = nextClaimTime - now;
+
+        if (diff <= 0) {
+            btn.disabled     = false;
+            text.textContent = 'Секретний код';
+            text.style.color = '#fff';
+            return;
+        }
+
+        btn.disabled = true;
+        const hours   = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = Math.floor(diff % 60);
+        text.textContent = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+        text.style.color = '#ff6b6b';
+    }
+    
+    async function claimFreeChest() {
+        try {
+            const response = await fetch('claim_free_code.php', { method: 'POST' });
+            const data     = await response.json();
+
+            if (data.success) {
+                const successText = typeof translate === 'function' ? translate('success', 'shop') : 'Успіх!';
+                showModal('success', successText, 'Секретний код додано в інвентар!');
+                nextClaimTime = data.next_claim_time;
+                updateFreeChestTimer();
+                const lbDot = document.getElementById('lbDot');
+                if (lbDot) lbDot.classList.add('visible');
+            } else {
+                console.error('claimFreeChest FAILED:', data.error);
+            }
+        } catch (error) {
+            console.error('claimFreeChest EXCEPTION:', error);
+        }
+    }
+    
+    function renderShop() {
+        const grid = document.getElementById('shopGrid');
+        
+        if (!shopItems || shopItems.length === 0) {
+            const emptyText = typeof translate === 'function' ? translate('shopEmpty', 'shop') : 'Магазин порожній. Зачекайте до опівночі!';
+            grid.innerHTML = '<div class="empty-shop"><i class="fas fa-box-open"></i><br>' + emptyText + '</div>';
+            return;
+        }
+        
+        const soldText = typeof translate === 'function' ? translate('sold', 'shop') : 'ПРОДАНО';
+        
+        grid.innerHTML = shopItems.map(item => {
+            const ppo = PPO_CARDS.find(p => p.id === item.item_id);
+            if (!ppo) return '';
+            
+            const canAfford = userCurrency >= item.price;
+            const isSold = parseInt(item.purchased) === 1;
+            
+            return `
+                <div class="shop-item rarity-${item.rarity} ${isSold ? 'shop-sold' : ''}" id="item-${item.id}">
+                    <div class="shop-item-rarity ${item.rarity}">${getRarityLabel(item.rarity)}</div>
+                    ${isSold ? '<div class="shop-sold-badge">' + soldText + '</div>' : ''}
+                    <img src="${ppo.img}" class="shop-item-image" alt="${ppo.name}">
+                    <div class="shop-item-name">${ppo.name}</div>
+                    <div class="shop-item-quantity">×${item.quantity}</div>
+                    <button class="shop-buy-btn" onclick="buyItem(${item.id})" ${!canAfford || isSold ? 'disabled' : ''}>
+                        <span>${item.price}</span>
+                        <img src="assets/hryvnya.png" alt="₴">
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ── CODE PACKS ──────────────────────────────────────────────────────────
+    const CODE_PACKS = [
+        { size: 1,  qty: 1,  price: 320,  origPrice: null, discount: null, dailyLimit: 10 },
+        { size: 5,  qty: 5,  price: 1280, origPrice: 1600, discount: '−20%', dailyLimit: 10 },
+        { size: 10, qty: 10, price: 1920, origPrice: 3200, discount: '−40%', dailyLimit:  5 },
+    ];
+
+    let codeCarouselIndex = 0;
+    let codeCarouselData  = [];
+
+    function buildCodePackHTML(pack) {
+        const canBuy = pack.remaining > 0 && userCurrency >= pack.price;
+        return `
+        <div class="shop-item rarity-code" style="position:relative;">
+          ${pack.discount ? `<div class="shop-item-rarity epic">${pack.discount}</div>` : ''}
+          <div class="shop-item-limit">${pack.remaining}/${pack.dailyLimit}</div>
+          <img src="assets/secretcode.png" class="shop-item-image" alt="Секретний код" style="width:75px;height:75px;object-fit:contain;">
+          <div class="shop-item-name">Секретний код</div>
+          <div class="shop-item-quantity">×${pack.qty}</div>
+          <button class="shop-buy-btn" onclick="buyCodePack(${pack.size})" ${canBuy ? '' : 'disabled'}>
+            <span>${pack.price.toLocaleString()}</span>
+            <img src="assets/hryvnya.png" alt="₴">
+          </button>
+        </div>`;
+    }
+
+    function renderCodePacks(purchases) {
+        codeCarouselData = CODE_PACKS.map(pack => {
+            const bought = purchases[pack.size] || 0;
+            return { ...pack, remaining: pack.dailyLimit - bought };
+        });
+
+        // Десктоп: сітка
+        document.getElementById('codePacksGrid').innerHTML =
+            codeCarouselData.map(buildCodePackHTML).join('');
+
+        // Мобільний: карусель (індекс не скидаємо)
+        renderCodeCarousel();
+    }
+
+    function renderCodeCarousel() {
+        const card = document.getElementById('codeCarouselCard');
+        const dots = document.getElementById('codeCarouselDots');
+        const prev = document.getElementById('codePrevBtn');
+        const next = document.getElementById('codeNextBtn');
+        if (!card) return;
+
+        card.innerHTML = buildCodePackHTML(codeCarouselData[codeCarouselIndex]);
+
+        dots.innerHTML = codeCarouselData.map((_, i) =>
+            `<div class="code-carousel-dot ${i === codeCarouselIndex ? 'active' : ''}"></div>`
+        ).join('');
+
+        prev.disabled = codeCarouselIndex === 0;
+        next.disabled = codeCarouselIndex === codeCarouselData.length - 1;
+    }
+
+    function codeCarouselPrev() {
+        if (codeCarouselIndex > 0) { codeCarouselIndex--; renderCodeCarousel(); }
+    }
+    function codeCarouselNext() {
+        if (codeCarouselIndex < codeCarouselData.length - 1) { codeCarouselIndex++; renderCodeCarousel(); }
+    }
+
+    // Свайп для каруселі кодів
+    (function() {
+        let startX = 0;
+        document.addEventListener('touchstart', e => {
+            if (e.target.closest('#codeCarousel')) startX = e.touches[0].clientX;
+        }, { passive: true });
+        document.addEventListener('touchend', e => {
+            if (!e.target.closest('#codeCarousel')) return;
+            const dx = e.changedTouches[0].clientX - startX;
+            if (Math.abs(dx) > 40) { dx < 0 ? codeCarouselNext() : codeCarouselPrev(); }
+        }, { passive: true });
+    })();
+
+    async function buyCodePack(packSize) {
+        try {
+            const resp = await fetch('buy_code_pack.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `pack_size=${packSize}`
+            });
+            const data = await resp.json();
+            if (data.success) {
+                userCurrency = data.new_balance;
+                document.getElementById('currencyBalance').textContent = userCurrency.toLocaleString();
+                // Оновити відображення пакетів
+                const purchases = {};
+                CODE_PACKS.forEach(p => {
+                    if (p.size === packSize) {
+                        purchases[p.size] = data.purchased_today;
+                    }
+                });
+                // Перезавантажити актуальні дані
+                const shopResp = await fetch('get_shop.php');
+                const shopData = await shopResp.json();
+                if (shopData.success) renderCodePacks(shopData.code_purchases || {});
+                showModal('success', 'Успіх!', `+${packSize} Секретних кодів додано!`);
+            } else {
+                showModal('error', 'Помилка', data.error || 'Не вдалося купити');
+            }
+        } catch (e) {
+            showModal('error', 'Помилка', 'Помилка з\'єднання');
+        }
+    }
+
+
+    async function buyItem(itemId) {
+        try {
+            const response = await fetch('buy_shop_item.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `item_id=${itemId}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                userCurrency = data.currency_remaining;
+                document.getElementById('currencyBalance').textContent = userCurrency.toLocaleString();
+                
+                // ВИПРАВЛЕНО: Оновити стан товару ОДРАЗУ
+                const item = shopItems.find(i => i.id === itemId);
+                if (item) item.purchased = 1;
+                
+                // ВИПРАВЛЕНО: Додати "ПРОДАНО" без перезавантаження
+                const itemElement = document.getElementById(`item-${itemId}`);
+                if (itemElement) {
+                    itemElement.classList.add('shop-sold');
+                    
+                    // Додати бейдж ПРОДАНО
+                    const soldBadge = document.createElement('div');
+                    soldBadge.className = 'shop-sold-badge';
+                    soldBadge.textContent = typeof translate === 'function' ? translate('sold', 'shop') : 'ПРОДАНО';
+                    itemElement.appendChild(soldBadge);
+                    
+                    // Вимкнути кнопку
+                    const btn = itemElement.querySelector('.shop-buy-btn');
+                    if (btn) btn.disabled = true;
+                }
+                
+                // Показати модальне вікно з карткою
+                showPurchaseModal(data.item_name, data.quantity, data.rarity);
+            } else {
+                const errorText = typeof translate === 'function' ? translate('error', 'shop') : 'Помилка';
+                const purchaseErrorText = typeof translate === 'function' ? translate('purchaseError', 'shop') : 'Помилка покупки';
+                showModal('error', errorText, data.error || purchaseErrorText);
+            }
+        } catch (error) {
+            console.error('Buy error:', error);
+            const errorText = typeof translate === 'function' ? translate('error', 'shop') : 'Помилка';
+            const purchaseErrorText = typeof translate === 'function' ? translate('purchaseError', 'shop') : 'Помилка покупки';
+            showModal('error', errorText, purchaseErrorText);
+        }
+    }
+    
+    function showPurchaseModal(itemName, quantity, rarity) {
+        const modal = document.getElementById('modal');
+        const icon = document.getElementById('modalIcon');
+        const titleEl = document.getElementById('modalTitle');
+        const messageEl = document.getElementById('modalMessage');
+        
+        // Знайти картку
+        const card = PPO_CARDS.find(c => c.name === itemName);
+        const rarityColors = {
+            common: '#4CAF50',
+            rare: '#FFD700',
+            epic: '#f44336'
+        };
+        
+        if (card) {
+            icon.innerHTML = `<div class="modal-particles" id="particles"></div><img src="${card.img}" alt="${itemName}" style="border: 3px solid ${rarityColors[rarity] || '#FFD700'}; border-radius: 15px; padding: 10px; background: rgba(255,255,255,0.1);">`;
+        } else {
+            icon.innerHTML = '<div class="modal-particles" id="particles"></div>✅';
+        }
+        
+        icon.className = 'modal-icon success';
+        
+        titleEl.textContent = typeof translate === 'function' ? translate('purchased', 'shop') : 'Куплено!';
+        messageEl.textContent = `+${quantity} × ${itemName}`;
+        
+        modal.classList.add('show');
+        
+        // Додати частинки
+        setTimeout(() => createParticles(), 100);
+    }
+    
+    // ========================================
+    // ADVENT CALENDAR
+    // ========================================
+    
+    const ADVENT_REWARDS = {
+        1: { type: 'chest', img: 'assets/chest_closed.png', quantity: 3, label: '×3' },
+        2: { type: 'chest', img: 'assets/chest_closed.png', quantity: 5, label: '×5' },
+        3: { type: 'chest', img: 'assets/chest_closed.png', quantity: 7, label: '×7' },
+        4: { type: 'currency', img: 'assets/hryvnya.png', amount: 7000, label: '×7000' },
+        5: { type: 'premium', img: 'assets/chest_closed2.png', quantity: 3, label: '×3' },
+        6: { type: 'epic', icon: 'fas fa-layer-group', color: '#f44336', quantity: 24, label: '×24' },
+        7: { type: 'legendary', icon: 'fas fa-crown', color: '#FFD700', quantity: 8, label: '×8' }
+    };
+    
+    let adventData = null;
+    let adventTimerInterval = null;
+    
+    async function loadAdventCalendar() {
+        try {
+            const response = await fetch('get_advent.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                adventData = data;
+                renderAdventCalendar();
+                startAdventTimer();
+            }
+        } catch (error) {
+            console.error('Advent load error:', error);
+        }
+    }
+    
+    function renderAdventCalendar() {
+        if (!adventData) return;
+        
+        const container = document.getElementById('adventDays');
+        const currentDay = adventData.current_day;
+        const canClaim = adventData.can_claim;
+        
+        const dayText = typeof translate === 'function' ? translate('adventDay', 'shop') : 'День';
+        
+        let html = '';
+        
+        for (let day = 1; day <= 7; day++) {
+            const reward = ADVENT_REWARDS[day];
+            let dayClass = '';
+            
+            if (day < currentDay) {
+                dayClass = 'claimed';
+            } else if (day === currentDay && canClaim) {
+                dayClass = 'current';
+            }
+            
+            // Іконка: картинка або FontAwesome
+            let iconHtml = '';
+            if (reward.img) {
+                iconHtml = `<img src="${reward.img}" alt="reward">`;
+            } else if (reward.icon) {
+                // Для epic/legendary - отримуємо картинку ППО
+                let cardImg = null;
+                if (day === 6 && adventData.day6_card) {
+                    const card = PPO_CARDS.find(c => c.id === adventData.day6_card);
+                    if (card) cardImg = card.img;
+                } else if (day === 7 && adventData.day7_card) {
+                    const card = PPO_CARDS.find(c => c.id === adventData.day7_card);
+                    if (card) cardImg = card.img;
+                }
+                
+                if (cardImg) {
+                    iconHtml = `<img src="${cardImg}" alt="reward">`;
+                } else {
+                    iconHtml = `<i class="${reward.icon}" style="color: ${reward.color || '#FFD700'}"></i>`;
+                }
+            }
+            
+            html += `
+                <div class="advent-day ${dayClass}" data-day="${day}">
+                    <div class="day-title">${dayText} ${day}</div>
+                    <div class="day-icon-wrapper">
+                        <div class="day-lock"><i class="fas fa-lock"></i></div>
+                        <div class="day-icon">${iconHtml}</div>
+                    </div>
+                    <div class="day-quantity">${reward.label}</div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+        
+        // Кнопка - стан оновлюється в updateAdventTimer
+        const btn = document.getElementById('adventClaimBtn');
+        const btnText = document.getElementById('adventClaimText');
+        
+        if (canClaim) {
+            btn.disabled = false;
+            btnText.textContent = typeof translate === 'function' ? translate('claim', 'shop') : 'Забрати';
+        } else {
+            btn.disabled = true;
+            // Таймер буде оновлюватись окремо
+        }
+    }
+    
+    function startAdventTimer() {
+        if (adventTimerInterval) {
+            clearInterval(adventTimerInterval);
+        }
+        adventTimerInterval = setInterval(updateAdventTimer, 1000);
+        updateAdventTimer();
+    }
+    
+    function updateAdventTimer() {
+        if (!adventData) return;
+        
+        const btn = document.getElementById('adventClaimBtn');
+        const btnText = document.getElementById('adventClaimText');
+        
+        const currentDay = adventData.current_day;
+        const canClaim = adventData.can_claim;
+        
+        if (canClaim) {
+            btn.disabled = false;
+            btnText.textContent = typeof translate === 'function' ? translate('claim', 'shop') : 'Забрати';
+            return;
+        }
+        
+        // Не можна забрати - показуємо таймер (і для дня 8 після 7-го теж)
+        // Розрахувати час до 00:00 UTC
+// Розрахувати час до 23:59 EET (Київ)
+const now = new Date();
+// EET = UTC+2 (зима) або UTC+3 (літо)
+// Використовуємо Intl для точного часу Києва
+const kyivTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Kyiv' }));
+const endOfDay = new Date(kyivTime);
+endOfDay.setHours(23, 59, 59, 999);
+
+// Якщо вже після 23:59 - наступний день
+if (kyivTime > endOfDay) {
+    endOfDay.setDate(endOfDay.getDate() + 1);
+}
+
+const diff = endOfDay - kyivTime;
+        
+        if (diff <= 0) {
+            // Час настав, перезавантажити
+            loadAdventCalendar();
+            return;
+        }
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        const timerStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        btn.disabled = true;
+        btnText.innerHTML = `<span class="timer-text">${timerStr}</span>`;
+    }
+    
+    async function claimAdvent() {
+        try {
+            const response = await fetch('claim_advent.php', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAdventRewardModal(data.day, data.reward);
+                
+                if (data.reward.type === 'currency') {
+                    const balanceEl = document.getElementById('currencyBalance');
+                    if (balanceEl) {
+                        const currentBalance = parseInt(balanceEl.textContent.replace(/,/g, '')) || 0;
+                        balanceEl.textContent = (currentBalance + data.reward.amount).toLocaleString();
+                    }
+                }
+                
+                await loadAdventCalendar();
+            } else {
+                alert(data.error || 'Помилка');
+            }
+        } catch (error) {
+            console.error('Advent claim error:', error);
+        }
+    }
+    
+    function showAdventRewardModal(day, reward) {
+        const modal = document.getElementById('modal');
+        const icon = document.getElementById('modalIcon');
+        const titleEl = document.getElementById('modalTitle');
+        const messageEl = document.getElementById('modalMessage');
+        
+        let iconHtml = '<div class="modal-particles" id="particles"></div>';
+        let message = '';
+        
+        switch (reward.type) {
+            case 'chest':
+                const chestImg = reward.chest_type === 'premium' ? 'assets/chest_closed2.png' : 'assets/chest_closed.png';
+                iconHtml += `<img src="${chestImg}" alt="Сундук">`;
+                const chestText = reward.quantity > 1 
+                    ? (typeof translate === 'function' ? translate('chestsAdded', 'shop') : 'скринь додано!')
+                    : (typeof translate === 'function' ? translate('chestAdded', 'shop') : 'скриня додана!');
+                message = `+${reward.quantity} ${chestText}`;
+                break;
+                
+            case 'currency':
+                iconHtml += '<img src="assets/hryvnya.png" alt="Гроші" style="width: 100px; height: 100px;">';
+                message = `+${reward.amount.toLocaleString()} ₴`;
+                break;
+                
+            case 'cards':
+                const card = PPO_CARDS.find(c => c.id === reward.card_id);
+                if (card) {
+                    const rarityColors = {
+                        epic: '#f44336',
+                        legendary: '#FFD700'
+                    };
+                    const borderColor = rarityColors[reward.rarity] || '#FFD700';
+                    
+                    let borderStyle = `border: 3px solid ${borderColor};`;
+                    if (reward.rarity === 'legendary') {
+                        borderStyle = 'border: 3px solid; border-image: linear-gradient(180deg, #FFD700, #2196F3) 1;';
+                    }
+                    
+                    iconHtml += `<img src="${card.img}" alt="${card.name}" style="${borderStyle} border-radius: 15px; padding: 10px; background: rgba(255,255,255,0.1);">`;
+                    message = `+${reward.quantity}× ${card.name}`;
+                }
+                break;
+        }
+        
+        icon.innerHTML = iconHtml;
+        icon.className = 'modal-icon success';
+        
+        const dayText = typeof translate === 'function' ? translate('adventDay', 'shop') : 'День';
+        titleEl.textContent = `${dayText} ${day}!`;
+        messageEl.textContent = message;
+        
+        modal.classList.add('show');
+        
+        setTimeout(() => createParticles(), 100);
+    }
+    
+    // ========================================
+    // ФУНКЦІЇ ПЕРЕМИКАННЯ НОТИФІКАЦІЙ
+    // ========================================
+    async function toggleFreeChestNotification() {
+        const icon = document.getElementById('notifyFreeChestIcon');
+        const currentState = icon.classList.contains('fa-bell'); // true = увімкнено
+        const newState = currentState ? 0 : 1; // Інвертуємо
+        
+        try {
+            const response = await fetch('save_notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `notify_free_chest=${newState}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Оновити іконку
+                icon.className = newState === 1 ? 'fas fa-bell' : 'fas fa-bell-slash';
+            } else {
+                console.error('Failed to save notification settings');
+            }
+        } catch (error) {
+            console.error('Error saving notification settings:', error);
+        }
+    }
+    
+    async function toggleDailyRewardNotification() {
+        const icon = document.getElementById('notifyDailyRewardIcon');
+        const currentState = icon.classList.contains('fa-bell'); // true = увімкнено
+        const newState = currentState ? 0 : 1; // Інвертуємо
+        
+        try {
+            const response = await fetch('save_notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `notify_daily_reward=${newState}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Оновити іконку
+                icon.className = newState === 1 ? 'fas fa-bell' : 'fas fa-bell-slash';
+            } else {
+                console.error('Failed to save notification settings');
+            }
+        } catch (error) {
+            console.error('Error saving notification settings:', error);
+        }
+    }
+
+    // ========================================
+    // БОЙОВІ ЗАВДАННЯ
+    // ========================================
+    const QUEST_TYPE_KEYS = {
+        shaheds:     'questShaheds',
+        heavy_drones:'questHeavy',
+        rockets:     'questRockets',
+        kalibrs:     'questKalibrs'
+    };
+
+    const RARITY_COLORS = {
+        common:    '#4CAF50',
+        rare:      '#FFD700',
+        epic:      '#f44336',
+        legendary: 'linear-gradient(135deg, #FFD700, #2196F3)'
+    };
+
+    async function loadQuests() {
+        try {
+            const res  = await fetch('get_quests.php');
+            const data = await res.json();
+            if (data.success) renderQuests(data.quests);
+        } catch (e) {
+            console.error('loadQuests error:', e);
+        }
+    }
+
+    function getPPOCardByRarity(rarity) {
+        const icons = { common: 'kulemet', rare: 'crotale90m', epic: '2k12kub', legendary: 'kilchen' };
+        const cardId = icons[rarity] || 'kulemet';
+        return `<div class="ppo-card-reward ${rarity}"><img src="assets/${cardId}.png" alt=""></div>`;
+    }
+
+    function renderQuests(quests) {
+        const list = document.getElementById('questsList');
+        if (!list) return;
+        if (!quests || quests.length === 0) {
+            list.innerHTML = '<div class="quest-loading">—</div>';
+            return;
+        }
+
+        const claimLabel   = (typeof translate === 'function') ? translate('questClaim',   'shop') : 'Забрати';
+        const claimedLabel = (typeof translate === 'function') ? translate('questClaimed', 'shop') : 'Отримано';
+
+        list.innerHTML = quests.map(q => {
+            const pct     = Math.min(100, Math.round(q.progress / q.target * 100));
+            const done    = q.progress >= q.target;
+            const claimed = q.is_claimed == 1;
+            const tKey    = QUEST_TYPE_KEYS[q.quest_type] || 'questShaheds';
+            const label   = (typeof translate === 'function') ? translate(tKey, 'shop') : q.quest_type;
+
+            const chestHtml = q.reward_premium_chests > 0
+                ? `<div class="reward-img-item"><img src="assets/chest_closed2.png" alt="">x${q.reward_premium_chests}</div>`
+                : '';
+            const rewardHtml = `
+                <div class="reward-img-row">
+                    ${chestHtml}
+                    <div class="reward-img-item">${getPPOCardByRarity(q.reward_cards_rarity)}x${q.reward_cards_count}</div>
+                    <div class="reward-img-item"><img src="assets/hryvnya.png" alt="">x${q.reward_hryvnias}</div>
+                </div>`;
+
+            const btnHtml = claimed
+                ? `<button class="quest-claim-btn claimed" disabled>${claimedLabel}</button>`
+                : done
+                    ? `<button class="quest-claim-btn ready" onclick="claimQuest(${q.slot})">${claimLabel}</button>`
+                    : `<button class="quest-claim-btn" disabled>${claimLabel}</button>`;
+
+            return `
+            <div class="quest-item${claimed ? ' claimed' : ''}">
+                <div class="quest-header">
+                    <span class="quest-label">${label}: ${q.target}</span>
+                    <span class="quest-progress-text">${q.progress} / ${q.target}</span>
+                </div>
+                <div class="quest-bar">
+                    <div class="quest-bar-fill" style="width:${pct}%; background: linear-gradient(90deg,#FFD700,#FFA500)"></div>
+                </div>
+                ${rewardHtml}
+                ${btnHtml}
+            </div>`;
+        }).join('');
+    }
+
+    async function claimQuest(slot) {
+        try {
+            const fd = new FormData();
+            fd.append('slot', slot);
+            const res  = await fetch('claim_quest.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.success) {
+                const r = data.rewards;
+                showQuestRewardModal(r);
+                await loadQuests();
+                await loadLoyalty();
+            } else {
+                alert(data.error || 'Помилка');
+            }
+        } catch (e) {
+            console.error('claimQuest error:', e);
+        }
+    }
+
+    function showQuestRewardModal(r) {
+        const modal     = document.getElementById('modal');
+        const icon      = document.getElementById('modalIcon');
+        const titleEl   = document.getElementById('modalTitle');
+        const messageEl = document.getElementById('modalMessage');
+
+        icon.innerHTML = '<div class="modal-particles" id="particles"></div><i class="fas fa-crosshairs" style="font-size:80px;color:#FFD700"></i>';
+        icon.className = 'modal-icon success';
+        titleEl.textContent = (typeof translate === 'function') ? translate('battleQuests', 'shop') : 'Бойові завдання';
+        messageEl.textContent = `+${r.hryvnias}₴${r.premium_chests > 0 ? '  +' + r.premium_chests + ' premium' : ''}  +${r.card_count}× ${r.card_id}`;
+        modal.classList.add('show');
+        setTimeout(() => createParticles(), 100);
+    }
+
+    // ========================================
+    // ТИЖНЕВА ВІРНІСТЬ
+    // ========================================
+    const LOYALTY_MILESTONES = [7, 14, 21, 28];
+    const LOYALTY_REWARDS = {
+        7:  { premium_chests: 7,  hryvnias: 7000,  legendary_cards: 7 },
+        14: { premium_chests: 14, hryvnias: 14000, legendary_cards: 14 },
+        21: { premium_chests: 21, hryvnias: 21000, legendary_cards: 21 },
+        28: { premium_chests: 28, hryvnias: 28000, legendary_cards: 28 },
+    };
+    const LEGENDARY_CARDS = ['kilchen', 'f16'];
+
+    async function loadLoyalty() {
+        try {
+            const res  = await fetch('get_weekly_loyalty.php');
+            const data = await res.json();
+            if (data.success) renderLoyalty(data.streak, data.milestones);
+        } catch (e) {
+            console.error('loadLoyalty error:', e);
+        }
+    }
+
+    // ===== СТАН КАРУСЕЛІ =====
+    let _loyaltyStreak = 0;
+    let _loyaltyMilestones = {};
+    let _carouselIndex = 0;
+
+    function renderLoyalty(streak, milestones) {
+        const streakEl = document.getElementById('loyaltyStreak');
+        const fillEl   = document.getElementById('loyaltyProgressFill');
+        const rewardsEl= document.getElementById('loyaltyRewards');
+        if (!streakEl || !fillEl || !rewardsEl) return;
+
+        // Зберігаємо для каруселі
+        _loyaltyStreak = streak;
+        _loyaltyMilestones = milestones;
+
+        const daysLabel = (typeof translate === 'function') ? translate('loyaltyDays', 'shop') : 'днів';
+        streakEl.textContent = `${streak} / 28 ${daysLabel}`;
+        fillEl.style.width = Math.min(100, Math.round(streak / 28 * 100)) + '%';
+
+        const claimLabel   = (typeof translate === 'function') ? translate('loyaltyClaim',   'shop') : 'Забрати';
+        const claimedLabel = (typeof translate === 'function') ? translate('loyaltyClaimed', 'shop') : 'Отримано';
+        const lockedLabel  = (typeof translate === 'function') ? translate('loyaltyLocked',  'shop') : 'Недоступно';
+
+        // ===== ДЕСКТОП =====
+        rewardsEl.innerHTML = LOYALTY_MILESTONES.map((m, idx) => {
+            const r       = LOYALTY_REWARDS[m];
+            const reached = streak >= m;
+            const claimed = milestones[m] == 1;
+            const legCard = LEGENDARY_CARDS[idx % LEGENDARY_CARDS.length];
+
+            let btnHtml;
+            if (claimed) {
+                btnHtml = `<button class="loyalty-claim-btn claimed" disabled>${claimedLabel}</button>`;
+            } else if (reached) {
+                btnHtml = `<button class="loyalty-claim-btn ready" onclick="claimLoyalty(${m})">${claimLabel}</button>`;
+            } else {
+                btnHtml = `<button class="loyalty-claim-btn" disabled>${lockedLabel}</button>`;
+            }
+
+            return `
+            <div class="loyalty-reward-card ${claimed ? 'claimed' : reached ? 'ready' : ''}">
+                <div class="loyalty-reward-day">${m} ${daysLabel}</div>
+                <div class="loyalty-reward-imgs">
+                    <div class="reward-img-item"><img src="assets/chest_closed2.png" alt="">x${r.premium_chests}</div>
+                    <div class="reward-img-item"><div class="ppo-card-reward legendary"><img src="assets/${legCard}.png" alt=""></div>x${r.legendary_cards}</div>
+                    <div class="reward-img-item"><img src="assets/hryvnya.png" alt="">x${r.hryvnias.toLocaleString()}</div>
+                </div>
+                ${btnHtml}
+            </div>`;
+        }).join('');
+
+        // ===== МОБІЛЬНА КАРУСЕЛЬ =====
+        // Знаходимо перший доступний для отримання слот
+        const firstReady = LOYALTY_MILESTONES.findIndex(m => streak >= m && milestones[m] != 1);
+        _carouselIndex = firstReady >= 0 ? firstReady : 0;
+        renderCarousel();
+    }
+
+    function renderCarousel() {
+        const carousel = document.getElementById('loyaltyCarousel');
+        if (!carousel) return;
+
+        // Показуємо тільки на мобільному
+        const isMobile = window.innerWidth <= 600;
+        carousel.style.display = isMobile ? 'flex' : 'none';
+
+        const daysLabel  = (typeof translate === 'function') ? translate('loyaltyDays',    'shop') : 'днів';
+        const claimLabel = (typeof translate === 'function') ? translate('loyaltyClaim',   'shop') : 'Забрати';
+        const claimedLabel=(typeof translate === 'function') ? translate('loyaltyClaimed', 'shop') : 'Отримано ✓';
+        const lockedLabel= (typeof translate === 'function') ? translate('loyaltyLocked',  'shop') : 'Недоступно';
+
+        const m       = LOYALTY_MILESTONES[_carouselIndex];
+        const r       = LOYALTY_REWARDS[m];
+        const reached = _loyaltyStreak >= m;
+        const claimed = _loyaltyMilestones[m] == 1;
+        const legCard = LEGENDARY_CARDS[_carouselIndex % LEGENDARY_CARDS.length];
+
+        // Рендер картки
+        const cardEl = document.getElementById('loyaltyCarouselCard');
+        cardEl.innerHTML = `
+            <div class="loyalty-reward-card ${claimed ? 'claimed' : reached ? 'ready' : ''}" style="width:100%">
+                <div class="loyalty-reward-day">${m} ${daysLabel}</div>
+                <div class="loyalty-reward-imgs">
+                    <div class="reward-img-item"><img src="assets/chest_closed2.png" alt="">x${r.premium_chests}</div>
+                    <div class="reward-img-item"><div class="ppo-card-reward legendary"><img src="assets/${legCard}.png" alt=""></div>x${r.legendary_cards}</div>
+                    <div class="reward-img-item"><img src="assets/hryvnya.png" alt="">x${r.hryvnias.toLocaleString()}</div>
+                </div>
+            </div>`;
+
+        // Dot-індикатори
+        const dotsEl = document.getElementById('loyaltyDots');
+        dotsEl.innerHTML = LOYALTY_MILESTONES.map((_, i) =>
+            `<div class="loyalty-carousel-dot ${i === _carouselIndex ? 'active' : ''}"></div>`
+        ).join('');
+
+        // Кнопки навігації
+        document.getElementById('loyaltyPrev').disabled = _carouselIndex === 0;
+        document.getElementById('loyaltyNext').disabled = _carouselIndex === LOYALTY_MILESTONES.length - 1;
+
+        // Єдина кнопка Забрати
+        const claimBtn = document.getElementById('loyaltyCarouselClaimBtn');
+        if (claimed) {
+            claimBtn.textContent = claimedLabel;
+            claimBtn.disabled = true;
+            claimBtn.className = 'loyalty-carousel-claim-btn claimed-state';
+        } else if (reached) {
+            claimBtn.textContent = claimLabel;
+            claimBtn.disabled = false;
+            claimBtn.className = 'loyalty-carousel-claim-btn';
+        } else {
+            claimBtn.textContent = lockedLabel;
+            claimBtn.disabled = true;
+            claimBtn.className = 'loyalty-carousel-claim-btn';
+        }
+    }
+
+    function loyaltyCarouselNav(dir) {
+        const newIdx = _carouselIndex + dir;
+        if (newIdx < 0 || newIdx >= LOYALTY_MILESTONES.length) return;
+        _carouselIndex = newIdx;
+        renderCarousel();
+    }
+
+    async function loyaltyCarouselClaim() {
+        const m = LOYALTY_MILESTONES[_carouselIndex];
+        await claimLoyalty(m);
+    }
+
+    // Перерендерити карусель при зміні розміру вікна
+    window.addEventListener('resize', () => {
+        if (_loyaltyStreak !== undefined) renderCarousel();
+    });
+
+    async function claimLoyalty(milestone) {
+        try {
+            const fd = new FormData();
+            fd.append('milestone', milestone);
+            const res  = await fetch('claim_weekly_loyalty.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.success) {
+                showLoyaltyRewardModal(milestone, data.rewards);
+                await loadLoyalty();
+            } else {
+                alert(data.error || 'Помилка');
+            }
+        } catch (e) {
+            console.error('claimLoyalty error:', e);
+        }
+    }
+
+    function showLoyaltyRewardModal(milestone, r) {
+        const modal     = document.getElementById('modal');
+        const icon      = document.getElementById('modalIcon');
+        const titleEl   = document.getElementById('modalTitle');
+        const messageEl = document.getElementById('modalMessage');
+
+        icon.innerHTML = '<div class="modal-particles" id="particles"></div><i class="fas fa-fire" style="font-size:80px;color:#FFD700"></i>';
+        icon.className = 'modal-icon success';
+        const loyaltyLabel = (typeof translate === 'function') ? translate('weeklyLoyalty', 'shop') : 'Тижнева вірність';
+        const daysLabel    = (typeof translate === 'function') ? translate('loyaltyDays',   'shop') : 'днів';
+        titleEl.textContent   = `${loyaltyLabel} — ${milestone} ${daysLabel}`;
+        messageEl.textContent = `+${r.hryvnias.toLocaleString()}₴  +${r.premium_chests} premium  +${r.legendary_cards}× legendary`;
+        modal.classList.add('show');
+        setTimeout(() => createParticles(), 100);
+    }
+
+    // Hint tooltip toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const hintBtn     = document.getElementById('loyaltyHintBtn');
+        const hintTooltip = document.getElementById('loyaltyHintTooltip');
+        if (hintBtn && hintTooltip) {
+            hintBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const visible = hintTooltip.style.display !== 'none';
+                hintTooltip.style.display = visible ? 'none' : 'block';
+            });
+            document.addEventListener('click', function() {
+                if (hintTooltip) hintTooltip.style.display = 'none';
+            });
+        }
+    });
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ea36a8b923a94718bd9d04cba6a7184c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

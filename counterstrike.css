@@ -1,0 +1,600 @@
+/* ═══════════════════════════════════════════════════════════
+   DRONEFALL — COUNTERSTRIKE CSS v3.0
+   Підключати після style.css
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+  --cs-orange:    #ff6b35;
+  --cs-gold:      #ffd700;
+  --cs-green:     #00d278;
+  --cs-cyan:      #00e5ff;
+  --cs-red:       #ff2222;
+  --cs-panel:     rgba(3, 7, 16, 0.97);
+  --cs-border:    rgba(255,107,53,.35);
+  --cs-glow-or:   0 0 20px rgba(255,107,53,.4);
+  --cs-glow-gd:   0 0 24px rgba(255,215,0,.4);
+  --cs-r:         14px;
+  --cs-t:         .22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── HUD BAR ──────────────────────────────────────────── */
+
+#cs-hud-bar {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10010;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  background: rgba(4, 8, 18, 0.94);
+  border: 1px solid var(--cs-border);
+  border-radius: 40px;
+  box-shadow: 0 4px 28px rgba(0,0,0,.65);
+  backdrop-filter: blur(14px);
+  min-width: 240px;
+  transition: border-color .3s, box-shadow .3s;
+}
+
+#cs-hud-bar.cs-hud--visible { display: flex; }
+
+#cs-hud-bar.cs-hud--ready {
+  border-color: var(--cs-gold);
+  box-shadow: var(--cs-glow-gd);
+}
+
+.cs-hud-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--cs-orange);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cs-hud-track {
+  flex: 1;
+  height: 9px;
+  background: rgba(255,255,255,.07);
+  border-radius: 9px;
+  overflow: hidden;
+  position: relative;
+  min-width: 70px;
+}
+
+.cs-hud-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 9px;
+  background: linear-gradient(90deg, var(--cs-green), var(--cs-cyan));
+  transition: width .35s ease, background .5s ease;
+}
+
+.cs-hud-pct {
+  position: absolute;
+  right: 5px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Orbitron', monospace;
+  font-size: 7px; font-weight: 700;
+  color: rgba(255,255,255,.85);
+  pointer-events: none;
+}
+
+.cs-hud-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--cs-orange);
+  background: rgba(255,107,53,.15);
+  color: var(--cs-orange);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--cs-t);
+  flex-shrink: 0;
+  opacity: .5;
+}
+
+.cs-hud-btn:hover { background: rgba(255,107,53,.3); transform: scale(1.1); }
+
+.cs-hud-btn.cs-ready {
+  opacity: 1;
+  border-color: var(--cs-gold);
+  background: rgba(255,215,0,.2);
+  color: var(--cs-gold);
+  box-shadow: var(--cs-glow-gd);
+  animation: cs-pulse 1.6s ease infinite;
+}
+
+@keyframes cs-pulse {
+  0%,100% { box-shadow: var(--cs-glow-gd); }
+  50%      { box-shadow: 0 0 36px rgba(255,215,0,.7); }
+}
+
+/* ─── BUFF / COOLDOWN DISPLAY ──────────────────────────── */
+
+#cs-buff-display {
+  position: fixed;
+  bottom: 68px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10010;
+  align-items: center; gap: 7px;
+  padding: 4px 14px;
+  background: rgba(0,210,120,.14);
+  border: 1px solid rgba(0,210,120,.45);
+  border-radius: 20px;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px; font-weight: 700;
+  color: var(--cs-green);
+  backdrop-filter: blur(10px);
+}
+
+.cs-buff-sec { color: #fff; }
+
+#cs-cd-display {
+  position: fixed;
+  bottom: 68px; right: 16px;
+  z-index: 10010;
+  padding: 4px 12px;
+  background: rgba(255,50,50,.12);
+  border: 1px solid rgba(255,50,50,.35);
+  border-radius: 14px;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,140,140,.9);
+}
+
+/* ─── STATUS BAR ───────────────────────────────────────── */
+
+#cs-status {
+  position: fixed;
+  top: 70px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10010;
+  padding: 7px 20px;
+  background: rgba(4,8,18,.92);
+  border: 1px solid rgba(0,229,255,.35);
+  border-radius: 24px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--cs-cyan);
+  letter-spacing: 1px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0,229,255,.15);
+  pointer-events: none;
+}
+
+/* ─── NOTIFICATION ─────────────────────────────────────── */
+
+.cs-notif {
+  position: fixed;
+  top: 74px; left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  z-index: 10020;
+  padding: 9px 22px;
+  border-radius: 28px;
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0; pointer-events: none;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+
+.cs-notif--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cs-notif--info   { background: rgba(0,229,255,.13); color: var(--cs-cyan);   border: 1px solid rgba(0,229,255,.4); }
+.cs-notif--warn   { background: rgba(255,215,0,.13); color: var(--cs-gold);   border: 1px solid rgba(255,215,0,.4); }
+.cs-notif--ready  { background: rgba(255,107,53,.2); color: var(--cs-orange); border: 1px solid rgba(255,107,53,.6); box-shadow: var(--cs-glow-or); font-size: 12px; }
+.cs-notif--launch { background: rgba(0,210,120,.15); color: var(--cs-green);  border: 1px solid rgba(0,210,120,.4); }
+
+/* ─── OVERLAY ──────────────────────────────────────────── */
+
+.cs-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(5px);
+  z-index: 10011;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--cs-t);
+}
+.cs-ov--active { opacity: 1; pointer-events: auto; }
+
+/* ─── WEAPON PANEL ─────────────────────────────────────── */
+
+.cs-wpanel {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  z-index: 10012;
+  width: min(980px, 96vw);
+  max-height: 88vh;
+  border-radius: var(--cs-r) var(--cs-r) 0 0;
+  background: var(--cs-panel);
+  border: 1px solid var(--cs-border);
+  border-bottom: none;
+  box-shadow: 0 -8px 60px rgba(255,107,53,.18), inset 0 1px 0 rgba(255,107,53,.12);
+  transition: transform .42s cubic-bezier(.16,1,.3,1);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+.cs-wpanel--open { transform: translateX(-50%) translateY(0); }
+
+.cs-wpanel-inner { display: flex; flex-direction: column; height: 100%; }
+
+.cs-wpanel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 22px 11px;
+  border-bottom: 1px solid rgba(255,107,53,.18);
+  background: linear-gradient(180deg, rgba(255,107,53,.07) 0%, transparent 100%);
+  flex-shrink: 0;
+}
+
+.cs-wpanel-title {
+  font-family: 'Orbitron', monospace;
+  font-size: .95rem; font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--cs-gold);
+  text-shadow: 0 0 18px rgba(255,215,0,.45);
+}
+
+.cs-wpanel-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.55); font-size: 13px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all var(--cs-t);
+}
+.cs-wpanel-close:hover { border-color: var(--cs-red); color: var(--cs-red); transform: rotate(90deg); }
+
+.cs-wpanel-hint {
+  padding: 8px 22px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4);
+  letter-spacing: 1px; flex-shrink: 0;
+}
+
+.cs-wpanel-body {
+  flex: 1; overflow-y: auto; padding: 10px 16px 20px;
+  scrollbar-width: thin; scrollbar-color: rgba(255,107,53,.3) transparent;
+}
+.cs-wpanel-body::-webkit-scrollbar { width: 3px; }
+.cs-wpanel-body::-webkit-scrollbar-thumb { background: rgba(255,107,53,.3); border-radius: 2px; }
+
+/* ─── WEAPON CATEGORY ──────────────────────────────────── */
+
+.cs-wcat { margin-bottom: 14px; }
+
+.cs-wcat-label {
+  font-size: .68rem; font-weight: 700; letter-spacing: 2px;
+  color: rgba(255,255,255,.4); text-transform: uppercase;
+  margin-bottom: 8px; padding-left: 2px;
+}
+
+.cs-wcards {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+/* ─── WEAPON CARD ──────────────────────────────────────── */
+
+.cs-wcard {
+  width: 118px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.03);
+  cursor: pointer;
+  transition: all var(--cs-t);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; text-align: center; position: relative;
+}
+
+.cs-wcard:hover {
+  border-color: var(--wc, var(--cs-orange));
+  background: rgba(255,107,53,.07);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+
+.cs-wcard--sel {
+  border-color: var(--wc, var(--cs-orange)) !important;
+  background: rgba(255,107,53,.13) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--wc,#ff6b35) 45%, transparent) !important;
+}
+
+.cs-wcard--sel::after {
+  content: '✓';
+  position: absolute; top: 4px; right: 7px;
+  font-size: 10px; color: var(--wc, var(--cs-orange)); font-weight: 900;
+}
+
+.cs-wcard-img {
+  width: 52px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.cs-wcard-img img {
+  max-width: 52px; max-height: 32px; object-fit: contain;
+  filter: drop-shadow(0 0 6px var(--wc, rgba(255,107,53,.5)));
+}
+
+.cs-wcard-name {
+  font-family: 'Orbitron', monospace;
+  font-size: .58rem; font-weight: 700;
+  color: var(--wc, #fff); letter-spacing: .5px; line-height: 1.2;
+}
+
+.cs-wcard-meta {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+}
+
+.cs-wcard-meta span, .cs-wcard-gold, .cs-wcard-buff {
+  font-size: .6rem; color: rgba(255,255,255,.45);
+}
+
+.cs-wcard-gold { color: var(--cs-gold) !important; }
+.cs-wcard-buff { color: var(--cs-green) !important; }
+
+.cs-wcard-desc {
+  font-size: .56rem; color: rgba(255,255,255,.35); line-height: 1.3;
+  display: none;
+}
+.cs-wcard:hover .cs-wcard-desc { display: block; }
+
+.cs-wcard-good {
+  display: flex; gap: 3px; flex-wrap: wrap; justify-content: center;
+  align-items: center; margin-top: 2px;
+}
+.cs-wcard-good span { font-size: .75rem; }
+.cs-wcard-good-hint {
+  font-size: .55rem !important;
+  color: var(--cs-gold) !important;
+  display: none;
+}
+.cs-wcard:hover .cs-wcard-good-hint { display: inline; }
+
+/* ─── АЕРОДРОМ-МАРКЕРИ НА КАРТІ ────────────────────────── */
+
+.cs-ap-div { pointer-events: auto; }
+
+.cs-ap-marker {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.7));
+  transition: transform var(--cs-t);
+}
+.cs-ap-marker:hover { transform: scale(1.15); }
+
+.cs-ap-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle, #ffd700 30%, rgba(255,215,0,.3));
+  border: 2px solid #fff;
+  box-shadow: 0 0 12px rgba(255,215,0,.7);
+  transition: all var(--cs-t);
+}
+
+.cs-ap-dot::after {
+  content: '🇺🇦';
+  position: absolute;
+  font-size: 14px;
+  top: -2px; left: -2px;
+}
+
+.cs-ap-dot--sel {
+  background: radial-gradient(circle, #ff6b35 30%, rgba(255,107,53,.4));
+  box-shadow: 0 0 20px rgba(255,107,53,.9);
+  border-color: #fff;
+  transform: scale(1.3);
+}
+
+.cs-ap-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px; font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 8px rgba(0,0,0,.9);
+  white-space: nowrap; letter-spacing: 1px;
+  background: rgba(0,0,0,.6);
+  padding: 1px 5px; border-radius: 4px;
+}
+
+/* ─── ЦІЛІ НА КАРТІ РФ ─────────────────────────────────── */
+
+.cs-rf-target { pointer-events: auto; cursor: crosshair; }
+
+.cs-rf-icon {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 3px 4px;
+  background: rgba(4, 0, 0, 0.75);
+  border: 1.5px solid rgba(255,40,40,.5);
+  border-radius: 7px;
+  transition: all var(--cs-t);
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.7));
+}
+
+.cs-rf-target:hover .cs-rf-icon {
+  border-color: #ff2222;
+  background: rgba(30,0,0,.9);
+  box-shadow: 0 0 16px rgba(255,50,50,.5);
+  transform: scale(1.1);
+}
+
+.cs-rf-emoji { font-size: 1.3rem; line-height: 1; }
+
+.cs-rf-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 7px; font-weight: 700;
+  color: rgba(255,180,180,.9);
+  white-space: nowrap; letter-spacing: .5px;
+}
+
+.cs-rf-zone {
+  font-size: 6px;
+  color: rgba(255,120,120,.55);
+  white-space: nowrap;
+}
+
+/* Стани доступності */
+.cs-rf--out .cs-rf-icon {
+  opacity: .25;
+  border-color: rgba(100,100,100,.3);
+  filter: grayscale(.8);
+  pointer-events: none;
+}
+
+.cs-rf--in .cs-rf-icon {
+  border-color: #ff2222;
+  box-shadow: 0 0 12px rgba(255,30,30,.45);
+  animation: cs-target-pulse 1.8s ease infinite;
+}
+
+@keyframes cs-target-pulse {
+  0%,100% { box-shadow: 0 0 8px rgba(255,30,30,.4); }
+  50%      { box-shadow: 0 0 20px rgba(255,80,80,.7); }
+}
+
+/* ─── СНАРЯДИ НА КАРТІ ─────────────────────────────────── */
+
+.cs-proj-marker { pointer-events: none; }
+
+.cs-proj-icon {
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─── ВИБУХ ─────────────────────────────────────────────── */
+
+.cs-boom-fx {
+  font-size: 3.5rem; line-height: 1;
+  animation: cs-boom 1.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes cs-boom {
+  0%   { transform: scale(.3); opacity: 0; }
+  15%  { transform: scale(1.7); opacity: 1; }
+  50%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(.8); opacity: 0; }
+}
+
+/* Тряска карти */
+@keyframes cs-shake {
+  0%,100% { transform: translate(0,0) rotate(0); }
+  15%      { transform: translate(-4px,3px) rotate(-.4deg); }
+  30%      { transform: translate(4px,-3px) rotate(.4deg); }
+  45%      { transform: translate(-3px,2px) rotate(-.2deg); }
+  60%      { transform: translate(3px,-2px) rotate(.2deg); }
+  75%      { transform: translate(-2px,1px); }
+}
+
+.cs-map-shake { animation: cs-shake .4s ease; }
+
+/* ─── RESULT MODAL ─────────────────────────────────────── */
+
+.cs-result-modal {
+  position: fixed; inset: 0; z-index: 10030;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease;
+}
+.cs-result--active { opacity: 1; pointer-events: auto; }
+
+.cs-result-box {
+  background: var(--cs-panel);
+  border: 2px solid var(--cs-gold);
+  border-radius: 20px;
+  padding: 28px 34px;
+  text-align: center;
+  box-shadow: var(--cs-glow-gd), 0 20px 80px rgba(0,0,0,.8);
+  min-width: 290px; max-width: 420px;
+  animation: cs-res-appear .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+@keyframes cs-res-appear {
+  from { transform: scale(.7) translateY(30px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);     opacity: 1; }
+}
+
+.cs-res-boom { font-size: 3.6rem; animation: cs-boom-spin .6s ease-out; }
+
+@keyframes cs-boom-spin {
+  from { transform: scale(0) rotate(-180deg); }
+  to   { transform: scale(1) rotate(0); }
+}
+
+.cs-res-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem; font-weight: 900;
+  color: var(--cs-gold); letter-spacing: 4px;
+  text-shadow: 0 0 18px rgba(255,215,0,.5);
+  margin: 6px 0 3px;
+}
+
+.cs-res-sub {
+  font-size: .82rem; color: rgba(255,255,255,.5); margin-bottom: 3px;
+}
+
+.cs-res-zone { font-size: .72rem; color: rgba(255,100,100,.55); margin-bottom: 8px; }
+
+.cs-res-match {
+  display: inline-block;
+  padding: 3px 12px;
+  background: rgba(255,215,0,.15);
+  border: 1px solid rgba(255,215,0,.4);
+  border-radius: 12px;
+  font-size: .75rem; font-weight: 700;
+  color: var(--cs-gold); margin-bottom: 12px;
+}
+
+.cs-res-rewards {
+  display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px;
+}
+
+.cs-rw {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 7px 16px; border-radius: 8px;
+  font-size: .85rem; font-weight: 700; font-family: 'Orbitron', monospace;
+}
+.cs-rw--gold { background: rgba(255,215,0,.12); color: var(--cs-gold); border: 1px solid rgba(255,215,0,.3); }
+.cs-rw--wave { background: rgba(30,144,255,.12); color: #6ab4ff;       border: 1px solid rgba(30,144,255,.3); }
+.cs-rw--buff { background: rgba(0,210,120,.12); color: var(--cs-green); border: 1px solid rgba(0,210,120,.3); }
+
+.cs-res-close {
+  padding: 9px 26px; border-radius: 8px;
+  border: 2px solid var(--cs-green);
+  background: rgba(0,210,120,.12); color: var(--cs-green);
+  font-family: 'Orbitron', monospace; font-size: .78rem;
+  font-weight: 700; letter-spacing: 2px; cursor: pointer;
+  transition: all var(--cs-t);
+}
+.cs-res-close:hover { background: rgba(0,210,120,.25); box-shadow: 0 0 18px rgba(0,210,120,.3); }
+
+/* ─── АДАПТИВНІСТЬ ─────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  #cs-hud-bar { bottom: 8px; min-width: 180px; padding: 5px 8px; }
+  .cs-wpanel { width: 100vw; border-radius: 14px 14px 0 0; }
+  .cs-wpanel-title { font-size: .78rem; letter-spacing: 2px; }
+  .cs-wcards { gap: 5px; }
+  .cs-wcard { width: 88px; padding: 7px 5px; }
+  .cs-result-box { padding: 18px 14px; min-width: 260px; }
+  .cs-notif { font-size: .66rem; padding: 7px 12px; white-space: normal; max-width: 88vw; text-align: center; }
+  #cs-status { font-size: 11px; padding: 5px 14px; }
+}
+
+/* ─── СКРОЛБАРИ ─────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: rgba(255,107,53,.25) transparent; }
+*::-webkit-scrollbar { width: 3px; height: 3px; }
+*::-webkit-scrollbar-thumb { background: rgba(255,107,53,.25); border-radius: 2px; }

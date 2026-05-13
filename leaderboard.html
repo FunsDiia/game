@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Лідерборд - DroneFall</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="translations.js?v=70"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 100px;
+        }
+        
+                .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .page-header-center {
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            flex: unset !important;
+            pointer-events: none;
+        }
+
+        .page-header-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        .page-icon-btn {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: default;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+
+        .back-btn {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .back-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 3px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .page-header-placeholder {
+            width: 42px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .page-header-title { font-size: 1.25rem; }
+            .page-icon-btn { width: 36px; height: 36px; font-size: 1rem; }
+            .page-header-placeholder { width: 36px; }
+        }
+
+        .categories {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── КАТЕГОРІЇ-КАРУСЕЛЬ (mobile) ── */
+        @media (max-width: 600px) {
+            .categories { display: none !important; }
+            .cat-carousel { display: block; margin-bottom: 20px; }
+        }
+        @media (min-width: 601px) {
+            .cat-carousel { display: none !important; }
+        }
+        .cat-carousel-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cat-nav-btn {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+            color: #fff; font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .cat-nav-btn:active { background: rgba(255,215,0,0.2); border-color: #FFD700; }
+        .cat-nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        .cat-carousel-label {
+            flex: 1;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.15));
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            color: #FFD700;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 48px;
+        }
+        .cat-carousel-label img { width: 26px; height: 26px; object-fit: contain; }
+        .cat-carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .cat-carousel-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .cat-carousel-dot.active { background: #FFD700; transform: scale(1.3); }
+        
+        .category-btn {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-btn:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            color: #fff;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+        
+        .category-btn img {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* Подіум */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 20px;
+            min-height: 280px;
+            padding: 0 10px;
+        }
+        
+        .podium-place {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .podium-player {
+            text-align: center;
+            margin-bottom: 8px;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .podium-avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 3px solid;
+            margin: 0 auto 5px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            overflow: hidden;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .podium-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .podium-place.first .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .podium-place.second .podium-avatar {
+            width: 75px;
+            height: 75px;
+            border-color: #C0C0C0;
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        }
+        
+        .podium-place.third .podium-avatar {
+            width: 70px;
+            height: 70px;
+            border-color: #CD7F32;
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+        }
+        
+        .podium-name {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 85px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* ПОДІУМ - ТІЛЬКИ КАРТИНКА І ЧИСЛО! */
+        .podium-stand {
+            width: 95px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 8px;
+        }
+        
+        .podium-place.first .podium-stand {
+            height: 160px;
+            background: linear-gradient(180deg, #FFD700 0%, #B8860B 100%);
+            width: 105px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .podium-place.second .podium-stand {
+            height: 120px;
+            background: linear-gradient(180deg, #C0C0C0 0%, #808080 100%);
+        }
+        
+        .podium-place.third .podium-stand {
+            height: 90px;
+            background: linear-gradient(180deg, #CD7F32 0%, #8B4513 100%);
+        }
+        
+        .podium-icon {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 10px;
+        }
+        
+        .podium-place.first .podium-icon {
+            width: 55px;
+            height: 55px;
+        }
+        
+        .podium-place.third .podium-icon {
+            width: 38px;
+            height: 38px;
+        }
+        
+        .podium-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        
+        .podium-place.first .podium-value {
+            font-size: 1.7rem;
+        }
+        
+        .podium-place.third .podium-value {
+            font-size: 1.2rem;
+        }
+        
+        .podium-empty .podium-avatar {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: none !important;
+        }
+        
+        .podium-empty .podium-name {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .podium-empty .podium-stand {
+            opacity: 0.4;
+        }
+        
+        /* Список 4-10 */
+        .leaderboard-list {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .list-header {
+            display: flex;
+            padding: 8px 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+        }
+        
+        .list-header span:first-child { width: 35px; }
+        .list-header span:nth-child(2) { flex: 1; }
+        .list-header span:last-child { width: 70px; text-align: right; }
+        
+        .player-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: background 0.3s;
+            min-height: 48px;
+        }
+        
+        .player-row:hover:not(.empty) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .player-row.empty {
+            opacity: 0.25;
+        }
+        
+        .player-rank {
+            width: 35px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .player-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-avatar-small {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            overflow: hidden;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .player-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .player-name {
+            font-size: 0.9rem;
+        }
+        
+        .player-value {
+            width: 70px;
+            text-align: right;
+            font-weight: 600;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+        
+        .player-value img {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Моя позиція */
+        .my-position {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .my-position.not-participating {
+            background: linear-gradient(135deg, rgba(100, 100, 100, 0.15), rgba(100, 100, 100, 0.05));
+            border-color: rgba(100, 100, 100, 0.4);
+        }
+        
+        .my-position-header {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+        
+        .my-rank {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 12px;
+        }
+        
+        .my-reward-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+        
+        .my-reward-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .reward-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-height: 70px;
+            min-width: 65px;
+        }
+        
+        .reward-badge img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+        
+        .reward-badge.gold { background: rgba(255, 215, 0, 0.2); border: 1px solid rgba(255, 215, 0, 0.4); }
+        .reward-badge.silver { background: rgba(192, 192, 192, 0.2); border: 1px solid rgba(192, 192, 192, 0.4); }
+        .reward-badge.bronze { background: rgba(205, 127, 50, 0.2); border: 1px solid rgba(205, 127, 50, 0.4); }
+        .reward-badge.top10 { background: rgba(100, 181, 246, 0.2); border: 1px solid rgba(100, 181, 246, 0.4); }
+        
+        /* ППО картка всередині reward-badge */
+        .reward-badge .ppo-card-reward {
+            width: 45px;
+            height: 45px;
+            margin: 0;
+        }
+        
+        .reward-badge .
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* ППО картка в рамці */
+        .ppo-card-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+        
+        .ppo-card-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .ppo-card-mini.common { border: 2px solid #4CAF50; background: rgba(76, 175, 80, 0.2); }
+        .ppo-card-mini.rare { border: 2px solid #FFD700; background: rgba(255, 215, 0, 0.2); }
+        .ppo-card-mini.epic { border: 2px solid #f44336; background: rgba(244, 67, 54, 0.2); }
+        .ppo-card-mini.legendary { 
+            border: 2px solid; 
+            border-image: linear-gradient(135deg, #FFD700, #2196F3) 1;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(33, 150, 243, 0.2));
+        }
+        
+        /* ========== ПРИЗИ - КОМПАКТНА СІТКА ========== */
+        .rewards-info {
+            background: rgba(255, 215, 0, 0.08);
+            border: 2px solid rgba(255, 215, 0, 0.25);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .rewards-title {
+            font-size: 0.9rem;
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rewards-table {
+            display: inline-block;
+            border-collapse: collapse;
+        }
+        
+        .rewards-table table {
+            border-collapse: collapse;
+        }
+        
+        .rewards-table td {
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .rewards-table td:first-child {
+            min-width: 50px;
+        }
+        
+        .rewards-table td.item-cell {
+            min-width: 80px;
+        }
+        
+        .rewards-table td img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .rewards-table td span {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .reward-place {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .reward-place.gold { color: #FFD700; }
+        .reward-place.silver { color: #C0C0C0; }
+        .reward-place.bronze { color: #CD7F32; }
+        .reward-place.top10 { color: #64B5F6; }
+        .reward-place.participant { color: #4CAF50; }
+        
+        /* ППО картка в призах */
+        .ppo-card-reward {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 4px auto;
+        }
+        
+        .ppo-card-reward img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .reward-detail-items .reward-item img {
+    width: 40px;
+    height: 40px;
+}
+        
+        .ppo-card-reward.common { border: 2px solid #4CAF50; background: rgba(76, 175, 80, 0.2); }
+        .ppo-card-reward.rare { border: 2px solid #FFD700; background: rgba(255, 215, 0, 0.2); }
+        .ppo-card-reward.epic { border: 2px solid #f44336; background: rgba(244, 67, 54, 0.2); }
+        .ppo-card-reward.legendary { 
+            border: 2px solid #FFD700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(33, 150, 243, 0.3));
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Модальне вікно нагород */
+        .reward-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .reward-modal.show {
+            display: flex;
+        }
+        
+        .reward-modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalSlide 0.4s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: translateY(-40px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        .reward-modal-title {
+            text-align: center;
+            color: #FFD700;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .reward-detail {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+        
+        .reward-detail.place-1 { border-color: #FFD700; }
+        .reward-detail.place-2 { border-color: #C0C0C0; }
+        .reward-detail.place-3 { border-color: #CD7F32; }
+        .reward-detail.place-other { border-color: #64B5F6; }
+        .reward-detail.participation { border-color: #4CAF50; }
+        
+        .reward-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .reward-detail-category {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .reward-detail-category img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .reward-detail-place {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .reward-totals {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.08));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .reward-totals-title {
+            font-size: 1rem;
+            color: #FFD700;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .reward-totals-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .total-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-height: 70px;
+            min-width: 65px;
+        }
+        
+        .total-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        .claim-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .claim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #f44336, #c62828);
+            border-radius: 10px;
+            padding: 6px 12px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.4;
+            flex-shrink: 0;
+            min-width: 80px;
+        }
+
+        .timer-label {
+            font-size: 0.65rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <button class="back-btn" onclick="location.href='/'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="page-header-center">
+            <div class="page-icon-btn"><i class="fas fa-trophy"></i></div>
+            <div class="page-header-title"><span>Щоденний рейтинг</span></div>
+        </div>
+        <div class="timer" id="timer">
+            <div class="timer-label">До скидання</div>
+            <div><i class="fas fa-clock"></i> <span id="timerText">--:--:--</span></div>
+        </div>
+    </div>
+    
+    <!-- Категорії -->
+    <div class="categories" id="categories">
+        <button class="category-btn active" data-category="max_wave">
+            <i class="fas fa-flag"></i> Фаза
+        </button>
+        <button class="category-btn" data-category="shaheds_killed">
+            <img src="assets/drone.png" alt=""> Шахеди
+        </button>
+        <button class="category-btn" data-category="heavy_drones_killed">
+            <img src="assets/heavy-drone.png" alt=""> Важкі
+        </button>
+        <button class="category-btn" data-category="rockets_killed">
+            <img src="assets/rocket1.png" alt=""> Ракети
+        </button>
+        <button class="category-btn" data-category="kalibrs_killed">
+            <img src="assets/kalibr.png" alt=""> Калібри
+        </button>
+    </div>
+
+    <!-- Категорії-карусель (мобільний) -->
+    <div class="cat-carousel" id="catCarousel">
+        <div class="cat-carousel-row">
+            <button class="cat-nav-btn" id="catPrevBtn" onclick="catCarouselPrev()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="cat-carousel-label" id="catCarouselLabel"></div>
+            <button class="cat-nav-btn" id="catNextBtn" onclick="catCarouselNext()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="cat-carousel-dots" id="catCarouselDots"></div>
+    </div>
+    
+    <!-- Подіум -->
+    <div class="podium-container" id="podium"></div>
+    
+    <!-- Список 4-10 -->
+    <div class="leaderboard-list" id="leaderboardList">
+        <div class="list-header">
+            <span>#</span>
+            <span>Гравець</span>
+            <span id="valueHeader">Фаза</span>
+        </div>
+        <div id="playersList"></div>
+    </div>
+    
+    <!-- Моя позиція -->
+    <div class="my-position" id="myPosition" style="display: none;">
+        <div class="my-position-header">Ваша позиція:</div>
+        <div class="my-rank" id="myRank">#--</div>
+        <div class="my-reward-label" id="myRewardLabel">Ваша нагорода:</div>
+        <div class="my-reward-preview" id="myRewardPreview"></div>
+    </div>
+    
+    <!-- Інфо про призи -->
+    <div class="rewards-info">
+        <div class="rewards-title"><i class="fas fa-gift"></i> Призи (23:59 EET)</div>
+        
+        <div class="rewards-table">
+            <table>
+                <tr>
+                    <td><span class="reward-place gold">1</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed2.png" alt=""><span>x9</span></td>
+                    <td class="item-cell" id="reward1Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x6000</span></td>
+                </tr>
+                <tr>
+                    <td><span class="reward-place silver">2</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed2.png" alt=""><span>x6</span></td>
+                    <td class="item-cell" id="reward2Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x5000</span></td>
+                </tr>
+                <tr>
+                    <td><span class="reward-place bronze">3</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed2.png" alt=""><span>x3</span></td>
+                    <td class="item-cell" id="reward3Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x4000</span></td>
+                </tr>
+                <tr>
+                    <td><span class="reward-place top10">4-10</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed.png" alt=""><span>x9</span></td>
+                    <td class="item-cell" id="reward4Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x3000</span></td>
+                </tr>
+                <tr>
+                    <td><span class="reward-place top10">11-20</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed.png" alt=""><span>x6</span></td>
+                    <td class="item-cell" id="reward5Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x2000</span></td>
+                </tr>
+                <tr>
+                    <td><span class="reward-place participant">21+</span></td>
+                    <td class="item-cell"><img src="assets/chest_closed.png" alt=""><span>x3</span></td>
+                    <td class="item-cell" id="reward6Card"></td>
+                    <td class="item-cell"><img src="assets/hryvnya.png" alt=""><span>x1000</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Модальне вікно нагород -->
+    <div class="reward-modal" id="rewardModal">
+        <div class="reward-modal-content">
+            <h2 class="reward-modal-title"><i class="fas fa-trophy"></i> Твої нагороди!</h2>
+            <div id="rewardDetails"></div>
+            <div class="reward-totals" id="rewardTotals"></div>
+            <button class="claim-btn" onclick="claimRewards()">
+                <i class="fas fa-gift"></i> Забрати
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        const CARD_NAMES = {
+            'kilchen': 'Кільчень', 'f16': 'F-16', '2k12kub': '2K12 KUB',
+            'patriot': 'Patriot', 'su27': 'Су-27', 'crotale90m': 'Crotale 90M',
+            'iristsml': 'IRIS-T SML', 'reb': 'РЕБ', 'mig29': 'МіГ-29',
+            'kulemet': 'Кулемет', 'madt': 'MADT', 'radar': 'Радар'
+        };
+        
+        const CARD_RARITIES = {
+            'kilchen': 'legendary', 'f16': 'legendary',
+            '2k12kub': 'epic', 'patriot': 'epic', 'su27': 'epic',
+            'crotale90m': 'rare', 'iristsml': 'rare', 'reb': 'rare', 'mig29': 'rare',
+            'kulemet': 'common', 'madt': 'common', 'radar': 'common'
+        };
+        
+        // ФАЗА замість Хвиля!
+        const CATEGORY_NAMES = {
+            'max_wave': 'Фаза', 'shaheds_killed': 'Шахеди',
+            'heavy_drones_killed': 'Важкі дрони', 'rockets_killed': 'Ракети',
+            'kalibrs_killed': 'Калібри'
+        };
+        
+        const CATEGORY_ICONS = {
+            'max_wave': '<i class="fas fa-flag" style="color:#FFD700"></i>',
+            'shaheds_killed': '<img src="assets/drone.png" width="20">',
+            'heavy_drones_killed': '<img src="assets/heavy-drone.png" width="20">',
+            'rockets_killed': '<img src="assets/rocket1.png" width="20">',
+            'kalibrs_killed': '<img src="assets/kalibr.png" width="20">'
+        };
+        
+        const CATEGORY_IMAGES = {
+            'max_wave': null,
+            'shaheds_killed': 'assets/drone.png',
+            'heavy_drones_killed': 'assets/heavy-drone.png',
+            'rockets_killed': 'assets/rocket1.png',
+            'kalibrs_killed': 'assets/kalibr.png'
+        };
+        
+        let currentCategory = 'max_wave';
+        let timerInterval = null;
+        let currentRewardCards = null;
+
+        // ── КАТЕГОРІЇ-КАРУСЕЛЬ ───────────────────────────────────────────────
+        const CAT_LIST = [
+            { key: 'max_wave',           label: 'Фаза',    icon: '<i class="fas fa-flag"></i>' },
+            { key: 'shaheds_killed',      label: 'Шахеди',  icon: '<img src="assets/drone.png">' },
+            { key: 'heavy_drones_killed', label: 'Важкі',   icon: '<img src="assets/heavy-drone.png">' },
+            { key: 'rockets_killed',      label: 'Ракети',  icon: '<img src="assets/rocket1.png">' },
+            { key: 'kalibrs_killed',      label: 'Калібри', icon: '<img src="assets/kalibr.png">' },
+        ];
+        let catCarouselIndex = 0;
+
+        function renderCatCarousel() {
+            const cat  = CAT_LIST[catCarouselIndex];
+            const lbl  = document.getElementById('catCarouselLabel');
+            const dots = document.getElementById('catCarouselDots');
+            const prev = document.getElementById('catPrevBtn');
+            const next = document.getElementById('catNextBtn');
+            if (!lbl) return;
+
+            lbl.innerHTML = `${cat.icon} ${cat.label}`;
+            dots.innerHTML = CAT_LIST.map((_, i) =>
+                `<div class="cat-carousel-dot ${i === catCarouselIndex ? 'active' : ''}" onclick="catCarouselGoto(${i})"></div>`
+            ).join('');
+            prev.disabled = catCarouselIndex === 0;
+            next.disabled = catCarouselIndex === CAT_LIST.length - 1;
+        }
+
+        function catCarouselGoto(i) {
+            catCarouselIndex = i;
+            renderCatCarousel();
+            loadLeaderboard(CAT_LIST[i].key);
+        }
+        function catCarouselPrev() { if (catCarouselIndex > 0) catCarouselGoto(catCarouselIndex - 1); }
+        function catCarouselNext() { if (catCarouselIndex < CAT_LIST.length - 1) catCarouselGoto(catCarouselIndex + 1); }
+
+        // Свайп
+        (function() {
+            let sx = 0;
+            document.addEventListener('touchstart', e => {
+                if (e.target.closest('#catCarousel')) sx = e.touches[0].clientX;
+            }, { passive: true });
+            document.addEventListener('touchend', e => {
+                if (!e.target.closest('#catCarousel')) return;
+                const dx = e.changedTouches[0].clientX - sx;
+                if (Math.abs(dx) > 40) { dx < 0 ? catCarouselNext() : catCarouselPrev(); }
+            }, { passive: true });
+        })();
+        
+        function getAvatarContent(player) {
+            if (!player) return '<i class="fas fa-user"></i>';
+            if (player.avatar) {
+                if (player.avatar.startsWith('http') || player.avatar.startsWith('/') || player.avatar.startsWith('assets/')) {
+                    return `<img src="${player.avatar}" alt="" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-user\\'></i>'">`;
+                }
+                return player.avatar;
+            }
+            if (player.username) return player.username.charAt(0).toUpperCase();
+            return '<i class="fas fa-user"></i>';
+        }
+        
+        // Картка ППО в рамці
+        function getPPOCard(cardId, size = 'reward') {
+            const rarity = CARD_RARITIES[cardId] || 'common';
+            const className = size === 'mini' ? 'ppo-card-mini' : 'ppo-card-reward';
+            return `<div class="${className} ${rarity}"><img src="assets/${cardId}.png" alt=""></div>`;
+        }
+        
+        // Картка за рарністю (рандомна)
+        function getPPOCardByRarity(rarity) {
+            const className = 'ppo-card-reward';
+            const icons = {
+                'common': 'kulemet',
+                'rare': 'crotale90m', 
+                'epic': '2k12kub',
+                'legendary': 'kilchen'
+            };
+            const cardId = icons[rarity] || 'kulemet';
+            return `<div class="${className} ${rarity}"><img src="assets/${cardId}.png" alt=""></div>`;
+        }
+        
+        async function checkPendingRewards() {
+            try {
+                const response = await fetch('get_pending_rewards.php');
+                const data = await response.json();
+                if (data.success && data.has_pending) showRewardModal(data);
+            } catch (e) { console.error('Error checking rewards:', e); }
+        }
+        
+        function showRewardModal(data) {
+            const modal = document.getElementById('rewardModal');
+            const detailsEl = document.getElementById('rewardDetails');
+            const totalsEl = document.getElementById('rewardTotals');
+            
+            let detailsHtml = '';
+            for (const reward of data.rewards) {
+                // Показати деталі по категоріях (тільки place-other стиль)
+                for (const detail of reward.details) {
+                    const catName = CATEGORY_NAMES[detail.category] || detail.category;
+                    const catIcon = CATEGORY_ICONS[detail.category] || '';
+                    let placeText = detail.place ? `#${detail.place}` : 'Участь';
+                    
+                    detailsHtml += `
+                        <div class="reward-detail place-other">
+                            <div class="reward-detail-header">
+                                <span class="reward-detail-category">${catIcon} ${catName}</span>
+                                <span class="reward-detail-place">${placeText}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            detailsEl.innerHTML = detailsHtml;
+            
+            // Загалом - картинки на 1 лінії
+            const t = data.totals;
+            let totalsHtml = '<div class="reward-totals-title">Загалом:</div><div class="reward-totals-grid">';
+            if (t.premium_chests) totalsHtml += `<div class="total-item"><img src="assets/chest_closed2.png"><span>x${t.premium_chests}</span></div>`;
+            if (t.normal_chests) totalsHtml += `<div class="total-item"><img src="assets/chest_closed.png"><span>x${t.normal_chests}</span></div>`;
+            if (t.hryvnias) totalsHtml += `<div class="total-item"><img src="assets/hryvnya.png"><span>x${t.hryvnias}</span></div>`;
+            for (const [cardId, count] of Object.entries(t.cards)) {
+                totalsHtml += `<div class="total-item">${getPPOCard(cardId)}<span>x${count}</span></div>`;
+            }
+            totalsHtml += '</div>';
+            totalsEl.innerHTML = totalsHtml;
+            
+            modal.classList.add('show');
+        }
+        
+        async function claimRewards() {
+            const btn = document.querySelector('.claim-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const response = await fetch('claim_pending_rewards.php', { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('rewardModal').classList.remove('show');
+                }
+            } catch (e) { console.error('Error claiming:', e); }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-gift"></i> Забрати';
+        }
+        
+        async function loadLeaderboard(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+            
+            document.getElementById('valueHeader').textContent = CATEGORY_NAMES[category];
+            
+            try {
+                const response = await fetch(`get_leaderboard.php?category=${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentRewardCards = data.reward_cards || null;
+                    renderPodium(data.top_players.slice(0, 3), category);
+                    renderList(data.top_players.slice(3, 10), category);
+                    renderMyPosition(data.current_user, category);
+                    if (data.reward_cards) updateRewardCards(data.reward_cards);
+                    startTimer(data.seconds_until_reset);
+                }
+            } catch (e) { console.error('Error loading leaderboard:', e); }
+        }
+        
+        function renderPodium(players, category) {
+            const podium = document.getElementById('podium');
+            const catImg = CATEGORY_IMAGES[category];
+            
+            // Порядок: 2, 1, 3
+            const order = [1, 0, 2];
+            const places = ['second', 'first', 'third'];
+            
+            let html = '';
+            for (let i = 0; i < 3; i++) {
+                const player = players[order[i]];
+                const placeClass = places[i];
+                const isEmpty = !player;
+                
+                // ТІЛЬКИ картинка категорії!
+                let categoryIcon = '';
+                if (catImg) {
+                    categoryIcon = `<img src="${catImg}" class="podium-icon" alt="">`;
+                } else {
+                    const iconSize = placeClass === 'first' ? '45px' : (placeClass === 'second' ? '40px' : '35px');
+                    categoryIcon = `<i class="fas fa-flag" style="font-size: ${iconSize}; color: rgba(0,0,0,0.4); margin-bottom: 10px;"></i>`;
+                }
+                
+                const avatarContent = isEmpty ? '<i class="fas fa-user"></i>' : getAvatarContent(player);
+                
+                html += `
+                    <div class="podium-place ${placeClass} ${isEmpty ? 'podium-empty' : ''}">
+                        <div class="podium-player">
+                            <div class="podium-avatar">${avatarContent}</div>
+                            <div class="podium-name">${isEmpty ? '---' : player.username}</div>
+                        </div>
+                        <div class="podium-stand">
+                            ${categoryIcon}
+                            <div class="podium-value">${isEmpty ? '-' : player.value.toLocaleString()}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            podium.innerHTML = html;
+        }
+        
+        function renderList(players, category) {
+            const list = document.getElementById('playersList');
+            const catImg = CATEGORY_IMAGES[category];
+            
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const player = players[i];
+                const place = i + 4;
+                const isEmpty = !player;
+                
+                const avatarContent = isEmpty ? '<i class="fas fa-user"></i>' : getAvatarContent(player);
+                let valueIcon = catImg ? `<img src="${catImg}" alt="">` : '<i class="fas fa-flag" style="color:#FFD700"></i>';
+                
+                html += `
+                    <div class="player-row ${isEmpty ? 'empty' : ''}">
+                        <div class="player-rank">${place}</div>
+                        <div class="player-info">
+                            <div class="player-avatar-small">${avatarContent}</div>
+                            <span class="player-name">${isEmpty ? '---' : player.username}</span>
+                        </div>
+                        <div class="player-value">
+                            ${valueIcon}
+                            ${isEmpty ? '-' : player.value.toLocaleString()}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            list.innerHTML = html;
+        }
+        
+        function renderMyPosition(user, category) {
+            const container = document.getElementById('myPosition');
+            const rewardLabel = document.getElementById('myRewardLabel');
+            const rewardPreview = document.getElementById('myRewardPreview');
+            
+            // Не участвует в этой категории (нет значения или нет места)
+            if (!user || !user.value || user.value === 0 || !user.place) {
+                container.style.display = 'block';
+                container.className = 'my-position not-participating';
+                document.getElementById('myRank').textContent = '--';
+                rewardLabel.style.display = 'none';
+                rewardPreview.innerHTML = '';
+                return;
+            }
+            
+            container.style.display = 'block';
+            container.className = 'my-position';
+            document.getElementById('myRank').textContent = `#${user.place}`;
+            
+            // Призи з картками ППО (формат як в item-cell)
+            let rewardHtml = '';
+            const cards = currentRewardCards;
+            
+            if (user.place === 1) {
+                const cardHtml = cards && cards[1] ? `<span class="reward-badge gold">${getPPOCard(cards[1])}<span>x9</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge gold"><img src="assets/chest_closed2.png"><span>x9</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge gold"><img src="assets/hryvnya.png"><span>x6000</span></span>
+                `;
+            } else if (user.place === 2) {
+                const cardHtml = cards && cards[2] ? `<span class="reward-badge silver">${getPPOCard(cards[2])}<span>x18</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge silver"><img src="assets/chest_closed2.png"><span>x6</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge silver"><img src="assets/hryvnya.png"><span>x5000</span></span>
+                `;
+            } else if (user.place === 3) {
+                const cardHtml = cards && cards[3] ? `<span class="reward-badge bronze">${getPPOCard(cards[3])}<span>x36</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge bronze"><img src="assets/chest_closed2.png"><span>x3</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge bronze"><img src="assets/hryvnya.png"><span>x4000</span></span>
+                `;
+            } else if (user.place <= 10) {
+                const cardHtml = cards && cards[4] ? `<span class="reward-badge top10">${getPPOCard(cards[4])}<span>x24</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge top10"><img src="assets/chest_closed.png"><span>x9</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge top10"><img src="assets/hryvnya.png"><span>x3000</span></span>
+                `;
+            } else if (user.place <= 20) {
+                const cardHtml = cards && cards[5] ? `<span class="reward-badge top10">${getPPOCard(cards[5])}<span>x48</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge top10"><img src="assets/chest_closed.png"><span>x6</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge top10"><img src="assets/hryvnya.png"><span>x2000</span></span>
+                `;
+            } else {
+                // 21+ місце
+                const cardHtml = cards && cards[6] ? `<span class="reward-badge">${getPPOCard(cards[6])}<span>x32</span></span>` : '';
+                rewardHtml = `
+                    <span class="reward-badge"><img src="assets/chest_closed.png"><span>x3</span></span>
+                    ${cardHtml}
+                    <span class="reward-badge"><img src="assets/hryvnya.png"><span>x1000</span></span>
+                `;
+            }
+            
+            rewardLabel.style.display = 'block';
+            rewardPreview.innerHTML = rewardHtml;
+        }
+        
+        function updateRewardCards(cards) {
+            if (!cards) return;
+
+            // cards[1]=legendary(1м) [2]=epic(2м) [3]=rare(3м) [4]=rare2(4-10м) [5]=common(11-20м) [6]=common2(21+м)
+            document.getElementById('reward1Card').innerHTML = `${getPPOCard(cards[1])}<span>x9</span>`;
+            document.getElementById('reward2Card').innerHTML = `${getPPOCard(cards[2])}<span>x18</span>`;
+            document.getElementById('reward3Card').innerHTML = `${getPPOCard(cards[3])}<span>x36</span>`;
+            document.getElementById('reward4Card').innerHTML = `${getPPOCard(cards[4])}<span>x24</span>`;
+            document.getElementById('reward5Card').innerHTML = `${getPPOCard(cards[5])}<span>x48</span>`;
+            document.getElementById('reward6Card').innerHTML = `${getPPOCard(cards[6])}<span>x32</span>`;
+        }
+        
+        function startTimer(seconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            if (!seconds || seconds <= 0) {
+                document.getElementById('timerText').textContent = '00:00:00';
+                return;
+            }
+            
+            let remaining = seconds;
+            
+            function update() {
+                const h = Math.floor(remaining / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                const s = remaining % 60;
+                
+                document.getElementById('timerText').textContent = 
+                    `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                remaining--;
+                if (remaining < 0) {
+                    clearInterval(timerInterval);
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }
+            
+            update();
+            timerInterval = setInterval(update, 1000);
+        }
+        
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = CAT_LIST.findIndex(c => c.key === btn.dataset.category);
+                if (i !== -1) { catCarouselIndex = i; renderCatCarousel(); }
+                loadLeaderboard(btn.dataset.category);
+            });
+        });
+        
+        checkPendingRewards();
+        renderCatCarousel();
+        loadLeaderboard('max_wave');
+    </script>
+    <script src="language-updater.js?v=70"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ea36a8b923a94718bd9d04cba6a7184c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

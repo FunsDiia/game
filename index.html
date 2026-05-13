@@ -1,0 +1,1925 @@
+
+<!DOCTYPE html>
+<html lang="uk"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <title>DroneFall: UA Defense</title>
+  <link rel="icon" type="image/png" href="assets/drone.png">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2599767001450655"
+     crossorigin="anonymous"></script>
+
+    <meta name="description" content="Українська гра-оборона проти дронів та ракет">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css?v=80">
+  <!-- Мультимовна система -->
+  <!-- Стилі мови вбудовані в index.html -->
+  <script src="translations.js?v=72"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <style>
+
+    /* Стилі для опису гри (accordion) */
+    /* Адаптивність для мобільних */
+
+    #userWidget {
+      top: 10px;
+    }
+
+
+/* КНОПКИ НАВІГАЦІЇ: стандартний стиль DroneFall */
+#registerBtn,
+#loginBtn,
+#userIcon,
+#inventoryBtn,
+#shopBtn,
+#leaderboardBtn {
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s ease !important;
+}
+#registerBtn,
+#loginBtn,
+#userIcon,
+#inventoryBtn,
+#shopBtn,
+#leaderboardBtn,
+#languageBtn {
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s ease !important;
+}
+#registerBtn:hover,
+#loginBtn:hover,
+#userIcon:hover,
+#inventoryBtn:hover,
+#shopBtn:hover,
+#leaderboardBtn:hover,
+#languageBtn:hover {
+  transform: scale(1.15) !important;
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6) !important;
+}
+#registerBtn:active,
+#loginBtn:active,
+#userIcon:active,
+#inventoryBtn:active,
+#shopBtn:active,
+#leaderboardBtn:active,
+#languageBtn:active {
+  transform: scale(1.05) !important;
+  box-shadow: 0 3px 15px rgba(255, 215, 0, 0.5) !important;
+}
+
+/* КОЛЬОРОВІ ІКОНКИ РЕЖИМІВ */
+.mode-icon-fire {
+  color: #FF6B35 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.5));
+}
+
+.mode-icon-radar {
+  color: #4CAF50 !important;
+  filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5));
+}
+
+.mode-icon-trophy {
+  color: #FFD700 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+.mode-icon-sync {
+  color: #2196F3 !important;
+  filter: drop-shadow(0 0 5px rgba(33, 150, 243, 0.5));
+}
+
+.mode-icon-arrow {
+  color: #f44336 !important;
+  filter: drop-shadow(0 0 5px rgba(244, 67, 54, 0.5));
+}
+
+.mode-icon-palette {
+  color: #9C27B0 !important;
+  filter: drop-shadow(0 0 5px rgba(156, 39, 176, 0.5));
+}
+
+.mode-icon-grad {
+  color: #00BCD4 !important;
+  filter: drop-shadow(0 0 5px rgba(0, 188, 212, 0.5));
+}
+
+/* ========================================
+   🌍 КНОПКА МОВИ (ЗЛІВА ЗВЕРХУ)
+   ======================================== */
+.language-btn-main {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 999999;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+  font-size: 1.1rem;
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.language-btn-main:hover {
+  transform: scale(1.15);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+}
+
+.language-btn-main:active {
+  transform: scale(1.05);
+}
+
+/* Модальне вікно мови */
+.language-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000000;
+  justify-content: center;
+  align-items: center;
+}
+
+.language-modal.active {
+  display: flex;
+}
+
+.language-modal-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #FFD700;
+  border-radius: 20px;
+  padding: 25px;
+  min-width: 280px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.language-modal-title {
+  text-align: center;
+  color: #FFD700;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.language-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.language-option:hover {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateX(5px);
+}
+
+.language-option.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+  border-color: #FFD700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.language-option.active::after {
+  content: '✓';
+  margin-left: auto;
+  color: #4CAF50;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.language-flag {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.language-modal-close {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: rgba(255, 100, 100, 0.2);
+  border: 2px solid rgba(255, 100, 100, 0.5);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.language-modal-close:hover {
+  background: rgba(255, 100, 100, 0.3);
+  border-color: #ff6b6b;
+}
+</style>
+</head>
+<body>
+  <!-- Кнопка мови (зліва зверху) -->
+  <button class="language-btn-main" id="languageBtn" onclick="toggleLanguageModal()">
+    <i class="fas fa-language"></i>
+  </button>
+
+  <!-- Модальне вікно вибору мови -->
+  <div class="language-modal" id="languageModal">
+    <div class="language-modal-content">
+      <div class="language-modal-title">
+        <i class="fas fa-globe"></i>
+        <span data-translate="selectLanguage" data-translate-section="menu">Оберіть мову</span>
+      </div>
+      
+      <div class="language-list">
+        <div class="language-option active" data-lang="ua" onclick="selectLanguage('ua')">
+          <span class="language-flag">🇺🇦</span>
+          <span class="language-name">Українська</span>
+        </div>
+        <div class="language-option" data-lang="en" onclick="selectLanguage('en')">
+          <span class="language-flag">🇨🇦</span>
+          <span class="language-name">English</span>
+        </div>
+        <div class="language-option" data-lang="kz" onclick="selectLanguage('kz')">
+          <span class="language-flag">🇰🇿</span>
+          <span class="language-name">Қазақша</span>
+        </div>
+        <div class="language-option" data-lang="pl" onclick="selectLanguage('pl')">
+          <span class="language-flag">🇵🇱</span>
+          <span class="language-name">Polski</span>
+        </div>
+        <div class="language-option" data-lang="cs" onclick="selectLanguage('cs')">
+          <span class="language-flag">🇨🇿</span>
+          <span class="language-name">Čeština</span>
+        </div>
+      </div>
+      
+      <button class="language-modal-close" onclick="toggleLanguageModal()">
+        <i class="fas fa-times"></i>
+        <span data-translate="close" data-translate-section="menu">Закрити</span>
+      </button>
+    </div>
+  </div>
+
+    <!-- User Widget -->
+  <div class="user-widget" id="userWidget" style="position: fixed !important; right: 10px !important; z-index: 999999 !important; display: flex !important; flex-direction: row !important; gap: 8px !important;">
+    <!-- Кнопка реєстрації (для гостей) -->
+    <button id="registerBtn" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; font-weight: bold; display: none; align-items: center; justify-content: center;" onclick="window.location.href='register_step1.php'">
+      <i class="fas fa-user-plus"></i>
+    </button>
+    <!-- Кнопка логіну (для гостей) -->
+    <button id="loginBtn" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; font-weight: bold; display: none; align-items: center; justify-content: center;" onclick="window.location.href='login.php'">
+      <i class="fas fa-sign-in-alt"></i>
+    </button>
+    <!-- Кнопка профілю (для залогінених) -->
+    <div class="user-icon" id="userIcon" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; font-weight: bold; display: none; align-items: center; justify-content: center;">
+      <i class="fas fa-user"></i>
+    </div>
+    <!-- Кнопка інвентаря -->
+    <button id="inventoryBtn" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; font-weight: bold; display: none; align-items: center; justify-content: center;" onclick="window.location.href='inventory.html'">
+      <i class="fas fa-box"></i>
+    </button>
+    <!-- Кнопка магазина -->
+    <button id="shopBtn" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; display: none; align-items: center; justify-content: center;" onclick="window.location.href='shop.html'">
+      <i class="fas fa-store"></i>
+    </button>
+    <button id="leaderboardBtn" style="width: 42px; height: 42px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); font-size: 1.1rem; color: #1a1a2e; display: none; align-items: center; justify-content: center;" onclick="window.location.href='leaderboard.html'">
+      <i class="fas fa-trophy"></i>
+    </button>
+  </div>
+
+  <div id="map"></div>
+  
+  <div id="hudTop">
+    <div class="hud-left">
+      <div id="hudPanel"></div>
+      <div id="fpsDisplay" class="hud-fps">FPS: 0</div>
+      <div id="targetNotification" class="hud-target-notification" aria-live="polite"></div>
+    </div>
+    <div id="hudMenuWrapper" class="hud-menu-wrapper">
+      <button id="hudMenuToggle" class="hud-icon-button hud-menu-toggle" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+        <span class="hud-sr-only">Меню</span>
+      </button>
+      <div id="hudMenu" class="hud-menu" role="menu">
+        <button id="pauseButton" class="hud-icon-button hud-pause" type="button" role="menuitem">
+          <i class="fa fa-pause" aria-hidden="true"></i>
+          <span class="hud-sr-only">Пауза</span>
+        </button>
+        <button id="speedCycleButton" class="hud-icon-button hud-speed speed" type="button" role="menuitem" data-speed="1">
+          <span class="hud-speed-icon hud-speed-icon-top"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+          <span class="hud-speed-value">1x</span>
+          <span class="hud-speed-icon hud-speed-icon-bottom"></span>
+          <span class="hud-sr-only">Швидкість гри</span>
+        </button>
+        <button id="soundToggleButton" class="hud-icon-button hud-sound" type="button" role="menuitem">
+          <i class="fa fa-volume-up" aria-hidden="true"></i>
+          <span class="hud-sr-only">Звук</span>
+        </button>
+        <button id="exitButton" class="hud-icon-button hud-exit" type="button" role="menuitem">
+          <i class="fa fa-sign-out" aria-hidden="true"></i>
+          <span class="hud-sr-only">Вихід</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="exitConfirm" class="exit-confirm hidden" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle">
+    <div class="exit-dialog">
+      <h2 id="exitConfirmTitle" data-translate="exitConfirmBattle" data-translate-section="game">Ти справді готовий покинути поле бою?</h2>
+      <p data-translate="battleNotFinished" data-translate-section="game">Бій із ворогом ще не завершено!</p>
+      <div class="exit-actions">
+        <button id="exitLeaveButton" class="exit-btn danger" data-translate="yesEndBattle" data-translate-section="game">Так, завершити бій</button>
+        <button id="exitStayButton" class="exit-btn" data-translate="noContinueBattle" data-translate-section="game">Ні, продовжити бій</button>
+      </div>
+    </div>
+  </div>
+  <audio id="bgMusic" src="assets/music3.mp3"></audio>
+  <audio id="alarmSound" src="assets/alarm.mp3"></audio>
+  <div id="preMenu">
+    <div class="overlay"></div>
+
+    <div class="preMenu-content">
+      <span class="ai-note">🧠 <br>v.1.4.88</span>
+      <h1>DroneFall: UA Defense</h1>
+      
+      <!-- Туторіал і Довідка -->
+      <div style="display: flex; gap: 10px; margin-bottom: 25px; width: 220px;">
+        <button id="tutorialBtn" class="mode-button small" style="flex: 1;">🎓<br>Туторіал</button>
+        <button id="helpBtn" class="mode-button small" style="flex: 1; height: 60px;" onclick="window.location.href='guide.html'">
+          <i class="fas fa-book"></i> Довідка
+        </button>
+      </div>
+      
+      <!-- РЕЖИМ: (написано вище) -->
+      <div style="text-align: center; color: #FFD700; font-size: 1rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+        <i class="fas fa-gamepad"></i> РЕЖИМ:
+      </div>
+      
+      <!-- Кастомний випадаючий список режимів -->
+      <div style="position: relative; margin-bottom: 15px;" id="modeDropdown">
+        <button id="modeButton" class="mode-button" style="width: 100%; display: flex; justify-content: space-between; align-items: center; height: 60px; gap: 10px;" onclick="toggleModeMenu()">
+          <span id="currentMode" data-translate="againstRussia" data-translate-section="modes"><i class="fas fa-arrow-right mode-icon-arrow"></i> Проти росії</span>
+          <i class="fas fa-chevron-down" id="modeChevron"></i>
+        </button>
+        
+        <!-- Випадаюче меню (накладається поверх ВСЬОГО!) -->
+        <div id="modeMenu" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999; background: rgba(0, 0, 0, 0.95); border: 3px solid #FFD700; border-radius: 20px; padding: 20px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9); min-width: 350px; max-width: 90%; font-size: 1.1rem;">
+          <div style="text-align: center; color: #FFD700; font-size: 1.3rem; font-weight: bold; margin-bottom: 15px;">
+            <i class="fas fa-gamepad"></i> ОБЕРІТЬ РЕЖИМ
+          </div>
+          
+          <div class="mode-option" data-mode="tutorial" onclick="selectMode('tutorial', '<i class=\'fas fa-graduation-cap mode-icon-grad\'></i> Туторіал')">
+            <i class="fas fa-graduation-cap mode-icon-grad"></i> Туторіал
+          </div>
+          <div style="height: 1px; background: rgba(255, 215, 0, 0.3); margin: 10px 0;"></div>
+          <div class="mode-option" data-mode="circular" onclick="selectMode('circular', '<i class=\'fas fa-sync mode-icon-sync\'></i> Кругова оборона')">
+            <i class="fas fa-sync mode-icon-sync"></i> Кругова оборона
+          </div>
+          <div class="mode-option selected" data-mode="against-russia" onclick="selectMode('against-russia', '<i class=\'fas fa-arrow-right mode-icon-arrow\'></i> Проти росії')">
+            <i class="fas fa-arrow-right mode-icon-arrow"></i> Проти росії
+          </div>
+          <div class="mode-option" data-mode="hardcore" onclick="selectMode('hardcore', '<i class=\'fas fa-fire mode-icon-fire\'></i> Хардкор')">
+            <i class="fas fa-fire mode-icon-fire"></i> Хардкор
+          </div>
+          <div class="mode-option" data-mode="radar" onclick="selectMode('radar', '<i class=\'fas fa-satellite-dish mode-icon-radar\'></i> Радар')">
+            <i class="fas fa-satellite-dish mode-icon-radar"></i> Радар
+          </div>
+          <div class="mode-option" data-mode="sandbox" onclick="selectMode('sandbox', '<i class=\'fas fa-palette mode-icon-palette\'></i> SandBox')">
+            <i class="fas fa-palette mode-icon-palette"></i> SandBox
+          </div>
+          <div style="height: 1px; background: rgba(255, 215, 0, 0.3); margin: 10px 0;"></div>
+          <div class="mode-option" data-mode="ranked" onclick="selectMode('ranked', '<i class=\'fas fa-trophy mode-icon-trophy\'></i> Глобальний рейтинг')">
+            <i class="fas fa-trophy mode-icon-trophy"></i> Глобальний рейтинг
+          </div>
+          
+          <button onclick="toggleModeMenu()" style="width: 100%; padding: 12px; margin-top: 15px; background: rgba(255, 100, 100, 0.3); border: 2px solid #ff6b6b; border-radius: 10px; color: #fff; font-size: 1rem; cursor: pointer;">
+            <i class="fas fa-times"></i> Закрити
+          </button>
+        </div>
+      </div>
+      
+      <!-- Кнопка ДО БОЮ (стиль як у mode-button!) -->
+      <button id="launchBtn" class="mode-button" style="width: 220px; height: 60px; position: relative; color: #FFD700;" onclick="launchSelectedMode()">
+        <span id="launchText"><i class="fas fa-play"></i> ДО БОЮ</span>
+        
+      </button>
+      
+      <!-- Приховані кнопки для game.js (прозорі, невидимі, але доступні для кліку) -->
+      <div style="position: absolute; top: -9999px; opacity: 0; pointer-events: none;">
+        <button id="tutorialBtn" class="mode-button small">Режим:<br>🎓 Туторіал</button>
+        <button id="startBtn" class="mode-button small">Режим:<br>🔄️ Кругова<br>оборона</button>
+        <button id="startRightBtn" class="mode-button small">Режим:<br>➡️ Проти<br>росії</button>
+        <button id="startHardcoreBtn" class="mode-button small">Режим:<br>🔥 Хардкор</button>
+        <button id="startRadarBtn" class="mode-button small">Режим:<br>🔍 Радар</button>
+        <button id="startSandboxBtn" class="mode-button small">Режим:<br>🎨 SandBox</button>
+        <button id="startRankedBtn" class="mode-button small">Режим:<br>🏆 Глобальний рейтинг</button>
+      </div>
+
+<div style="display: flex; gap: 10px; margin: 10px 0;">
+  <button class="donate-btn" style="flex: 1; padding: 5px 5px; font-size: 0.75rem;" onclick="window.open('https://send.monobank.ua/jar/2JbpBYkhMv', '_blank')">
+    <i class="fas fa-heart"></i> Поточний RUSORIZ
+  </button>
+  <button class="donate-btn" style="flex: 1; padding: 5px 5px; font-size: 0.75rem;" onclick="window.open('https://send.monobank.ua/jar/z1H8hEA96', '_blank')">
+    <i class="fas fa-hand-holding-heart"></i> Підтримати проєкт
+  </button>
+</div>
+<div class="footer-links">
+  <a class="footer-link" href="https://t.me/dronefall" target="_blank">
+    <img src="assets/telegram-icon.png" alt="Telegram">
+  </a>
+  <a class="footer-link" href="https://tiktok.com/@eurogames7" target="_blank">
+    <img src="assets/tiktok-logo.png" alt="TikTok">
+  </a>
+  <a class="footer-link" href="https://instagram.com/dronefall.online" target="_blank">
+    <img src="assets/instg.png" alt="Instagram">
+  </a>
+  <a class="footer-link" href="https://threads.com/@dronefall.online" target="_blank">
+    <img src="assets/thrd.png" alt="Threads">
+  </a>
+</div>
+    </div>
+  </div>
+  <div id="pvoMenu"></div>
+
+
+  <script>
+  // ========================================
+  // 🎵 МУЗИКА - ТІЛЬКИ ПІД ЧАС ГРИ
+  // ========================================
+  const playlist = [
+    "assets/music2.mp3",
+    "assets/music.mp3",
+    "assets/music3.mp3",
+    "assets/music4.mp3"
+  ];
+
+  let currentTrack = 0;
+  let musicStarted = false;
+  const bgMusic = document.getElementById("bgMusic");
+  const _musicOn  = localStorage.getItem('df_music_on')  !== 'false';
+  const _musicVol = parseInt(localStorage.getItem('df_music_vol') ?? '50') / 100;
+  bgMusic.volume = _musicVol;
+
+  // Функція запуску треку
+  function playNextTrack() {
+    bgMusic.src = playlist[currentTrack];
+    bgMusic.play().catch(() => {});
+  }
+
+  // Коли трек закінчився — переключаємо
+  bgMusic.addEventListener("ended", () => {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    playNextTrack();
+  });
+
+  // 🎮 Запуск музики при старті гри (викликається з game.js)
+  window.startGameMusic = function() {
+    if (!musicStarted && window.isSoundOn !== false && _musicOn) {
+      musicStarted = true;
+      currentTrack = Math.floor(Math.random() * playlist.length);
+      playNextTrack();
+    }
+  };
+
+  // ⏸️ Пауза музики
+  window.pauseGameMusic = function() {
+    bgMusic.pause();
+  };
+
+  // ▶️ Продовження музики
+  window.resumeGameMusic = function() {
+    if (musicStarted && window.isSoundOn !== false) {
+      bgMusic.play().catch(() => {});
+    }
+  };
+
+  // 🛑 Зупинка музики (при виході з гри)
+  window.stopGameMusic = function() {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    musicStarted = false;
+  };
+
+  // 📱 Пауза при сворачуванні вкладки/вікна
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      bgMusic.pause();
+    } else if (musicStarted && window.isSoundOn !== false && _musicOn) {
+      bgMusic.play().catch(() => {});
+    }
+  });
+
+  // 📱 Додатково для мобільних (blur/focus)
+  window.addEventListener("blur", () => {
+    bgMusic.pause();
+  });
+
+  window.addEventListener("focus", () => {
+    if (musicStarted && window.isSoundOn !== false && _musicOn) {
+      bgMusic.play().catch(() => {});
+    }
+  });
+</script>
+  
+    <script src="ppo-config.js?v=72"></script>
+    <script src="ranked_config.js?v=72"></script>
+    <script src="language-updater.js?v=72"></script>
+    <script src="enemies-config.js?v=72"></script>
+    <script src="game.js?v=77"></script>
+    <script src="ranked-mode.js?v=72"></script>
+    <script src="tutorial.js?v=72"></script>
+    
+<script>
+function toggleUserMenu(){
+  console.log('=== toggleUserMenu START ===');
+  const modal = document.getElementById('userModal');
+  
+  if(!modal) {
+    alert('ПОМИЛКА: userModal не знайдено!');
+    return;
+  }
+  
+  console.log('Modal знайдено:', modal);
+  console.log('Поточний display:', modal.style.display);
+  
+  // ПРОСТО ВІДКРИТИ
+  modal.style.display = 'flex';
+  modal.style.opacity = '1';
+  modal.style.visibility = 'visible';
+  modal.style.pointerEvents = 'auto';
+  
+  console.log('Модалка відкрита! Новий display:', modal.style.display);
+  console.log('=== toggleUserMenu END ===');
+}
+
+function closeUserMenu(){
+  const modal = document.getElementById('userModal');
+  if(modal){
+    modal.style.display = 'none';
+  }
+  document.body.style.overflow = '';
+
+  const icon = document.getElementById('userIcon');
+  if(icon){
+    const i = icon.querySelector('i');
+
+    if (window.isLoggedIn) {
+      if(i) i.className = 'fas fa-user';
+      icon.onclick = function() {
+        window.location.href = 'profile.html';
+      };
+    } else {
+      if(i) i.className = 'fas fa-sign-in-alt';
+      icon.onclick = function() {
+        window.location.href = 'login.php';
+      };
+    }
+  }
+}
+
+
+document.addEventListener('click', function(e){
+  const modal = document.getElementById('userModal');
+  const icon = document.getElementById('userIcon');
+  if(!modal || getComputedStyle(modal).display !== 'flex') return;
+  const content = modal.querySelector('.user-modal-content');
+  if(content && !content.contains(e.target) && (!icon || !icon.contains(e.target))){
+    closeUserMenu();
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeUserMenu();
+});
+
+const form = document.getElementById('userProfileForm');
+if(form) form.addEventListener('submit', function(ev){ ev.preventDefault(); });
+
+let currentUser = null;
+
+
+
+
+
+function logout(){
+  fetch('logout.php', {
+    method: 'POST',
+    credentials: 'include',
+    cache: 'no-store'
+  })
+  .catch(() => {})
+  .finally(() => {
+    window.isLoggedIn = false;
+    window.rankedDeckEmpty = true;
+
+    if (typeof updateInventoryNotification === 'function') updateInventoryNotification(false);
+    if (typeof updateShopNotification === 'function') updateShopNotification(false);
+
+    if (typeof updateUserIcon === 'function') updateUserIcon(false);
+    if (typeof closeUserMenu === 'function') closeUserMenu();
+
+    if (typeof checkLoginStatus === 'function') {
+  setTimeout(() => checkLoginStatus(0, true), 500);
+}
+  });
+}
+
+
+
+let currentSort = 'max_wave';
+
+// Відкрити модальне вікно рейтингу
+function openLeaderboard() {
+    document.getElementById('leaderboardModal').style.display = 'flex';
+    loadLeaderboard('max_wave');
+}
+
+// Закрити модальне вікно
+function closeLeaderboard() {
+    document.getElementById('leaderboardModal').style.display = 'none';
+}
+
+// Закрити при кліку поза модальним вікном
+document.getElementById('leaderboardModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLeaderboard();
+    }
+});
+
+// Змінити сортування
+function sortLeaderboard(sortBy) {
+    currentSort = sortBy;
+    
+    // Оновити активну кнопку
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-sort="${sortBy}"]`).classList.add('active');
+    
+    // Завантажити дані
+    loadLeaderboard(sortBy);
+}
+
+// Завантажити рейтинг з сервера
+async function loadLeaderboard(sortBy) {
+    try {
+        const response = await fetch(`get_leaderboard.php?sort=${sortBy}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            renderLeaderboard(data);
+        } else {
+            console.error('Помилка завантаження рейтингу:', data.error);
+            document.getElementById('leaderboardTable').innerHTML = `
+                <div style="text-align: center; color: #ff6b6b; padding: 20px;">
+                    ❌ Помилка завантаження рейтингу
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Помилка:', error);
+        document.getElementById('leaderboardTable').innerHTML = `
+            <div style="text-align: center; color: #ff6b6b; padding: 20px;">
+                ❌ Помилка з'єднання з сервером
+            </div>
+        `;
+    }
+}
+
+// Відобразити рейтинг
+function renderLeaderboard(data) {
+    const table = document.getElementById('leaderboardTable');
+    const currentUserDiv = document.getElementById('currentUserStats');
+    
+    // Заголовок таблиці
+    const playerText = typeof translate === 'function' ? translate('player', 'leaderboard') : 'Гравець';
+    const phaseText = typeof translate === 'function' ? translate('phase', 'leaderboard') : 'Фаза';
+    
+    let html = `
+        <div class="leaderboard-row" style="font-weight: bold; color: #FFD700; border-bottom: 2px solid #FFD700;">
+            <div>#</div>
+            <div>${playerText}</div>
+            <div style="text-align: center;">${phaseText}</div>
+            <div style="text-align: center;"><img src="assets/drone.png" style="width: 20px; height: 20px;"></div>
+            <div style="text-align: center;"><img src="assets/heavy-drone.png" style="width: 20px; height: 20px;"></div>
+            <div style="text-align: center;"><img src="assets/rocket1.png" style="width: 20px; height: 20px;"></div>
+            <div style="text-align: center;"><img src="assets/kalibr.png" style="width: 20px; height: 20px;"></div>
+        </div>
+    `;
+    
+    // Топ-10 гравців
+    data.top_players.forEach((player, index) => {
+        const rank = index + 1;
+        const isCurrentUser = data.current_user && player.user_id == data.current_user.user_id;
+        
+        let rankClass = 'rank-other';
+        if (rank === 1) rankClass = 'rank-1';
+        else if (rank === 2) rankClass = 'rank-2';
+        else if (rank === 3) rankClass = 'rank-3';
+        
+        html += `
+            <div class="leaderboard-row ${isCurrentUser ? 'current-user' : ''}">
+                <div class="rank-badge ${rankClass}">${rank}</div>
+                <div class="username">${escapeHtml(player.username)}</div>
+                <div class="stat-value">${player.max_wave}</div>
+                <div class="stat-value">${formatNumber(player.shaheds_killed)}</div>
+                <div class="stat-value">${formatNumber(player.heavy_drones_killed)}</div>
+                <div class="stat-value">${formatNumber(player.rockets_killed)}</div>
+                <div class="stat-value">${formatNumber(player.kalibrs_killed)}</div>
+            </div>
+        `;
+    });
+    
+    table.innerHTML = html;
+    
+    // Статистика поточного гравця
+    if (data.current_user) {
+        const user = data.current_user;
+        
+        if (user.in_top10) {
+            // Якщо в топ-10, показати просто повідомлення
+            const inTop10Text = typeof translate === 'function' ? translate('inTop10', 'leaderboard') : 'Ви в топ-10! Ваше місце:';
+            currentUserDiv.innerHTML = `
+                <div style="text-align: center; color: #FFD700; font-size: 1.1rem; font-weight: bold;">
+                    🎉 ${inTop10Text} #${user.rank}
+                </div>
+            `;
+        } else {
+            // Якщо не в топ-10, показати статистику
+            const yourPlaceText = typeof translate === 'function' ? translate('yourPlace', 'leaderboard') : 'Ваше місце:';
+            const phaseStatText = typeof translate === 'function' ? translate('phase', 'leaderboard') : 'Фаза';
+            currentUserDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <div style="color: #FFD700; font-size: 1rem; margin-bottom: 5px;">${yourPlaceText} <span style="font-size: 1.5rem; font-weight: bold;">#${user.rank}</span></div>
+                        <div style="color: #fff; font-weight: bold;">${escapeHtml(user.username)}</div>
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <div style="color: #aaa; font-size: 0.85rem;">${phaseStatText}</div>
+                            <div style="color: #4CAF50; font-weight: bold; font-size: 1.2rem;">${user.max_wave}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <img src="assets/drone.png" style="width: 20px; height: 20px;">
+                            <div style="color: #4CAF50; font-weight: bold;">${formatNumber(user.shaheds_killed)}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <img src="assets/heavy-drone.png" style="width: 20px; height: 20px;">
+                            <div style="color: #4CAF50; font-weight: bold;">${formatNumber(user.heavy_drones_killed)}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <img src="assets/rocket1.png" style="width: 20px; height: 20px;">
+                            <div style="color: #4CAF50; font-weight: bold;">${formatNumber(user.rockets_killed)}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <img src="assets/kalibr.png" style="width: 20px; height: 20px;">
+                            <div style="color: #4CAF50; font-weight: bold;">${formatNumber(user.kalibrs_killed)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    } else {
+        // Користувач не авторизований або не має статистики
+        currentUserDiv.innerHTML = `
+            <div style="text-align: center; color: #aaa; font-style: italic;">
+                Зіграйте в ранговому режимі щоб з'явитись в рейтингу
+            </div>
+        `;
+    }
+}
+
+// Форматування числа (додає пробіли для тисяч)
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// Екранування HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
+// ========================================
+// КАСТОМНЕ МЕНЮ РЕЖИМІВ
+// ========================================
+
+let selectedMode = 'against-russia';
+window.isLoggedIn = false;
+
+// Перемикання меню режимів
+function toggleModeMenu() {
+  const menu = document.getElementById('modeMenu');
+  const button = document.getElementById('modeButton');
+  
+  if (menu.style.display === 'none') {
+    menu.style.display = 'block';
+    button.classList.add('active');
+  } else {
+    menu.style.display = 'none';
+    button.classList.remove('active');
+  }
+}
+
+// Вибрати режим
+function selectMode(mode, label) {
+  console.log("🎯 selectMode called with mode:", mode);
+  selectedMode = mode;
+  window.selectedMode = mode;
+  
+  // Використовуємо переклад замість захардкодженого label
+  var MODE_ICONS = {
+    'tutorial': 'fas fa-graduation-cap mode-icon-grad',
+    'circular': 'fas fa-sync mode-icon-sync',
+    'against-russia': 'fas fa-arrow-right mode-icon-arrow',
+    'hardcore': 'fas fa-fire mode-icon-fire',
+    'radar': 'fas fa-satellite-dish mode-icon-radar',
+    'sandbox': 'fas fa-palette mode-icon-palette',
+    'ranked': 'fas fa-trophy mode-icon-trophy'
+  };
+  var MODE_KEYS = {
+    'tutorial': 'tutorial',
+    'circular': 'circular',
+    'against-russia': 'againstRussia',
+    'hardcore': 'hardcore',
+    'radar': 'radar',
+    'sandbox': 'sandbox',
+    'ranked': 'ranked'
+  };
+  
+  var iconClass = MODE_ICONS[mode] || 'fas fa-arrow-right mode-icon-arrow';
+  var translatedName = translate(MODE_KEYS[mode] || mode, 'modes');
+  document.getElementById('currentMode').innerHTML = '<i class="' + iconClass + '"></i> ' + translatedName;
+  
+  // Сховати вибраний елемент
+  document.querySelectorAll('.mode-option').forEach(opt => {
+    if (opt.dataset.mode === mode) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+  
+  toggleModeMenu();
+  updateLaunchButton();
+}
+
+// Оновити кнопку ДО БОЮ
+function updateLaunchButton() {
+  const launchBtn = document.getElementById('launchBtn');
+  const launchText = document.getElementById('launchText');
+  const currentMode = window.selectedMode || selectedMode || 'against-russia';
+  
+  // Заблокувати якщо ТУТОРІАЛ
+  if (currentMode === 'sandbox' && !window.isLoggedIn) {
+    launchBtn.disabled = true;
+    launchBtn.style.opacity = '0.5';
+    launchBtn.style.cursor = 'not-allowed';
+    launchText.innerHTML = '<i class="fas fa-lock"></i> ' + translate('lockedNoRegistration', 'menu');
+    return;
+  }
+  
+  // Заблокувати якщо ранковий режим і не залогінений
+  if (currentMode === 'ranked' && !window.isLoggedIn) {
+    launchBtn.disabled = true;
+    launchBtn.style.opacity = '0.5';
+    launchBtn.style.cursor = 'not-allowed';
+    launchText.innerHTML = '<i class="fas fa-lock"></i> ' + translate('lockedNoRegistration', 'menu');
+    return;
+  }
+  
+  // Заблокувати якщо ранковий режим і колода порожня
+  if (currentMode === 'ranked' && window.isLoggedIn && window.rankedDeckEmpty) {
+    launchBtn.disabled = true;
+    launchBtn.style.opacity = '0.5';
+    launchBtn.style.cursor = 'not-allowed';
+    launchText.innerHTML = '<i class="fas fa-layer-group"></i> ' + translate('lockedNoDeck', 'menu');
+    return;
+  }
+  
+  // Все ОК - розблокувати
+  launchBtn.disabled = false;
+  launchBtn.style.opacity = '1';
+  launchBtn.style.cursor = 'pointer';
+  launchText.innerHTML = '<i class="fas fa-play"></i> ' + translate('toBattle', 'menu');
+}
+// Запустити вибраний режим
+function launchSelectedMode() {
+  const launchBtn = document.getElementById('launchBtn');
+  
+  // Використовуємо window.selectedMode (встановлюється language-updater.js)
+  const currentSelectedMode = window.selectedMode || selectedMode || 'against-russia';
+  console.log("🚀 launchSelectedMode called, currentSelectedMode =", currentSelectedMode, "window.selectedMode =", window.selectedMode, "local selectedMode =", selectedMode);
+  
+  if (launchBtn.disabled) return;
+  
+  // Встановити режими (як в game.js) - глобально!
+  window.tutorialMode = false;
+  window.rightOnlyMode = false;
+  window.hardcoreMode = false;
+  window.radarMode = false;
+  window.sandboxMode = false;
+  
+  switch(currentSelectedMode) {
+    case 'tutorial':
+      window.tutorialMode = true;
+      break;
+    case 'circular':
+      // всі false (базовий режим)
+      break;
+    case 'against-russia':
+      window.rightOnlyMode = true;
+      break;
+    case 'hardcore':
+      window.hardcoreMode = true;
+      break;
+    case 'radar':
+      window.radarMode = true;
+      break;
+    case 'sandbox':
+      window.sandboxMode = true;
+      money = NaN;
+      break;
+    case 'ranked':
+      // Встановити прапорці для ranked режиму
+      window.tutorialMode = false;
+      window.rightOnlyMode = false;
+      window.hardcoreMode = true; // Ранковий = хардкор база
+      window.radarMode = false;
+      window.sandboxMode = false;
+      window.rankedMode = true;
+      
+      // Завантажити колоду ПЕРЕД запуском гри
+      if (typeof initRankedMode === 'function') {
+        initRankedMode().then(success => {
+          if (success && typeof launchGame === 'function') {
+            launchGame(launchBtn);
+          }
+        });
+        return; // Вийти - launchGame викличеться в .then()
+      }
+      break;
+  }
+  
+  console.log("🚀 After switch: window.tutorialMode =", window.tutorialMode, "currentSelectedMode =", currentSelectedMode);
+  
+  // Викликати launchGame() з ВИДИМОЮ кнопкою launchBtn
+  // game.js покаже завантаження на НІЙ!
+  if (typeof launchGame === 'function') {
+    launchGame(launchBtn);
+  }
+}
+
+// ========================================
+// 🔐 ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ: БЕЗ LOADER, С ОТДЕЛЬНЫМИ КНОПКАМИ
+// ========================================
+
+window.isLoggedIn = undefined;
+
+function setNavVisible(el, visible) {
+  if (!el) return;
+  if (visible) {
+    el.style.opacity = '0';
+    el.style.display = 'flex';
+    requestAnimationFrame(() => { el.style.opacity = '1'; });
+  } else {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      // Ховаємо тільки якщо досі не visible (guard проти race)
+      if (el.style.opacity === '0') el.style.display = 'none';
+    }, 200);
+  }
+}
+
+function restoreGuestUI() {
+  setNavVisible(document.getElementById('registerBtn'), true);
+  setNavVisible(document.getElementById('loginBtn'), true);
+  setNavVisible(document.getElementById('userIcon'), false);
+  setNavVisible(document.getElementById('inventoryBtn'), false);
+  setNavVisible(document.getElementById('shopBtn'), false);
+  setNavVisible(document.getElementById('leaderboardBtn'), false);
+  window.isLoggedIn = false;
+  if (typeof updateLaunchButton === 'function') updateLaunchButton();
+}
+
+function updateUserIcon(loggedIn) {
+  // Не міняємо нічого якщо стан не змінився — усуває мигання
+  if (window.isLoggedIn === loggedIn) return;
+  window.isLoggedIn = loggedIn;
+
+  if (loggedIn) {
+    setNavVisible(document.getElementById('registerBtn'), false);
+    setNavVisible(document.getElementById('loginBtn'), false);
+    const userIcon = document.getElementById('userIcon');
+    setNavVisible(userIcon, true);
+    if (userIcon) userIcon.onclick = () => window.location.href = 'profile.html';
+    setNavVisible(document.getElementById('inventoryBtn'), true);
+    setNavVisible(document.getElementById('leaderboardBtn'), true);
+    setNavVisible(document.getElementById('shopBtn'), true);
+
+    if (typeof checkRankedDeck === 'function') checkRankedDeck();
+    if (typeof checkChestsForNotification === 'function') checkChestsForNotification();
+    if (typeof checkShopForNotification === 'function') checkShopForNotification();
+  } else {
+    restoreGuestUI();
+  }
+
+  if (typeof updateLaunchButton === 'function') updateLaunchButton();
+}
+
+
+// Перевірка наявності сундуків для червоної точки
+function checkChestsForNotification() {
+  fetch('get_inventory.php')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.chests) {
+        // chests - це об'єкт { "common": 2, "rare": 1 }
+        // Перевіряємо чи є хоча б 1 сундук
+        const hasChests = Object.values(data.chests).some(qty => qty > 0);
+        updateInventoryNotification(hasChests);
+      }
+    })
+    .catch(() => {});
+}
+
+// Оновлення червоної точки на кнопці інвентаря
+function updateInventoryNotification(hasChests) {
+  const inventoryBtn = document.getElementById('inventoryBtn');
+  if (!inventoryBtn) return;
+  
+  let dot = inventoryBtn.querySelector('.notification-dot');
+  
+  if (hasChests) {
+    if (!dot) {
+      dot = document.createElement('span');
+      dot.className = 'notification-dot';
+      dot.style.cssText = 'position:absolute; top:-3px; right:-3px; width:12px; height:12px; background:#ff4444; border-radius:50%; border:2px solid #1a1a2e;';
+      inventoryBtn.style.position = 'relative';
+      inventoryBtn.appendChild(dot);
+    }
+  } else {
+    if (dot) dot.remove();
+  }
+}
+
+// Перевірка магазину для червоної точки (безкоштовний сундук)
+function checkShopForNotification() {
+  Promise.all([
+    fetch('get_shop.php', { credentials: 'include' }).then(r => r.json()).catch(() => ({})),
+    fetch('get_advent.php', { credentials: 'include' }).then(r => r.json()).catch(() => ({}))
+  ]).then(([shopData, adventData]) => {
+    const now = Math.floor(Date.now() / 1000);
+    const canClaimFreeChest = shopData.success && (!shopData.next_claim_time || shopData.next_claim_time <= now);
+    const canClaimAdvent   = adventData.success && adventData.can_claim;
+    updateShopNotification(canClaimFreeChest || canClaimAdvent);
+  });
+}
+
+// Оновлення червоної точки на кнопці магазину
+function updateShopNotification(hasNotification) {
+  const shopBtn = document.getElementById('shopBtn');
+  if (!shopBtn) return;
+  
+  let dot = shopBtn.querySelector('.notification-dot');
+  
+  if (hasNotification) {
+    if (!dot) {
+      dot = document.createElement('span');
+      dot.className = 'notification-dot';
+      dot.style.cssText = 'position:absolute; top:-3px; right:-3px; width:12px; height:12px; background:#ff4444; border-radius:50%; border:2px solid #1a1a2e;';
+      shopBtn.style.position = 'relative';
+      shopBtn.appendChild(dot);
+    }
+  } else {
+    if (dot) dot.remove();
+  }
+}
+
+// Перевірити колоду для рангового режиму
+window.rankedDeckEmpty = true; // За замовчуванням - порожня
+
+async function checkRankedDeck() {
+  try {
+    const response = await fetch('get_ranked_deck.php', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    
+    if (data.success && data.deck) {
+      // Якщо є хоча б 1 ППО в колоді - не порожня
+      window.rankedDeckEmpty = data.deck.length === 0;
+    } else {
+      window.rankedDeckEmpty = true;
+    }
+    
+    // Оновити кнопку
+    updateLaunchButton();
+    
+  } catch (error) {
+    console.error('Error checking ranked deck:', error);
+    window.rankedDeckEmpty = true;
+  }
+}
+
+// checkLoginStatus: Без loader, з retry та forceCheck
+async function checkLoginStatus(retryCount = 0, forceCheck = false) {
+  const maxRetries = 3;
+  console.log(`🔐 checkLoginStatus (retry ${retryCount}/${maxRetries}, force=${forceCheck})`);
+  
+  // ❌ ВИДАЛЕНО: Кешування window.isLoggedIn без перевірки сервера
+  // Тепер ЗАВЖДИ перевіряємо сервер, але не блокуємо UI якщо вже залогінені
+  
+  try {
+    const response = await fetch('check_login.php', {
+      credentials: 'include',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const data = await response.json();
+    console.log('🔐 fetch:', data);
+    
+    // Оновити UI
+    updateUserIcon(data.logged_in || false);
+
+    // Якщо сервер каже "не залогінений" — чистимо cookie
+    if (!data.logged_in) {
+      document.cookie = 'ui_logged_in=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    }
+
+    // Якщо щойно залогінились - очистити флаг
+    if (data.just_logged_in) {
+      console.log('🔐 Очищуємо флаг just_logged_in');
+      await fetch('clear_login_flag.php', { 
+        credentials: 'include',
+        method: 'POST'
+      });
+    }
+    
+  } catch (err) {
+    console.error('🔐 Ошибка:', err);
+    
+    if (retryCount < maxRetries) {
+      const delay = 1000 * (retryCount + 1);
+      console.log(`🔐 Retry через ${delay}ms...`);
+      await new Promise(r => setTimeout(r, delay));
+      return checkLoginStatus(retryCount + 1, forceCheck);
+    } else {
+      console.error('🔐 Всі спроби вичерпано, показуємо гостьовий UI');
+      updateUserIcon(false);
+    }
+  }
+}
+
+// Читає cookie без бібліотек
+function getCookie(name) {
+  const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return match ? match[2] : null;
+}
+
+// Ініціалізація: миттєвий UI з cookie, потім верифікація сервером
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🔐 DOM ready');
+
+  // ⚡ Миттєво показуємо правильний UI з JS-readable cookie (без AJAX!)
+  if (getCookie('ui_logged_in') === '1') {
+    console.log('🔐 Cookie знайдено — показуємо кнопки одразу');
+    updateUserIcon(true);
+  }
+
+  // ✅ Верифікуємо реальний стан сесії на сервері (безпека)
+  setTimeout(() => checkLoginStatus(0, true), 300);
+});
+
+// При поверненні на сторінку (bfcache) - примусова перевірка
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    console.log('🔐 Повернення на сторінку з bfcache - примусова перевірка');
+    checkLoginStatus(0, true); // Примусова перевірка
+  }
+});
+
+// При фокусі на вкладку - перевірити логін (якщо довго не було активності)
+let lastCheckTime = Date.now();
+window.addEventListener('focus', function() {
+  const timeSinceLastCheck = Date.now() - lastCheckTime;
+  // Якщо минуло більше 5 хвилин - перевірити знову
+  if (timeSinceLastCheck > 5 * 60 * 1000) {
+    console.log('🔐 Фокус після довгої паузи - перевірка логіну');
+    checkLoginStatus(0, true);
+  }
+  lastCheckTime = Date.now();
+});
+
+
+</script>
+<!-- ДОДАТИ ПЕРЕД </body> В index.html -->
+
+<!-- Модальне вікно рейтингу -->
+<div id="leaderboardModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 100000; justify-content: center; align-items: center;">
+    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 3px solid #FFD700; border-radius: 20px; padding: 30px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
+        
+        <!-- Заголовок -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="color: #FFD700; margin: 0; font-size: 1.8rem;">
+                <i class="fas fa-trophy mode-icon-trophy"></i> <span data-translate="title" data-section="leaderboard">Глобальний рейтинг</span>
+            </h2>
+            <button onclick="closeLeaderboard()" style="background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3); color: #fff; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 1.2rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Фільтри сортування -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+            <button class="sort-btn active" data-sort="max_wave" onclick="sortLeaderboard('max_wave')">
+                <i class="fas fa-water"></i> <span data-translate="phase" data-section="leaderboard">Фаза</span>
+            </button>
+            <button class="sort-btn" data-sort="shaheds_killed" onclick="sortLeaderboard('shaheds_killed')">
+                <img src="assets/drone.png" style="width: 20px; height: 20px; vertical-align: middle;"> <span data-translate="sortShaheds" data-section="leaderboard">Шахеди</span>
+            </button>
+            <button class="sort-btn" data-sort="heavy_drones_killed" onclick="sortLeaderboard('heavy_drones_killed')">
+                <img src="assets/heavy-drone.png" style="width: 20px; height: 20px; vertical-align: middle;"> <span data-translate="sortHeavy" data-section="leaderboard">Важкі дрони</span>
+            </button>
+            <button class="sort-btn" data-sort="rockets_killed" onclick="sortLeaderboard('rockets_killed')">
+                <img src="assets/rocket1.png" style="width: 20px; height: 20px; vertical-align: middle;"> <span data-translate="sortRockets" data-section="leaderboard">Ракети</span>
+            </button>
+            <button class="sort-btn" data-sort="kalibrs_killed" onclick="sortLeaderboard('kalibrs_killed')">
+                <img src="assets/kalibr.png" style="width: 20px; height: 20px; vertical-align: middle;"> <span data-translate="sortKalibrs" data-section="leaderboard">Калібри</span>
+            </button>
+        </div>
+        
+        <!-- Таблиця топ-10 -->
+        <div id="leaderboardTable" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+            <!-- Динамічно заповнюється -->
+        </div>
+        
+        <!-- Статистика поточного гравця -->
+        <div id="currentUserStats" style="background: rgba(255, 215, 0, 0.1); border: 2px solid #FFD700; border-radius: 15px; padding: 15px;">
+            <!-- Динамічно заповнюється -->
+        </div>
+        
+    </div>
+</div>
+
+<style>
+/* Стилі для кнопок сортування */
+.sort-btn {
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.sort-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.sort-btn.active {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-color: #FFD700;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+/* Стилі для рядків рейтингу */
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 80px 80px 80px 80px 80px;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-row.current-user {
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    margin: 5px 0;
+}
+
+.rank-badge {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a1a2e; }
+.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A8A8A8); color: #1a1a2e; }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #B8860B); color: #1a1a2e; }
+.rank-other { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.username {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.stat-value {
+    color: #4CAF50;
+    font-weight: bold;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .leaderboard-row {
+        grid-template-columns: 40px 1fr 60px 60px 60px 60px 60px;
+        gap: 5px;
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+    
+    .rank-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Стилі для випадаючого меню режимів */
+.mode-option {
+  padding: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.mode-option:last-child {
+  border-bottom: none;
+}
+
+.mode-option:hover {
+  background: rgba(255, 215, 0, 0.15);
+  transform: translateX(5px);
+}
+
+.mode-option.selected {
+  background: rgba(255, 215, 0, 0.3);
+  border-left: 4px solid #FFD700;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+#modeChevron {
+  transition: transform 0.3s;
+}
+
+#modeButton.active #modeChevron {
+  transform: rotate(180deg);
+}
+
+.footer-links {
+  gap: 18px !important;
+}
+
+.footer-link img {
+  width: 32px !important;
+  height: 32px !important;
+}
+/* Приховати старі кнопки режимів (вони викликаються через JS) */
+#tutorialBtn,
+#startBtn,
+#startRightBtn,
+#startHardcoreBtn,
+#startRadarBtn,
+#startSandboxBtn,
+#startRankedBtn {
+  display: none !important;
+}
+
+
+
+
+/* КОЛЬОРОВІ ІКОНКИ РЕЖИМІВ */
+.mode-icon-fire {
+  color: #FF6B35 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.5));
+}
+
+.mode-icon-radar {
+  color: #4CAF50 !important;
+  filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5));
+}
+
+.mode-icon-trophy {
+  color: #FFD700 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+.mode-icon-sync {
+  color: #2196F3 !important;
+  filter: drop-shadow(0 0 5px rgba(33, 150, 243, 0.5));
+}
+
+.mode-icon-arrow {
+  color: #f44336 !important;
+  filter: drop-shadow(0 0 5px rgba(244, 67, 54, 0.5));
+}
+
+.mode-icon-palette {
+  color: #9C27B0 !important;
+  filter: drop-shadow(0 0 5px rgba(156, 39, 176, 0.5));
+}
+
+.mode-icon-grad {
+  color: #00BCD4 !important;
+  filter: drop-shadow(0 0 5px rgba(0, 188, 212, 0.5));
+}
+</style>
+
+<script>
+// ========================================
+// 🌍 АВТОМАТИЧНЕ ОНОВЛЕННЯ UI ПРИ ЗМІНІ МОВИ
+// ========================================
+function updateIndexUI() {
+  // AI Note
+  const aiNote = document.querySelector('.ai-note');
+  if (aiNote) {
+    aiNote.innerHTML = translate('aiNote', 'menu') + '<br>© 2026 DroneFall v.1.04.06';
+  }
+  
+  // Кнопки туторіал/довідка
+  const tutorialBtn = document.getElementById('tutorialBtn');
+  if (tutorialBtn) {
+    tutorialBtn.innerHTML = '🎓<br>' + translate('tutorial', 'menu');
+  }
+  
+  const helpBtn = document.getElementById('helpBtn');
+  if (helpBtn) {
+    helpBtn.innerHTML = '<i class="fas fa-book"></i> ' + translate('guide', 'menu');
+  }
+  
+  // РЕЖИМ:
+  const modeHeader = document.querySelector('.preMenu-content > div[style*="РЕЖИМ"]');
+  if (modeHeader) {
+    modeHeader.innerHTML = '<i class="fas fa-gamepad"></i> ' + translate('mode', 'menu');
+  }
+  
+  // Назва поточного режиму в кнопці
+  const currentMode = document.getElementById('currentMode');
+  if (currentMode && currentMode.innerHTML.includes('Проти росії')) {
+    currentMode.innerHTML = '<i class="fas fa-arrow-right mode-icon-arrow"></i> ' + translate('againstRussia', 'modes');
+  }
+  
+  // Випадаюче меню режимів
+  const modeMenuTitle = document.querySelector('#modeMenu > div[style*="ОБЕРІТЬ"]');
+  if (modeMenuTitle) {
+    modeMenuTitle.innerHTML = '<i class="fas fa-gamepad"></i> ' + translate('selectMode', 'menu');
+  }
+  
+  // Опції режимів
+  const modeOptions = {
+    'tutorial': translate('tutorial', 'modes'),
+    'circular': translate('circular', 'modes'),
+    'against-russia': translate('againstRussia', 'modes'),
+    'hardcore': translate('hardcore', 'modes'),
+    'radar': translate('radar', 'modes'),
+    'sandbox': translate('sandbox', 'modes'),
+    'ranked': translate('ranked', 'modes')
+  };
+  
+  document.querySelectorAll('.mode-option').forEach(option => {
+    const mode = option.getAttribute('data-mode');
+    if (mode && modeOptions[mode]) {
+      const icon = option.querySelector('i');
+      const iconClass = icon ? icon.className : '';
+      option.innerHTML = `<i class="${iconClass}"></i> ${modeOptions[mode]}`;
+    }
+  });
+  
+  // Кнопка закрити
+  const closeBtn = document.querySelector('#modeMenu button[onclick="toggleModeMenu()"]');
+  if (closeBtn) {
+    closeBtn.innerHTML = '<i class="fas fa-times"></i> ' + translate('close', 'menu');
+  }
+  
+  // Кнопка ДО БОЮ
+  const launchText = document.getElementById('launchText');
+  if (launchText) {
+    launchText.innerHTML = '<i class="fas fa-play"></i> ' + translate('toBattle', 'menu');
+  }
+  
+  // Donate кнопки
+  const donateButtons = document.querySelectorAll('.donate-btn');
+  if (donateButtons.length >= 2) {
+    donateButtons[1].innerHTML = '<i class="fas fa-hand-holding-heart"></i> ' + translate('donate', 'menu');
+  }
+}
+
+// ========================================
+// 🌍 МОДАЛЬНЕ ВІКНО ВИБОРУ МОВИ
+// ========================================
+
+// Відкрити/закрити модальне вікно мови
+function toggleLanguageModal() {
+  const modal = document.getElementById('languageModal');
+  modal.classList.toggle('active');
+}
+
+// Вибрати мову
+function selectLanguage(lang) {
+  // Оновити активний стан
+  document.querySelectorAll('.language-option').forEach(opt => {
+    opt.classList.remove('active');
+  });
+  const activeOpt = document.querySelector(`.language-option[data-lang="${lang}"]`);
+  if (activeOpt) activeOpt.classList.add('active');
+  
+  // Встановити мову
+  if (typeof setLanguage === 'function') {
+    setLanguage(lang);
+  }
+  
+  // Закрити модалку
+  toggleLanguageModal();
+  
+  // Оновити UI
+  updateIndexUI();
+}
+
+// Оновлення вибору мови в модальному вікні
+function updateLanguageSelection() {
+  document.querySelectorAll('.language-option').forEach(opt => {
+    opt.classList.remove('active');
+  });
+  const activeOpt = document.querySelector(`.language-option[data-lang="${currentLanguage}"]`);
+  if (activeOpt) activeOpt.classList.add('active');
+}
+
+// Закрити модалку при кліку поза нею
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('languageModal');
+  const btn = document.getElementById('languageBtn');
+  if (modal && modal.classList.contains('active')) {
+    const content = modal.querySelector('.language-modal-content');
+    if (content && !content.contains(e.target) && !btn.contains(e.target)) {
+      toggleLanguageModal();
+    }
+  }
+});
+
+// Закрити модалку по Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('languageModal');
+    if (modal && modal.classList.contains('active')) {
+      toggleLanguageModal();
+    }
+  }
+});
+
+// Перевизначення setLanguage для оновлення UI
+const originalSetLanguage = setLanguage;
+setLanguage = function(lang) {
+  originalSetLanguage(lang);
+  updateLanguageSelection();
+  updateIndexUI();
+};
+
+// Оновлюємо preview текст при завантаженні та зміні розміру вікна
+window.addEventListener('load', () => {
+  updateLanguageSelection();
+  updateIndexUI();
+});
+window.addEventListener('languageChanged', updateIndexUI);
+
+// Синхронізуємо видимість кнопки мови з userWidget (ховаємо під час гри)
+(function() {
+  const userWidget = document.getElementById('userWidget');
+  const languageBtn = document.getElementById('languageBtn');
+  const languageModal = document.getElementById('languageModal');
+  
+  if (!userWidget || !languageBtn) return;
+  
+  // MutationObserver для відстеження змін стилю userWidget
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        const widgetStyle = window.getComputedStyle(userWidget);
+        const isHidden = widgetStyle.display === 'none' || 
+                         widgetStyle.visibility === 'hidden' || 
+                         widgetStyle.opacity === '0';
+        
+        if (isHidden) {
+          languageBtn.style.display = 'none';
+          // Закриваємо модалку мови якщо відкрита
+          if (languageModal && languageModal.classList.contains('active')) {
+            languageModal.classList.remove('active');
+          }
+        } else {
+          languageBtn.style.display = 'flex';
+        }
+      }
+    });
+  });
+  
+  observer.observe(userWidget, { 
+    attributes: true, 
+    attributeFilter: ['style', 'class'] 
+  });
+})();
+</script>
+
+<!-- ========================================
+     🎁 МОДАЛЬНЕ ВІКНО НАГОРОДИ ЗА РЕЄСТРАЦІЮ
+     ======================================== -->
+<div id="registrationRewardModal" style="
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 9999999;
+  align-items: center;
+  justify-content: center;
+">
+  <div style="
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 3px solid #FFD700;
+    border-radius: 20px;
+    padding: 30px 25px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.3);
+    animation: rewardModalAppear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-align: center;
+  ">
+    <!-- Заголовок з іконкою -->
+    <div style="
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+      animation: rewardPulse 2s infinite;
+    ">🎁</div>
+    
+    <h2 style="
+      color: #FFD700;
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    " data-translate="title" data-section="registrationReward">Вітальний подарунок!</h2>
+    
+    <p style="
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+      margin-bottom: 25px;
+    " data-translate="thanks" data-section="registrationReward">Дякуємо за реєстрацію в DroneFall!</p>
+    
+    <!-- Список нагород -->
+    <div style="
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+    ">
+      <!-- Звичайний сундук -->
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      ">
+        <img src="assets/chest_closed.png" style="width: 50px; height: 50px; object-fit: contain;">
+        <div style="flex: 1; text-align: left;">
+          <div style="color: #FFD700; font-weight: 600;" data-translate="normalChest" data-section="registrationReward">Звичайний сундук</div>
+          <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;"></div>
+        </div>
+        <div style="
+          background: linear-gradient(135deg, #FFD700, #FFD700);
+          padding: 5px 12px;
+          border-radius: 20px;
+          color: #fff;
+          font-weight: bold;
+        ">×1</div>
+      </div>
+      
+      <!-- Преміум сундук -->
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      ">
+        <img src="assets/chest_closed2.png" style="width: 50px; height: 50px; object-fit: contain;">
+        <div style="flex: 1; text-align: left;">
+          <div style="color: #f44336; font-weight: 600;" data-translate="premiumChest" data-section="registrationReward">Преміум сундук</div>
+          <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;"></div>
+        </div>
+        <div style="
+          background: linear-gradient(135deg, #f44336, #f44336);
+          padding: 5px 12px;
+          border-radius: 20px;
+          color: #fff;
+          font-weight: bold;
+        ">×1</div>
+      </div>
+      
+      <!-- Карточки Кулемета -->
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+      ">
+        <img src="assets/kulemet.png" style="width: 50px; height: 50px; object-fit: contain;">
+        <div style="flex: 1; text-align: left;">
+          <div style="color: #4CAF50; font-weight: 600;" data-translate="kulemet" data-section="ppo">Кулемет</div>
+          <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;"></div>
+        </div>
+        <div style="
+          background: linear-gradient(135deg, #4CAF50, #4CAF50);
+          padding: 5px 12px;
+          border-radius: 20px;
+          color: #1a1a2e;
+          font-weight: bold;
+        ">×5</div>
+      </div>
+    </div>
+    
+    <!-- Кнопка забрати -->
+    <button onclick="claimRegistrationReward()" style="
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border: none;
+      border-radius: 12px;
+      color: #1a1a2e;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    " onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(255, 215, 0, 0.6)';"
+       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(255, 215, 0, 0.4)';">
+      <i class="fas fa-gift"></i> <span data-translate="claim" data-section="registrationReward">Забрати!</span>
+    </button>
+  </div>
+</div>
+
+<style>
+@keyframes rewardModalAppear {
+  0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes rewardPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5); }
+  50% { transform: scale(1.1); box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7); }
+}
+</style>
+
+<script>
+// ========================================
+// 🎁 ПЕРЕВІРКА НАГОРОДИ ЗА РЕЄСТРАЦІЮ
+// ========================================
+
+async function checkRegistrationReward() {
+  try {
+    const response = await fetch('check_registration_reward.php');
+    const data = await response.json();
+    
+    if (data.success && data.has_reward) {
+      // Показати модальне вікно
+      const modal = document.getElementById('registrationRewardModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        // Оновити переклади в модальному вікні
+        if (typeof updateAllTranslations === 'function') {
+          updateAllTranslations();
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error checking registration reward:', error);
+  }
+}
+
+async function claimRegistrationReward() {
+  try {
+    const response = await fetch('claim_registration_reward.php', {
+      method: 'POST'
+    });
+    const data = await response.json();
+    
+    // Закрити модалку
+    const modal = document.getElementById('registrationRewardModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    
+    // Перенаправити в інвентар
+    window.location.href = 'inventory.html';
+    
+  } catch (error) {
+    console.error('Error claiming reward:', error);
+    // Все одно закрити модалку
+    const modal = document.getElementById('registrationRewardModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+}
+
+// Перевірити нагороду при завантаженні (якщо залогінений)
+document.addEventListener('DOMContentLoaded', function() {
+  // Зачекати поки checkLoginStatus() відпрацює
+  setTimeout(() => {
+    if (window.isLoggedIn) {
+      checkRegistrationReward();
+    }
+  }, 500);
+});
+
+// Також перевірити коли статус логіну оновиться
+const originalUpdateUserIcon = updateUserIcon;
+updateUserIcon = function(loggedIn) {
+  originalUpdateUserIcon(loggedIn);
+  if (loggedIn) {
+    checkRegistrationReward();
+  }
+};
+</script>
+
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ea36a8b923a94718bd9d04cba6a7184c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script src="game-bugfix.js?v=1"></script>
+<link rel="stylesheet" href="counterstrike.css?v=1">  
+<script src="counterstrike.js?v=1"></script>           
+</body></html>

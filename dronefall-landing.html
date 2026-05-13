@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DroneFall: UA Defense</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#00d278;--cyan:#00e5ff;--gold:#ffd700;--red:#ff3b3b;--orange:#ff6b35;
+  --bg:#050810;--panel:rgba(8,14,26,0.95);--glass:rgba(0,210,120,0.15);
+  --border:rgba(0,210,120,0.25);--font-hud:'Orbitron',monospace;--font-body:'Rajdhani',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);background:var(--bg);color:#d4f0e8;
+  min-height:100vh;overflow-x:hidden;
+}
+
+/* SCANLINE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+}
+
+/* GRID BG */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,210,120,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,210,120,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.hero{
+  position:relative;z-index:1;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,80,40,0.35) 0%,transparent 70%);
+}
+
+.hero-eyebrow{
+  font-family:var(--font-hud);font-size:11px;letter-spacing:4px;
+  color:var(--green);text-transform:uppercase;margin-bottom:18px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';display:block;height:1px;width:50px;background:var(--green);opacity:.5;
+}
+
+.hero-title{
+  font-family:var(--font-hud);font-size:clamp(2.4rem,6vw,5rem);font-weight:900;
+  line-height:1;letter-spacing:-1px;
+  background:linear-gradient(135deg,#ffffff 0%,var(--green) 60%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.hero-title span{
+  display:block;font-size:clamp(1rem,2.5vw,1.8rem);font-weight:400;
+  -webkit-text-fill-color:var(--gold);letter-spacing:6px;margin-top:6px;
+}
+
+.hero-desc{
+  max-width:620px;font-size:1.15rem;color:rgba(212,240,232,0.75);
+  line-height:1.6;margin:24px auto 40px;
+}
+
+.hero-badges{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:48px;
+}
+.badge{
+  font-family:var(--font-hud);font-size:9px;letter-spacing:2px;
+  padding:6px 14px;border:1px solid;border-radius:4px;text-transform:uppercase;
+}
+.badge-green{color:var(--green);border-color:rgba(0,210,120,0.4);background:rgba(0,210,120,0.08)}
+.badge-gold{color:var(--gold);border-color:rgba(255,215,0,0.4);background:rgba(255,215,0,0.08)}
+.badge-red{color:var(--red);border-color:rgba(255,59,59,0.4);background:rgba(255,59,59,0.08)}
+.badge-cyan{color:var(--cyan);border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.08)}
+
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+
+.btn-primary{
+  font-family:var(--font-hud);font-size:13px;font-weight:700;letter-spacing:2px;
+  padding:16px 40px;border:none;border-radius:8px;cursor:pointer;
+  background:linear-gradient(135deg,var(--green),#00a855);
+  color:#020d07;text-transform:uppercase;
+  box-shadow:0 0 30px rgba(0,210,120,0.4);
+  transition:all .25s ease;text-decoration:none;display:inline-block;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 50px rgba(0,210,120,0.6)}
+.btn-primary:active{transform:translateY(0)}
+
+.btn-secondary{
+  font-family:var(--font-hud);font-size:13px;font-weight:700;letter-spacing:2px;
+  padding:14px 38px;border:1px solid var(--border);border-radius:8px;cursor:pointer;
+  background:transparent;color:var(--green);text-transform:uppercase;
+  transition:all .25s ease;text-decoration:none;display:inline-block;
+}
+.btn-secondary:hover{background:rgba(0,210,120,0.1);border-color:var(--green)}
+
+/* ── STATS BAR ────────────────────────────────── */
+.stats-bar{
+  position:relative;z-index:1;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:0;
+  border-top:1px solid rgba(0,210,120,0.15);border-bottom:1px solid rgba(0,210,120,0.15);
+  background:rgba(5,8,16,0.8);backdrop-filter:blur(12px);
+}
+.stat-item{
+  flex:1;min-width:160px;max-width:240px;
+  padding:28px 20px;text-align:center;
+  border-right:1px solid rgba(0,210,120,0.1);
+}
+.stat-item:last-child{border-right:none}
+.stat-num{
+  font-family:var(--font-hud);font-size:2rem;font-weight:900;
+  color:var(--green);display:block;line-height:1;
+}
+.stat-label{font-size:.85rem;color:rgba(212,240,232,0.5);letter-spacing:1px;margin-top:6px}
+
+/* ── SIDES SECTION ────────────────────────────── */
+.section{
+  position:relative;z-index:1;padding:80px 20px;max-width:1200px;margin:0 auto;
+}
+.section-tag{
+  font-family:var(--font-hud);font-size:10px;letter-spacing:4px;
+  color:var(--green);text-transform:uppercase;margin-bottom:12px;
+}
+.section-title{
+  font-family:var(--font-hud);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;
+  color:#fff;line-height:1.1;margin-bottom:16px;
+}
+.section-title em{color:var(--green);font-style:normal}
+.section-desc{
+  font-size:1.05rem;color:rgba(212,240,232,0.65);
+  max-width:580px;line-height:1.7;margin-bottom:48px;
+}
+
+.sides-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+
+.side-card{
+  border-radius:12px;border:1px solid;padding:32px;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.side-card::before{
+  content:'';position:absolute;inset:0;opacity:.08;
+  background:linear-gradient(135deg,currentColor,transparent);
+}
+.side-card:hover{transform:translateY(-6px)}
+
+.side-ua{
+  border-color:rgba(0,210,120,0.4);color:var(--green);
+  box-shadow:0 8px 40px rgba(0,210,120,0.1);
+}
+.side-ua:hover{box-shadow:0 16px 60px rgba(0,210,120,0.25)}
+
+.side-ru{
+  border-color:rgba(255,59,59,0.3);color:var(--red);
+  box-shadow:0 8px 40px rgba(255,59,59,0.06);
+}
+.side-ru:hover{box-shadow:0 16px 60px rgba(255,59,59,0.18)}
+
+.side-flag{font-size:3rem;display:block;margin-bottom:16px}
+.side-name{
+  font-family:var(--font-hud);font-size:1.4rem;font-weight:900;
+  color:inherit;display:block;margin-bottom:8px;
+}
+.side-role{
+  font-size:.95rem;color:rgba(212,240,232,0.7);margin-bottom:20px;line-height:1.5;
+}
+.side-units{display:flex;flex-direction:column;gap:8px}
+.unit-row{
+  display:flex;align-items:center;gap:10px;
+  font-size:.9rem;color:rgba(212,240,232,0.8);
+}
+.unit-dot{
+  width:8px;height:8px;border-radius:50%;background:currentColor;
+  flex-shrink:0;opacity:.8;
+}
+.side-badge{
+  position:absolute;top:16px;right:16px;
+  font-family:var(--font-hud);font-size:9px;letter-spacing:2px;
+  padding:5px 10px;border:1px solid currentColor;border-radius:3px;
+  background:rgba(0,0,0,0.5);color:inherit;
+}
+
+/* ── PPO GRID ─────────────────────────────────── */
+.ppo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+.ppo-card{
+  background:var(--panel);border-radius:10px;padding:20px 16px;
+  border:1px solid rgba(0,210,120,0.12);
+  transition:all .25s ease;position:relative;overflow:hidden;
+}
+.ppo-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--rarity-color,var(--green)),transparent);
+}
+.ppo-card:hover{
+  border-color:rgba(0,210,120,0.35);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+}
+.ppo-icon{
+  width:52px;height:52px;border-radius:10px;
+  background:rgba(0,210,120,0.08);border:1px solid rgba(0,210,120,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:12px;
+}
+.ppo-name{
+  font-family:var(--font-hud);font-size:.95rem;font-weight:700;
+  color:#fff;margin-bottom:4px;
+}
+.ppo-rarity{
+  font-family:var(--font-hud);font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:12px;
+}
+.rarity-common{color:#9db8b0}
+.rarity-rare{color:#4fc3f7}
+.rarity-epic{color:#ce93d8}
+.rarity-legendary{color:var(--gold)}
+
+.ppo-stat{
+  display:flex;justify-content:space-between;
+  font-size:.8rem;color:rgba(212,240,232,0.6);
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.ppo-stat:last-child{border-bottom:none}
+.ppo-stat-val{color:var(--green);font-family:var(--font-hud);font-size:.78rem}
+
+/* ── MODES ────────────────────────────────────── */
+.modes-list{display:flex;flex-direction:column;gap:12px}
+.mode-item{
+  background:var(--panel);border:1px solid rgba(0,210,120,0.1);
+  border-radius:10px;padding:20px 24px;
+  display:flex;align-items:center;gap:20px;
+  transition:all .2s ease;cursor:default;
+}
+.mode-item:hover{border-color:rgba(0,210,120,0.3);background:rgba(8,18,30,0.98)}
+.mode-icon-wrap{
+  width:48px;height:48px;flex-shrink:0;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:rgba(0,210,120,0.06);
+}
+.mode-info-name{
+  font-family:var(--font-hud);font-size:1rem;font-weight:700;
+  color:#fff;margin-bottom:4px;
+}
+.mode-info-desc{font-size:.9rem;color:rgba(212,240,232,0.6);line-height:1.4}
+.mode-chip{
+  margin-left:auto;font-family:var(--font-hud);font-size:9px;letter-spacing:1.5px;
+  padding:5px 12px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+}
+.chip-free{background:rgba(0,210,120,0.12);color:var(--green);border:1px solid rgba(0,210,120,0.3)}
+.chip-ranked{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3)}
+.chip-hard{background:rgba(255,107,53,0.12);color:var(--orange);border:1px solid rgba(255,107,53,0.3)}
+
+/* ── FEATURE GRID ─────────────────────────────── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;
+}
+.feature-card{
+  background:var(--panel);border:1px solid rgba(0,210,120,0.1);border-radius:10px;
+  padding:24px;transition:border-color .2s ease;
+}
+.feature-card:hover{border-color:rgba(0,210,120,0.28)}
+.feature-icon{
+  font-size:1.6rem;margin-bottom:14px;display:block;
+  filter:drop-shadow(0 0 6px rgba(0,210,120,0.4));
+}
+.feature-title{
+  font-family:var(--font-hud);font-size:.95rem;font-weight:700;
+  color:#fff;margin-bottom:8px;
+}
+.feature-text{font-size:.88rem;color:rgba(212,240,232,0.6);line-height:1.6}
+
+/* ── WAVES SECTION ────────────────────────────── */
+.waves-section{
+  position:relative;z-index:1;
+  background:rgba(0,210,120,0.03);
+  border-top:1px solid rgba(0,210,120,0.1);
+  border-bottom:1px solid rgba(0,210,120,0.1);
+}
+.waves-inner{max-width:1200px;margin:0 auto;padding:80px 20px}
+.waves-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;
+}
+.wave-card{
+  border:1px solid rgba(0,210,120,0.1);border-radius:8px;padding:16px 14px;
+  background:rgba(5,8,16,0.6);text-align:center;
+  transition:all .2s ease;
+}
+.wave-card:hover{border-color:rgba(0,210,120,0.3);background:rgba(0,30,20,0.5)}
+.wave-num{
+  font-family:var(--font-hud);font-size:1.5rem;font-weight:900;
+  color:var(--green);display:block;margin-bottom:4px;
+}
+.wave-name{font-size:.85rem;color:rgba(212,240,232,0.7);margin-bottom:10px}
+.wave-bar{height:4px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden}
+.wave-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--cyan))}
+
+/* ── FOOTER ───────────────────────────────────── */
+.footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(0,210,120,0.1);
+  padding:40px 20px;text-align:center;
+  background:rgba(2,5,10,0.8);
+}
+.footer-logo{
+  font-family:var(--font-hud);font-size:1.2rem;font-weight:900;
+  color:var(--green);letter-spacing:2px;margin-bottom:8px;
+}
+.footer-sub{font-size:.85rem;color:rgba(212,240,232,0.4);margin-bottom:24px}
+.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.footer-link{
+  font-family:var(--font-hud);font-size:10px;letter-spacing:2px;
+  color:rgba(212,240,232,0.4);text-decoration:none;text-transform:uppercase;
+  transition:color .2s ease;
+}
+.footer-link:hover{color:var(--green)}
+
+/* ── NAV ──────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;
+  background:rgba(5,8,16,0.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(0,210,120,0.1);
+}
+.nav-logo{
+  font-family:var(--font-hud);font-size:.95rem;font-weight:900;
+  color:var(--green);letter-spacing:2px;text-decoration:none;
+}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-link{
+  font-family:var(--font-hud);font-size:10px;letter-spacing:2px;
+  color:rgba(212,240,232,0.6);text-decoration:none;text-transform:uppercase;
+  transition:color .2s ease;
+}
+.nav-link:hover{color:var(--green)}
+.nav-cta{
+  font-family:var(--font-hud);font-size:10px;font-weight:700;letter-spacing:2px;
+  padding:9px 22px;border:1px solid var(--green);border-radius:6px;
+  background:rgba(0,210,120,0.08);color:var(--green);text-decoration:none;
+  text-transform:uppercase;transition:all .2s ease;
+}
+.nav-cta:hover{background:rgba(0,210,120,0.18);box-shadow:0 0 20px rgba(0,210,120,0.2)}
+
+/* ── DIVIDER ──────────────────────────────────── */
+.divider{
+  position:relative;z-index:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,210,120,0.2),transparent);
+  margin:0;
+}
+
+/* ── SCROLL ANIMATION ─────────────────────────── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── RADAR BLINK ──────────────────────────────── */
+@keyframes radar-blink{0%,100%{opacity:1}50%{opacity:.3}}
+.blink{animation:radar-blink 2s ease-in-out infinite}
+
+/* ── PULSE ────────────────────────────────────── */
+@keyframes pulse-ring{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.pulse-wrap{position:relative;display:inline-block}
+.pulse-ring{
+  position:absolute;inset:-8px;border-radius:50%;
+  border:2px solid var(--green);animation:pulse-ring 2s cubic-bezier(.2,.8,.2,1) infinite;
+}
+
+/* ── MOBILE ───────────────────────────────────── */
+@media(max-width:680px){
+  .nav-links{display:none}
+  .modes-list .mode-chip{display:none}
+  .stat-item{min-width:120px;padding:18px 10px}
+  .stat-num{font-size:1.4rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">⚡ DRONEFALL</a>
+  <div class="nav-links">
+    <a href="#sides" class="nav-link">Сторони</a>
+    <a href="#arsenal" class="nav-link">Арсенал</a>
+    <a href="#modes" class="nav-link">Режими</a>
+    <a href="#waves" class="nav-link">Хвилі</a>
+  </div>
+  <a href="index.html" class="nav-cta">▶ До бою</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:100px">
+  <div class="hero-eyebrow blink">
+    🛡 ТАКТИЧНА СТРАТЕГІЯ • РЕАЛЬНА КАРТА УКРАЇНИ
+  </div>
+  <h1 class="hero-title">
+    DRONEFALL
+    <span>UA DEFENSE</span>
+  </h1>
+  <p class="hero-desc">
+    Командуй системами ППО. Збивай шахеди, ракети та крилаті ракети над реальною картою. 
+    Розміщуй бойові одиниці, керуй ресурсами, виживай у нескінченних хвилях.
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-green">🎮 Tower Defense</span>
+    <span class="badge badge-cyan">🗺 Реальна карта</span>
+    <span class="badge badge-gold">🏆 Рейтинговий режим</span>
+    <span class="badge badge-red">⚡ Early Access</span>
+    <span class="badge badge-green">🌍 5 мов</span>
+    <span class="badge badge-cyan">🆓 Безкоштовно</span>
+  </div>
+  <div class="hero-cta">
+    <a href="index.html" class="btn-primary">▶&nbsp; Грати зараз</a>
+    <a href="guide.html" class="btn-secondary">📖&nbsp; Довідка</a>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" id="cnt-ppo">12+</span>
+    <div class="stat-label">СИСТЕМ ППО</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">4</span>
+    <div class="stat-label">ТИПИ ВОРОГІВ</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">7</span>
+    <div class="stat-label">РЕЖИМІВ ГРИ</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">∞</span>
+    <div class="stat-label">ХВИЛЬ</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">4</span>
+    <div class="stat-label">РАРНОСТІ ППО</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SIDES -->
+<div id="sides" class="section reveal">
+  <div class="section-tag">// 01 — ВИБІР СТОРОНИ</div>
+  <h2 class="section-title">Обери свою <em>сторону</em></h2>
+  <p class="section-desc">
+    Грай за Україну — будуй ешелоновану ППО і захищай цивільні об'єкти. 
+    Або випробуй режим «проти росії» — найшвидший спосіб відчути тиск ворожих атак.
+  </p>
+  <div class="sides-grid">
+
+    <div class="side-card side-ua">
+      <span class="side-badge">ЗАХИСТ</span>
+      <span class="side-flag">🇺🇦</span>
+      <span class="side-name">УКРАЇНА</span>
+      <p class="side-role">
+        Командуй системами протиповітряної оборони. Розміщуй радари, ракетні комплекси та авіацію для захисту критичної інфраструктури.
+      </p>
+      <div class="side-units">
+        <div class="unit-row"><div class="unit-dot" style="background:var(--green)"></div>F-16 Fighting Falcon</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--green)"></div>Patriot MIM-104</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--green)"></div>IRIS-T SML</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--green)"></div>Кільчень · Су-27 · Кулемет</div>
+      </div>
+    </div>
+
+    <div class="side-card side-ru">
+      <span class="side-badge">АТАКА</span>
+      <span class="side-flag">🇷🇺</span>
+      <span class="side-name">АГРЕСОР</span>
+      <p class="side-role">
+        Хвилі атак зростають у силі — шахеди, важкі дрони, ракети «Калібр». Чи встоїть твоя оборона?
+      </p>
+      <div class="side-units">
+        <div class="unit-row"><div class="unit-dot" style="background:var(--red)"></div>Shahed-136 · Shahed-131</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--red)"></div>Важкі ударні дрони</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--red)"></div>Балістичні ракети</div>
+        <div class="unit-row"><div class="unit-dot" style="background:var(--red)"></div>Крилаті ракети «Калібр»</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PPO ARSENAL -->
+<div id="arsenal" class="section reveal">
+  <div class="section-tag">// 02 — АРСЕНАЛ ППО</div>
+  <h2 class="section-title">12 систем <em>протиповітряної</em> оборони</h2>
+  <p class="section-desc">
+    Від кулемета до F-16 — кожна система має свою рарність, радіус, шкоду та цілі. Прокачуй у ранговому режимі.
+  </p>
+  <div class="ppo-grid">
+
+    <div class="ppo-card" style="--rarity-color:#9db8b0">
+      <div class="ppo-icon">🔫</div>
+      <div class="ppo-name">Кулемет</div>
+      <div class="ppo-rarity rarity-common">Common</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">14</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">120</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴400</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#9db8b0">
+      <div class="ppo-icon">📡</div>
+      <div class="ppo-name">Радар</div>
+      <div class="ppo-rarity rarity-common">Common</div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">333</span></div>
+      <div class="ppo-stat"><span>Цілі</span><span class="ppo-stat-val">ВСІ</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴100</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#4fc3f7">
+      <div class="ppo-icon">🚀</div>
+      <div class="ppo-name">IRIS-T SML</div>
+      <div class="ppo-rarity rarity-rare">Rare</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">35</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">165</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴1000</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#4fc3f7">
+      <div class="ppo-icon">📡</div>
+      <div class="ppo-name">РЕБ</div>
+      <div class="ppo-rarity rarity-rare">Rare</div>
+      <div class="ppo-stat"><span>Уповільн.</span><span class="ppo-stat-val">-55%</span></div>
+      <div class="ppo-stat"><span>Збиття</span><span class="ppo-stat-val">10%</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴500</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#4fc3f7">
+      <div class="ppo-icon">✈️</div>
+      <div class="ppo-name">МіГ-29</div>
+      <div class="ppo-rarity rarity-rare">Rare</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">225</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">220</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴2000</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#ce93d8">
+      <div class="ppo-icon">🛡</div>
+      <div class="ppo-name">Patriot</div>
+      <div class="ppo-rarity rarity-epic">Epic</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">50</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">200</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴2400</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:#ce93d8">
+      <div class="ppo-icon">✈️</div>
+      <div class="ppo-name">Су-27</div>
+      <div class="ppo-rarity rarity-epic">Epic</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">150</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">260</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴1800</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:var(--gold)">
+      <div class="ppo-icon">⭐</div>
+      <div class="ppo-name">Кільчень</div>
+      <div class="ppo-rarity rarity-legendary">Legendary</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">78</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">175</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴1800</span></div>
+    </div>
+
+    <div class="ppo-card" style="--rarity-color:var(--gold)">
+      <div class="ppo-icon">🦅</div>
+      <div class="ppo-name">F-16</div>
+      <div class="ppo-rarity rarity-legendary">Legendary</div>
+      <div class="ppo-stat"><span>Шкода</span><span class="ppo-stat-val">300</span></div>
+      <div class="ppo-stat"><span>Радіус</span><span class="ppo-stat-val">300</span></div>
+      <div class="ppo-stat"><span>Ціна</span><span class="ppo-stat-val">₴3600</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- MODES -->
+<div id="modes" class="section reveal">
+  <div class="section-tag">// 03 — РЕЖИМИ ГРИ</div>
+  <h2 class="section-title">7 <em>режимів</em> — від навчання до рейтингу</h2>
+  <p class="section-desc">
+    Починай з туторіалу, освоюй кругову оборону, виживай у хардкорі та заходь у глобальний рейтинг.
+  </p>
+  <div class="modes-list">
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap">🎓</div>
+      <div>
+        <div class="mode-info-name">Туторіал</div>
+        <div class="mode-info-desc">Покроковий вступ до механік гри. Ідеально для новачків.</div>
+      </div>
+      <span class="mode-chip chip-free">БЕЗКОШТОВНО</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap">🔄</div>
+      <div>
+        <div class="mode-info-name">Кругова оборона</div>
+        <div class="mode-info-desc">Вороги атакують з усіх сторін — тримай кільцеву лінію ППО.</div>
+      </div>
+      <span class="mode-chip chip-free">БАЗОВИЙ</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap" style="color:var(--red)">➡️</div>
+      <div>
+        <div class="mode-info-name">Проти росії</div>
+        <div class="mode-info-desc">Атака іде зі сходу. Реалістичний напрям ударів. Ешелонована оборона.</div>
+      </div>
+      <span class="mode-chip chip-free">РЕКОМЕНДОВАНО</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap" style="color:var(--orange)">🔥</div>
+      <div>
+        <div class="mode-info-name">Хардкор</div>
+        <div class="mode-info-desc">Більше ворогів, менше ресурсів. Для досвідчених командирів.</div>
+      </div>
+      <span class="mode-chip chip-hard">СКЛАДНО</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap" style="color:#4CAF50">📡</div>
+      <div>
+        <div class="mode-info-name">Радар</div>
+        <div class="mode-info-desc">Спершу виявляй ціль — без радарів ворог невидимий. Тактика виявлення.</div>
+      </div>
+      <span class="mode-chip chip-free">ТАКТИКА</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap" style="color:#9C27B0">🎨</div>
+      <div>
+        <div class="mode-info-name">SandBox</div>
+        <div class="mode-info-desc">Необмежені ресурси. Розміщуй будь-які одиниці. Досліджуй механіки.</div>
+      </div>
+      <span class="mode-chip chip-free">ТІЛЬКИ ДЛЯ РЕЄСТРОВАНИХ</span>
+    </div>
+
+    <div class="mode-item">
+      <div class="mode-icon-wrap" style="color:var(--gold)">🏆</div>
+      <div>
+        <div class="mode-info-name">Глобальний рейтинг</div>
+        <div class="mode-info-desc">Рейтингові матчі з унікальними колодами ППО. Прокачуй картки та змагайся з гравцями зі всього світу.</div>
+      </div>
+      <span class="mode-chip chip-ranked">РЕЙТИНГ</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- WAVES SECTION -->
+<div id="waves" class="waves-section">
+  <div class="waves-inner reveal">
+    <div class="section-tag">// 04 — ТИПИ ЗАГРОЗ</div>
+    <h2 class="section-title" style="margin-bottom:12px">Вороги <em>масштабуються</em></h2>
+    <p class="section-desc" style="margin-bottom:36px">
+      Кожна нова хвиля — більше HP та швидкість. Формула: базова характеристика × 1.2 на хвилю.
+    </p>
+    <div class="waves-grid">
+      <div class="wave-card">
+        <span class="wave-num">🛸</span>
+        <div class="wave-name">Shahed-136</div>
+        <div style="font-family:var(--font-hud);font-size:.75rem;color:rgba(212,240,232,0.5);margin-bottom:8px">20 HP · швидк. 0.3</div>
+        <div class="wave-bar"><div class="wave-fill" style="width:20%"></div></div>
+      </div>
+      <div class="wave-card">
+        <span class="wave-num">🤖</span>
+        <div class="wave-name">Heavy Drone</div>
+        <div style="font-family:var(--font-hud);font-size:.75rem;color:rgba(212,240,232,0.5);margin-bottom:8px">80 HP · швидк. 0.4</div>
+        <div class="wave-bar"><div class="wave-fill" style="width:40%"></div></div>
+      </div>
+      <div class="wave-card">
+        <span class="wave-num">🚀</span>
+        <div class="wave-name">Ракета</div>
+        <div style="font-family:var(--font-hud);font-size:.75rem;color:rgba(212,240,232,0.5);margin-bottom:8px">150 HP · швидк. 0.5</div>
+        <div class="wave-bar"><div class="wave-fill" style="width:65%;background:linear-gradient(90deg,#ffd700,#ff6b35)"></div></div>
+      </div>
+      <div class="wave-card">
+        <span class="wave-num">💥</span>
+        <div class="wave-name">Калібр</div>
+        <div style="font-family:var(--font-hud);font-size:.75rem;color:rgba(212,240,232,0.5);margin-bottom:8px">120 HP · швидк. 0.6</div>
+        <div class="wave-bar"><div class="wave-fill" style="width:90%;background:linear-gradient(90deg,var(--red),#ff6b35)"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section reveal">
+  <div class="section-tag">// 05 — МЕХАНІКИ</div>
+  <h2 class="section-title">Що робить DroneFall <em>особливим</em></h2>
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <span class="feature-icon">🗺</span>
+      <div class="feature-title">Реальна карта</div>
+      <p class="feature-text">Бої відбуваються на справжній карті України на базі Leaflet. Пікселеточна перевірка позицій ППО.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🃏</span>
+      <div class="feature-title">Карткова система</div>
+      <p class="feature-text">Ранговий режим з колодою ППО. Прокачуй шкоду, радіус, перезарядку та точність по картках.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">📡</span>
+      <div class="feature-title">РЕБ та Радар</div>
+      <p class="feature-text">Радіоелектронна боротьба уповільнює ворогів і збиває дрони. Радари відкривають зону видимості.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🌍</span>
+      <div class="feature-title">5 мов</div>
+      <p class="feature-text">Українська, English, Польська, Чеська, Казахська. Мова змінюється в один клік.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-title">Швидкість гри</div>
+      <p class="feature-text">Контролюй темп: пауза, x1, x2, x3. Музика, звуки та FPS-лічильник вбудовані.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🏆</span>
+      <div class="feature-title">Глобальний рейтинг</div>
+      <p class="feature-text">Таблиця лідерів за хвилями, шахедами, дронами, ракетами та калібрами.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🎁</span>
+      <div class="feature-title">Сундуки та магазин</div>
+      <p class="feature-text">Common і Premium сундуки з картками ППО. Безкоштовний сундук щодня. Вітальний подарунок при реєстрації.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">✈️</span>
+      <div class="feature-title">Рухома авіація</div>
+      <p class="feature-text">МіГ-29, Су-27, F-16 — повноцінно рухаються по карті та перехоплюють цілі в польоті.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="section reveal" style="text-align:center;padding-bottom:100px">
+  <div class="section-tag" style="justify-content:center;display:flex">// ПРИЄДНУЙСЯ</div>
+  <h2 class="section-title" style="margin-bottom:16px">Готовий до <em>бою</em>?</h2>
+  <p style="font-size:1.05rem;color:rgba(212,240,232,0.6);max-width:480px;margin:0 auto 40px;line-height:1.7">
+    DroneFall — безкоштовна гра в браузері. Ніяких завантажень. Просто відкрий і захищай Україну.
+  </p>
+  <div class="hero-cta">
+    <div class="pulse-wrap">
+      <div class="pulse-ring"></div>
+      <a href="index.html" class="btn-primary">▶&nbsp; Грати безкоштовно</a>
+    </div>
+    <a href="https://t.me/dronefall" target="_blank" class="btn-secondary">💬&nbsp; Telegram</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">⚡ DRONEFALL: UA DEFENSE</div>
+  <div class="footer-sub">© 2026 DroneFall · v1.04 · Українська незалежна розробка</div>
+  <div class="footer-links">
+    <a href="guide.html" class="footer-link">Довідка</a>
+    <a href="leaderboard.html" class="footer-link">Рейтинг</a>
+    <a href="shop.html" class="footer-link">Магазин</a>
+    <a href="https://t.me/dronefall" target="_blank" class="footer-link">Telegram</a>
+    <a href="https://tiktok.com/@eurogames7" target="_blank" class="footer-link">TikTok</a>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Count-up for stats
+function countUp(el, end, suffix = '', duration = 1500) {
+  const start = 0;
+  const step = end / (duration / 16);
+  let cur = start;
+  const timer = setInterval(() => {
+    cur += step;
+    if (cur >= end) { cur = end; clearInterval(timer); }
+    el.textContent = Math.floor(cur) + suffix;
+  }, 16);
+}
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      statsObs.unobserve(e.target);
+      e.target.querySelectorAll('.stat-num').forEach(num => {
+        const txt = num.textContent;
+        if (txt === '∞') return;
+        const val = parseInt(txt);
+        if (!isNaN(val)) countUp(num, val, txt.includes('+') ? '+' : '');
+      });
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelector('.stats-bar') && statsObs.observe(document.querySelector('.stats-bar'));
+</script>
+</body>
+</html>

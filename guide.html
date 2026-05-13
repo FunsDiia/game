@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title data-translate-title="guideTitle" data-section="guide">Довідка - DroneFall: UA Defense</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="translations.js?v=70"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    }
+    
+    .back-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            color: #FFD700;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+    .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateX(-5px);
+        }
+    
+    .header-title {
+      flex: 1;
+    }
+    
+    .header-title h1 {
+      color: #FFD700;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .header-title p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .nav-tab {
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .nav-tab:hover {
+      background: rgba(255, 215, 0, 0.15);
+      border-color: rgba(255, 215, 0, 0.5);
+    }
+    
+    .nav-tab.active {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border-color: #FFD700;
+      color: #1a1a2e;
+    }
+    
+    /* Sections */
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+      color: #FFD700;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    }
+    
+    /* Intro Section */
+    .intro-text {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      line-height: 1.8;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    
+    .intro-text p {
+      margin-bottom: 15px;
+    }
+    
+    .intro-text p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .highlight {
+      color: #FFD700;
+      font-weight: 600;
+    }
+    
+    .tip-box {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.5);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+    
+    .tip-box h4 {
+      color: #4CAF50;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    
+    /* PPO Card */
+    .ppo-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .ppo-card:hover {
+      border-color: rgba(255, 215, 0, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .ppo-card.rarity-common { border-left: 4px solid #4CAF50; }
+    .ppo-card.rarity-rare { border-left: 4px solid #FFD700; }
+    .ppo-card.rarity-epic { border-left: 4px solid #f44336; }
+    .ppo-card.rarity-legendary { border-left: 4px solid #00BFFF; background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(0, 191, 255, 0.05)); }
+    
+    .ppo-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .ppo-img {
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    
+    .ppo-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .ppo-title {
+      flex: 1;
+    }
+    
+    .ppo-title h3 {
+      color: #fff;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+    
+    .ppo-rarity {
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .ppo-rarity.common { background: rgba(76, 175, 80, 0.3); color: #81C784; }
+    .ppo-rarity.rare { background: rgba(255, 215, 0, 0.3); color: #FFD700; }
+    .ppo-rarity.epic { background: rgba(244, 67, 54, 0.3); color: #EF5350; }
+    .ppo-rarity.legendary { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(0, 191, 255, 0.3)); color: #00BFFF; }
+    
+    .ppo-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .stat-icon {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .stat-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.75rem;
+    }
+    
+    .stat-value {
+      color: #4CAF50;
+      font-weight: 700;
+    }
+    
+    .ppo-targets {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .ppo-targets h4 {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    
+    .target-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .target-tag {
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .target-tag img {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .ppo-special {
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .ppo-special i {
+      color: #FFD700;
+      margin-right: 5px;
+    }
+    
+    /* Enemy Card */
+    .enemy-card {
+      background: rgba(255, 50, 50, 0.05);
+      border: 2px solid rgba(255, 100, 100, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .enemy-card:hover {
+      border-color: rgba(255, 100, 100, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1);
+    }
+    
+    .enemy-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .enemy-img {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 0, 0, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    
+    .enemy-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .enemy-title h3 {
+      color: #ff6b6b;
+      font-size: 1.2rem;
+    }
+    
+    .enemy-wave {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+    
+    /* Mode Card */
+    .mode-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .mode-card:hover {
+      border-color: rgba(255, 215, 0, 0.5);
+      transform: translateY(-3px);
+    }
+    
+    .mode-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .mode-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .mode-icon.circular { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+    .mode-icon.russia { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+    .mode-icon.hardcore { background: rgba(255, 107, 53, 0.2); color: #FF6B35; }
+    .mode-icon.radar { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+    .mode-icon.sandbox { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+    .mode-icon.ranked { background: rgba(255, 215, 0, 0.2); color: #FFD700; }
+    
+    .mode-title {
+      color: #fff;
+      font-size: 1.1rem;
+    }
+    
+    .mode-desc {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    /* Building Card */
+    .building-card {
+      background: rgba(0, 188, 212, 0.05);
+      border: 2px solid rgba(0, 188, 212, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .building-card:hover {
+      border-color: rgba(0, 188, 212, 0.5);
+      transform: translateY(-3px);
+    }
+    
+    .building-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+    
+    .building-img {
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 188, 212, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    
+    .building-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .building-title h3 {
+      color: #00BCD4;
+      font-size: 1.1rem;
+    }
+    
+    .building-desc {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Subsection */
+    .subsection {
+      margin-bottom: 30px;
+    }
+    
+    .subsection-title {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .subsection-title i {
+      color: #FFD700;
+    }
+    
+    /* Rarity Filter */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      color: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn:hover {
+      background: rgba(255, 215, 0, 0.15);
+    }
+    
+    .filter-btn.active {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border-color: #FFD700;
+      color: #1a1a2e;
+    }
+    
+    /* Mobile */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+        padding-bottom: 80px;
+      }
+      
+      .header-title h1 {
+        font-size: 1.4rem;
+      }
+      
+      .nav-tabs {
+        gap: 6px;
+      }
+      
+      .nav-tab {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+      }
+      
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .ppo-stats {
+        grid-template-columns: 1fr;
+      }
+      
+      .stat-item {
+        justify-content: space-between;
+      }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 215, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 215, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="header-title">
+      <h1><i class="fas fa-book"></i> <span data-translate="guideTitle" data-section="guide">Довідка</span></h1>
+      <p>DroneFall: UA Defense</p>
+    </div>
+  </div>
+  
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-section="intro">
+      <i class="fas fa-info-circle"></i> <span data-translate="tabIntro" data-section="guide">Вступ</span>
+    </button>
+    <button class="nav-tab" data-section="ppo">
+      <i class="fas fa-shield-alt"></i> <span data-translate="tabPPO" data-section="guide">ППО</span>
+    </button>
+    <button class="nav-tab" data-section="enemies">
+      <i class="fas fa-skull"></i> <span data-translate="tabEnemies" data-section="guide">Вороги</span>
+    </button>
+    <button class="nav-tab" data-section="buildings">
+      <i class="fas fa-building"></i> <span data-translate="tabBuildings" data-section="guide">Об'єкти</span>
+    </button>
+    <button class="nav-tab" data-section="modes">
+      <i class="fas fa-gamepad"></i> <span data-translate="tabModes" data-section="guide">Режими</span>
+    </button>
+  </div>
+  
+  <!-- INTRO SECTION -->
+  <div class="section active" id="section-intro">
+    <h2 class="section-title"><i class="fas fa-flag-checkered"></i> <span data-translate="aboutGame" data-section="guide">Про гру</span></h2>
+    
+    <div class="intro-text" id="introText">
+      <!-- Заповнюється динамічно через JS -->
+    </div>
+    
+    <div class="tip-box">
+      <h4><i class="fas fa-lightbulb"></i> <span data-translate="tips" data-section="guide">Поради</span></h4>
+      <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.8;" id="tipsList">
+        <!-- Заповнюється динамічно через JS -->
+      </ul>
+    </div>
+  </div>
+  
+  <!-- PPO SECTION -->
+  <div class="section" id="section-ppo">
+    <h2 class="section-title"><i class="fas fa-shield-alt"></i> <span data-translate="ppoSystems" data-section="guide">Системи ППО</span></h2>
+    
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all" data-translate="filterAll" data-section="guide">Всі</button>
+      <button class="filter-btn" data-filter="common" data-translate="filterCommon" data-section="guide">Звичайні</button>
+      <button class="filter-btn" data-filter="rare" data-translate="filterRare" data-section="guide">Рідкісні</button>
+      <button class="filter-btn" data-filter="epic" data-translate="filterEpic" data-section="guide">Епічні</button>
+      <button class="filter-btn" data-filter="legendary" data-translate="filterLegendary" data-section="guide">Легендарні</button>
+    </div>
+    
+    <div class="cards-grid" id="ppoCards">
+      <!-- Динамічно заповнюється -->
+    </div>
+  </div>
+  
+  <!-- ENEMIES SECTION -->
+  <div class="section" id="section-enemies">
+    <h2 class="section-title"><i class="fas fa-skull"></i> <span data-translate="enemies" data-section="guide">Вороги</span></h2>
+    
+    <div class="cards-grid" id="enemyCards">
+      <!-- Динамічно заповнюється -->
+    </div>
+  </div>
+  
+  <!-- BUILDINGS SECTION -->
+  <div class="section" id="section-buildings">
+    <h2 class="section-title"><i class="fas fa-building"></i> <span data-translate="strategicObjects" data-section="guide">Стратегічні об'єкти</span></h2>
+    
+    <div class="subsection">
+      <h3 class="subsection-title"><i class="fas fa-industry"></i> <span data-translate="infrastructure" data-section="guide">Інфраструктура (для захисту)</span></h3>
+      <div class="cards-grid" id="infrastructureCards">
+        <!-- Динамічно заповнюється -->
+      </div>
+    </div>
+    
+    <div class="subsection">
+      <h3 class="subsection-title"><i class="fas fa-wrench"></i> <span data-translate="buildingsForBuild" data-section="guide">Будівлі (для будівництва)</span></h3>
+      <div class="cards-grid" id="buildingCards">
+        <!-- Динамічно заповнюється -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODES SECTION -->
+  <div class="section" id="section-modes">
+    <h2 class="section-title"><i class="fas fa-gamepad"></i> <span data-translate="gameModes" data-section="guide">Режими гри</span></h2>
+    
+    <div class="cards-grid" id="modeCards">
+      <!-- Статично -->
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon circular"><i class="fas fa-sync"></i></div>
+          <h3 class="mode-title"><i class="fas fa-sync" style="color: #2196F3;"></i> <span data-translate="modeCircular" data-section="guide">Кругова оборона</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeCircularDesc" data-section="guide">
+          Класичний сценарій, де атаки йдуть з усіх боків. Ви маєте витримати 
+          35 хвиль постійного тиску та зберегти контроль над небом.
+        </p>
+      </div>
+      
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon russia"><i class="fas fa-arrow-right"></i></div>
+          <h3 class="mode-title"><i class="fas fa-arrow-right" style="color: #f44336;"></i> <span data-translate="modeRussia" data-section="guide">Проти росії</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeRussiaDesc" data-section="guide">
+          Реалістичний режим з фокусом на східному напрямку. Нові стратегічні об'єкти 
+          поступово з'являються у різних областях України, а Ваша задача - втримати оборону.
+        </p>
+      </div>
+      
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon hardcore"><i class="fas fa-fire"></i></div>
+          <h3 class="mode-title"><i class="fas fa-fire" style="color: #FF5722;"></i> <span data-translate="modeHardcore" data-section="guide">Хардкор</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeHardcoreDesc" data-section="guide">
+          Для тих, хто готовий прийняти виклик. Ліміт у 35 систем ППО. 
+          Нескінченна кількість хвиль. Тут немає права на помилку.
+        </p>
+      </div>
+      
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon radar"><i class="fas fa-satellite-dish"></i></div>
+          <h3 class="mode-title"><i class="fas fa-search" style="color: #4CAF50;"></i> <span data-translate="modeRadar" data-section="guide">Радар</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeRadarDesc" data-section="guide">
+          Особливий режим, де вороги залишаються невидимими. Використовуйте Радари 
+          для виявлення Дронів та Ракет. Це випробування на уважність та вміння працювати на випередження.
+        </p>
+      </div>
+      
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon sandbox"><i class="fas fa-palette"></i></div>
+          <h3 class="mode-title"><i class="fas fa-palette" style="color: #9C27B0;"></i> <span data-translate="modeSandbox" data-section="guide">SandBox</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeSandboxDesc" data-section="guide">
+          Простір для експериментів. Жодних обмежень - нескінченні ресурси, 
+          можливість тестувати різні стратегії та комбінації ППО.
+        </p>
+      </div>
+      
+      <div class="mode-card">
+        <div class="mode-header">
+          <div class="mode-icon ranked"><i class="fas fa-trophy"></i></div>
+          <h3 class="mode-title"><i class="fas fa-trophy" style="color: #FFD700;"></i> <span data-translate="modeRanked" data-section="guide">Глобальний рейтинг</span></h3>
+        </div>
+        <p class="mode-desc" data-translate="modeRankedDesc" data-section="guide">
+          Змагайтесь з іншими гравцями! Ваші покращення ППО зберігаються та впливають на бій. 
+          Потрібна реєстрація. Прокачуйте картки ППО та підіймайтесь у рейтингу!
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="ppo-config.js?v=70"></script>
+  <script src="enemies-config.js?v=70"></script>
+  <script>
+    // ========================================
+    // NAVIGATION
+    // ========================================
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active from all tabs
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        // Add active to clicked
+        tab.classList.add('active');
+        const sectionId = 'section-' + tab.dataset.section;
+        document.getElementById(sectionId).classList.add('active');
+      });
+    });
+    
+    // ========================================
+    // PPO FILTER
+    // ========================================
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.ppo-card').forEach(card => {
+          if (filter === 'all' || card.dataset.rarity === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+    
+    // ========================================
+    // RENDER PPO CARDS
+    // ========================================
+    function renderPPOCards() {
+      const container = document.getElementById('ppoCards');
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'ua';
+      
+      const targetNames = {
+        'shaheds': { 
+          name: { ua: 'Шахеди', en: 'Shaheds', kz: 'Шахедтер', pl: 'Shahedy', cs: 'Shahedy' }, 
+          img: 'assets/drone.png' 
+        },
+        'heavy_drones': { 
+          name: { ua: 'Важкі дрони', en: 'Heavy Drones', kz: 'Ауыр дрондар', pl: 'Ciężkie drony', cs: 'Těžké drony' }, 
+          img: 'assets/heavy-drone.png' 
+        },
+        'rockets': { 
+          name: { ua: 'Ракети', en: 'Rockets', kz: 'Зымырандар', pl: 'Rakiety', cs: 'Rakety' }, 
+          img: 'assets/rocket1.png' 
+        },
+        'calibers': { 
+          name: { ua: 'Калібри', en: 'Kalibrs', kz: 'Калибрлер', pl: 'Kalibry', cs: 'Kalibry' }, 
+          img: 'assets/kalibr.png' 
+        },
+        'cruiser': { 
+          name: { ua: 'Крейсер', en: 'Cruiser', kz: 'Крейсер', pl: 'Krążownik', cs: 'Křižník' }, 
+          img: 'assets/kreiser.png' 
+        }
+      };
+      
+      const rarityNames = {
+        'common': { ua: 'Звичайний', en: 'Common', kz: 'Қарапайым', pl: 'Zwykły', cs: 'Běžný' },
+        'rare': { ua: 'Рідкісний', en: 'Rare', kz: 'Сирек', pl: 'Rzadki', cs: 'Vzácný' },
+        'epic': { ua: 'Епічний', en: 'Epic', kz: 'Эпикалық', pl: 'Epicki', cs: 'Epický' },
+        'legendary': { ua: 'Легендарний', en: 'Legendary', kz: 'Аңызшылық', pl: 'Legendarny', cs: 'Legendární' }
+      };
+      
+      const statLabels = {
+        price: { ua: 'Ціна', en: 'Price', kz: 'Бағасы', pl: 'Cena', cs: 'Cena' },
+        damage: { ua: 'Урон', en: 'Damage', kz: 'Зақым', pl: 'Obrażenia', cs: 'Poškození' },
+        radius: { ua: 'Радіус', en: 'Radius', kz: 'Радиус', pl: 'Zasięg', cs: 'Dosah' },
+        cooldown: { ua: 'Перезарядка', en: 'Cooldown', kz: 'Қайта зарядтау', pl: 'Przeładowanie', cs: 'Přebíjení' },
+        hitChance: { ua: 'Шанс влучання', en: 'Hit Chance', kz: 'Тию мүмкіндігі', pl: 'Szansa trafienia', cs: 'Šance na zásah' },
+        speed: { ua: 'Швидкість ракети', en: 'Projectile Speed', kz: 'Снаряд жылдамдығы', pl: 'Prędkość pocisku', cs: 'Rychlost střely' },
+        targets: { ua: 'Цілі', en: 'Targets', kz: 'Нысандар', pl: 'Cele', cs: 'Cíle' },
+        slowsEnemies: { ua: 'Уповільнює ворогів', en: 'Slows enemies', kz: 'Жауларды баяулатады', pl: 'Spowalnia wrogów', cs: 'Zpomaluje nepřátele' },
+        detectsEnemies: { ua: 'Виявляє ворогів у радіусі', en: 'Detects enemies in radius', kz: 'Радиуста жауларды анықтайды', pl: 'Wykrywa wrogów w zasięgu', cs: 'Detekuje nepřátele v dosahu' },
+        mobileUnit: { ua: 'Мобільна одиниця', en: 'Mobile unit', kz: 'Мобильді бірлік', pl: 'Jednostka mobilna', cs: 'Mobilní jednotka' }
+      };
+      
+      let html = '';
+      
+      for (const [key, ppo] of Object.entries(PPO_CONFIG)) {
+        // Skip Аеродром - it's a building
+        if (ppo.isBuilding) continue;
+        
+        const rarity = ppo.rarity || 'common';
+        const hitChance = ppo.projectile ? Math.round(ppo.projectile.hitChance * 100) : 0;
+        const speed = ppo.projectile ? ppo.projectile.speed : 0;
+        
+        // Targets
+        let targetsHtml = '';
+        if (ppo.canTarget && ppo.canTarget.length > 0) {
+          targetsHtml = ppo.canTarget.map(t => {
+            const target = targetNames[t];
+            return target ? `<span class="target-tag"><img src="${target.img}" alt="${target.name[lang]}"> ${target.name[lang]}</span>` : '';
+          }).join('');
+        }
+        
+        // Special features
+        let specialHtml = '';
+        if (ppo.reb) {
+          const slowsText = statLabels.slowsEnemies[lang];
+          const knockdownText = { ua: 'Шанс збиття', en: 'Knockdown chance', kz: 'Құлату мүмкіндігі', pl: 'Szansa powalenia', cs: 'Šance na sestřelení' };
+          specialHtml = `<div class="ppo-special"><i class="fas fa-bolt"></i> ${slowsText} ${Math.round(ppo.slowFactor * 100)}%. ${knockdownText[lang] || knockdownText.en}: ${ppo.rebKnockdownChance}%</div>`;
+        } else if (ppo.radar) {
+          const radarText = { ua: 'Показує невидимих ворогів на карті. Доступний тільки в режимі Радар.', en: 'Shows invisible enemies on the map. Available only in Radar mode.', kz: 'Картада көрінбейтін жауларды көрсетеді. Тек Радар режимінде қол жетімді.', pl: 'Pokazuje niewidzialnych wrogów na mapie. Dostępny tylko w trybie Radar.', cs: 'Zobrazuje neviditelné nepřátele na mapě. Dostupné pouze v režimu Radar.' };
+          specialHtml = `<div class="ppo-special"><i class="fas fa-eye"></i> ${radarText[lang] || radarText.en}</div>`;
+        } else if (ppo.isPlane) {
+          const planeText = { ua: 'Літак. Патрулює обрану ділянку. Не може бути знищений.', en: 'Aircraft. Patrols selected area. Cannot be destroyed.', kz: 'Ұшақ. Таңдалған аймақты патрульдейді. Жойылмайды.', pl: 'Samolot. Patroluje wybrany obszar. Nie może być zniszczony.', cs: 'Letadlo. Hlídkuje ve vybrané oblasti. Nemůže být zničeno.' };
+          specialHtml = `<div class="ppo-special"><i class="fas fa-plane"></i> ${planeText[lang] || planeText.en}</div>`;
+        }
+        
+        html += `
+          <div class="ppo-card rarity-${rarity}" data-rarity="${rarity}">
+            <div class="ppo-header">
+              <div class="ppo-img">
+                <img src="${ppo.img}" alt="${ppo.name}">
+              </div>
+              <div class="ppo-title">
+                <h3>${typeof translate === 'function' ? translate(ppo.name, 'ppo') || ppo.name : ppo.name}</h3>
+                <span class="ppo-rarity ${rarity}">${rarityNames[rarity][lang]}</span>
+              </div>
+            </div>
+            
+            <div class="ppo-stats">
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-coins" style="color: #FFD700;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.price[lang]}</div>
+                  <div class="stat-value">${ppo.price}</div>
+                </div>
+              </div>
+              
+              ${ppo.damage > 0 ? `
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-crosshairs" style="color: #f44336;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.damage[lang]}</div>
+                  <div class="stat-value">${ppo.damage}</div>
+                </div>
+              </div>
+              ` : ''}
+              
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-satellite-dish" style="color: #2196F3;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.radius[lang]}</div>
+                  <div class="stat-value">${ppo.radius}</div>
+                </div>
+              </div>
+              
+              ${ppo.cd > 0 ? `
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-clock" style="color: #FF9800;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.cooldown[lang]}</div>
+                  <div class="stat-value">${(ppo.cd / 1000).toFixed(2)}${lang === 'ua' ? 'с' : 's'}</div>
+                </div>
+              </div>
+              ` : ''}
+              
+              ${hitChance > 0 ? `
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-bullseye" style="color: #4CAF50;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.hitChance[lang]}</div>
+                  <div class="stat-value">${hitChance}%</div>
+                </div>
+              </div>
+              ` : ''}
+              
+              ${speed > 0 ? `
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-wind" style="color: #00BCD4;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.speed[lang]}</div>
+                  <div class="stat-value">${speed}</div>
+                </div>
+              </div>
+              ` : ''}
+            </div>
+            
+            ${targetsHtml ? `
+            <div class="ppo-targets">
+              <h4><i class="fas fa-bullseye" style="color: #4CAF50;"></i> ${statLabels.targets[lang]}:</h4>
+              <div class="target-tags">${targetsHtml}</div>
+            </div>
+            ` : ''}
+            
+            ${specialHtml}
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    // ========================================
+    // RENDER ENEMY CARDS
+    // ========================================
+    function renderEnemyCards() {
+      const container = document.getElementById('enemyCards');
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'ua';
+      
+      const enemyInfo = {
+        shahed: {
+          name: { ua: 'Шахед', en: 'Shahed-136', kz: 'Шахед', pl: 'Shahed-136', cs: 'Shahed-136' },
+          img: 'assets/drone.png',
+          reward: 110,
+          rebReward: 55,
+          damage: '15-25',
+          wave: 1,
+          desc: { 
+            ua: 'Повільна швидкість, низька кількість HP. Поширений ворог, сила якого в кількості.',
+            en: 'Slow speed, low HP. Common enemy whose strength is in numbers.',
+            kz: 'Баяу жылдамдық, төмен HP. Күші санында болатын жиі кездесетін жау.',
+            pl: 'Niska prędkość, niskie HP. Pospolity wróg, którego siła tkwi w liczebności.',
+            cs: 'Nízká rychlost, nízké HP. Běžný nepřítel, jehož síla je v počtech.'
+          }
+        },
+        heavyDrone: {
+          name: { ua: 'Важкий Дрон', en: 'Heavy Drone', kz: 'Ауыр Дрон', pl: 'Ciężki Dron', cs: 'Těžký Dron' },
+          img: 'assets/heavy-drone.png',
+          reward: 230,
+          rebReward: 115,
+          damage: '25-35',
+          wave: 5,
+          desc: { 
+            ua: 'Середня швидкість, висока кількість HP. Серйозна загроза для інфраструктури.',
+            en: 'Medium speed, high HP. Serious threat to infrastructure.',
+            kz: 'Орташа жылдамдық, жоғары HP. Инфрақұрылымға елеулі қауіп.',
+            pl: 'Średnia prędkość, wysokie HP. Poważne zagrożenie dla infrastruktury.',
+            cs: 'Střední rychlost, vysoké HP. Vážná hrozba pro infrastrukturu.'
+          }
+        },
+        rocket: {
+          name: { ua: 'Ракета', en: 'Rocket', kz: 'Зымыран', pl: 'Rakieta', cs: 'Raketa' },
+          img: 'assets/rocket1.png',
+          reward: 310,
+          rebReward: 155,
+          damage: '75-85',
+          wave: 8,
+          desc: { 
+            ua: 'Висока швидкість, середня кількість HP. Може пройти скрізь увесь захист.',
+            en: 'High speed, medium HP. Can pass through all defenses.',
+            kz: 'Жоғары жылдамдық, орташа HP. Барлық қорғаныстан өте алады.',
+            pl: 'Wysoka prędkość, średnie HP. Może przejść przez całą obronę.',
+            cs: 'Vysoká rychlost, střední HP. Může projít všemi obrannými liniemi.'
+          }
+        },
+        kalibr: {
+          name: { ua: 'Калібр', en: 'Kalibr', kz: 'Калибр', pl: 'Kalibr', cs: 'Kalibr' },
+          img: 'assets/kalibr.png',
+          reward: 400,
+          rebReward: 0,
+          damage: '25-45',
+          wave: 12,
+          desc: { 
+            ua: "Висока швидкість, висока кількість HP. Залп з 6 Калібрів атакує один стратегічний об'єкт.",
+            en: 'High speed, high HP. A salvo of 6 Kalibrs attacks one strategic object.',
+            kz: 'Жоғары жылдамдық, жоғары HP. 6 Калибрден тұратын залп бір стратегиялық нысанға шабуылдайды.',
+            pl: 'Wysoka prędkość, wysokie HP. Salwa 6 Kalibrów atakuje jeden obiekt strategiczny.',
+            cs: 'Vysoká rychlost, vysoké HP. Salva 6 Kalibrů útočí na jeden strategický objekt.'
+          }
+        }
+      };
+      
+      const statLabels = {
+        baseHP: { ua: 'Базове HP', en: 'Base HP', kz: 'Базалық HP', pl: 'Bazowe HP', cs: 'Základní HP' },
+        baseSpeed: { ua: 'Базова швидкість', en: 'Base Speed', kz: 'Базалық жылдамдық', pl: 'Bazowa prędkość', cs: 'Základní rychlost' },
+        damageToTarget: { ua: 'Урон по цілі', en: 'Damage to target', kz: 'Нысанаға зақым', pl: 'Obrażenia celowi', cs: 'Poškození cíle' },
+        reward: { ua: 'Нагорода', en: 'Reward', kz: 'Сыйлық', pl: 'Nagroda', cs: 'Odměna' },
+        appearsFromWave: { ua: "З'являється з хвилі", en: 'Appears from wave', kz: 'Толқыннан бастап пайда болады', pl: 'Pojawia się od fali', cs: 'Objevuje se od vlny' }
+      };
+      
+      let html = '';
+      
+      for (const [key, config] of Object.entries(ENEMIES_CONFIG)) {
+        const info = enemyInfo[key];
+        if (!info) continue;
+        
+        html += `
+          <div class="enemy-card">
+            <div class="enemy-header">
+              <div class="enemy-img">
+                <img src="${info.img}" alt="${info.name[lang]}">
+              </div>
+              <div class="enemy-title">
+                <h3>${info.name[lang]}</h3>
+                <div class="enemy-wave">${statLabels.appearsFromWave[lang]} ${info.wave}</div>
+              </div>
+            </div>
+            
+            <div class="ppo-stats">
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-heart" style="color: #f44336;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.baseHP[lang]}</div>
+                  <div class="stat-value">${config.baseHP}</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-wind" style="color: #00BCD4;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.baseSpeed[lang]}</div>
+                  <div class="stat-value">${config.baseSpeed}</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-burst" style="color: #FF5722;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.damageToTarget[lang]}</div>
+                  <div class="stat-value">${info.damage}</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-coins" style="color: #FFD700;"></i></span>
+                <div>
+                  <div class="stat-label">${statLabels.reward[lang]}</div>
+                  <div class="stat-value">+${info.reward}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ppo-special" style="background: rgba(255, 100, 100, 0.1);">
+              <i class="fas fa-info-circle" style="color: #ff6b6b;"></i> ${info.desc[lang]}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Add Cruiser manually
+      const cruiserName = { ua: 'Крейсер', en: 'Cruiser', kz: 'Крейсер', pl: 'Krążownik', cs: 'Křižník' };
+      const cruiserDesc = { 
+        ua: 'Запускає залп з 6 Калібрів. Знаходиться в морі. Можна знищити за допомогою F-16.',
+        en: 'Launches a salvo of 6 Kalibrs. Located at sea. Can be destroyed with F-16.',
+        kz: '6 Калибрден тұратын залп жібереді. Теңізде орналасқан. F-16 көмегімен жоюға болады.',
+        pl: 'Wystrzeliwuje salwę 6 Kalibrów. Znajduje się na morzu. Można go zniszczyć za pomocą F-16.',
+        cs: 'Vystřeluje salvu 6 Kalibrů. Nachází se na moři. Lze zničit pomocí F-16.'
+      };
+      const launchChance = { ua: 'Шанс пуску', en: 'Launch chance', kz: 'Ұшыру мүмкіндігі', pl: 'Szansa wystrzelenia', cs: 'Šance na vypuštění' };
+      const radius = { ua: 'Радіус', en: 'Radius', kz: 'Радиус', pl: 'Zasięg', cs: 'Dosah' };
+      const cooldown = { ua: 'Перезарядка', en: 'Cooldown', kz: 'Қайта зарядтау', pl: 'Przeładowanie', cs: 'Přebíjení' };
+      
+      html += `
+        <div class="enemy-card">
+          <div class="enemy-header">
+            <div class="enemy-img">
+              <img src="assets/kreiser.png" alt="${cruiserName[lang]}">
+            </div>
+            <div class="enemy-title">
+              <h3>${cruiserName[lang]}</h3>
+              <div class="enemy-wave">${statLabels.appearsFromWave[lang]} 12</div>
+            </div>
+          </div>
+          
+          <div class="ppo-stats">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-satellite-dish" style="color: #2196F3;"></i></span>
+              <div>
+                <div class="stat-label">${radius[lang]}</div>
+                <div class="stat-value">350</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-dice" style="color: #9C27B0;"></i></span>
+              <div>
+                <div class="stat-label">${launchChance[lang]}</div>
+                <div class="stat-value">35%</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-clock" style="color: #FF9800;"></i></span>
+              <div>
+                <div class="stat-label">${cooldown[lang]}</div>
+                <div class="stat-value">0.8${lang === 'ua' || lang === 'kz' ? 'с' : 's'}</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-coins" style="color: #FFD700;"></i></span>
+              <div>
+                <div class="stat-label">${statLabels.reward[lang]}</div>
+                <div class="stat-value">+0</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ppo-special" style="background: rgba(255, 100, 100, 0.1);">
+            <i class="fas fa-info-circle" style="color: #ff6b6b;"></i> 
+            ${cruiserDesc[lang]}
+          </div>
+        </div>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    // ========================================
+    // RENDER BUILDINGS
+    // ========================================
+    function renderBuildings() {
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'ua';
+      
+      const labels = {
+        produces: { ua: 'Виробляє:', en: 'Produces:', kz: 'Өндіреді:', pl: 'Produkuje:', cs: 'Vyrábí:' },
+        interval: { ua: 'Інтервал:', en: 'Interval:', kz: 'Аралық:', pl: 'Interwał:', cs: 'Interval:' },
+        cost: { ua: 'Вартість:', en: 'Cost:', kz: 'Құны:', pl: 'Koszt:', cs: 'Cena:' },
+        buildTime: { ua: 'Будівництво:', en: 'Build time:', kz: 'Құрылыс:', pl: 'Czas budowy:', cs: 'Doba stavby:' },
+        feature: { ua: 'Особливість:', en: 'Feature:', kz: 'Ерекшелігі:', pl: 'Cecha:', cs: 'Funkce:' }
+      };
+      
+      const buildings = {
+        tes: { 
+          name: { ua: 'ТЕС', en: 'Power Plant', kz: 'ЖЭС', pl: 'Elektrownia', cs: 'Elektrárna' },
+          produces: { ua: 'Енергію', en: 'Energy', kz: 'Энергия', pl: 'Energię', cs: 'Energii' },
+          interval: { ua: 'Кожні 5 секунд виробляє 1 ресурс', en: 'Produces 1 resource every 5 seconds', kz: 'Әр 5 секунд сайын 1 ресурс өндіреді', pl: 'Produkuje 1 zasób co 5 sekund', cs: 'Vyrábí 1 zdroj každých 5 sekund' }
+        },
+        gas: { 
+          name: { ua: 'Газопровід', en: 'Gas Pipeline', kz: 'Газ құбыры', pl: 'Gazociąg', cs: 'Plynovod' },
+          produces: { ua: 'Пальне', en: 'Fuel', kz: 'Жанармай', pl: 'Paliwo', cs: 'Palivo' },
+          interval: { ua: 'Кожні 10 секунд виробляє 1 ресурс', en: 'Produces 1 resource every 10 seconds', kz: 'Әр 10 секунд сайын 1 ресурс өндіреді', pl: 'Produkuje 1 zasób co 10 sekund', cs: 'Vyrábí 1 zdroj každých 10 sekund' }
+        },
+        factory: { 
+          name: { ua: 'Завод', en: 'Factory', kz: 'Зауыт', pl: 'Fabryka', cs: 'Továrna' },
+          produces: { ua: 'Цеглу', en: 'Bricks', kz: 'Кірпіш', pl: 'Cegły', cs: 'Cihly' },
+          interval: { ua: 'Кожні 5 секунд виробляє 2 ресурси', en: 'Produces 2 resources every 5 seconds', kz: 'Әр 5 секунд сайын 2 ресурс өндіреді', pl: 'Produkuje 2 zasoby co 5 sekund', cs: 'Vyrábí 2 zdroje každých 5 sekund' }
+        },
+        aerodrom: { 
+          name: { ua: 'Аеродром', en: 'Airfield', kz: 'Әуежай', pl: 'Lotnisko', cs: 'Letiště' },
+          buildTime: { ua: '60 секунд', en: '60 seconds', kz: '60 секунд', pl: '60 sekund', cs: '60 sekund' },
+          feature: { ua: 'Відкриває можливість придбання F-16, МіГ-29 та Су-27. Дозволено збудувати лише один.', en: 'Unlocks ability to purchase F-16, MiG-29 and Su-27. Only one can be built.', kz: 'F-16, МіГ-29 және Су-27 сатып алу мүмкіндігін ашады. Тек біреуін салуға болады.', pl: 'Odblokowuje możliwość zakupu F-16, MiG-29 i Su-27. Można zbudować tylko jedno.', cs: 'Odemyká možnost nákupu F-16, MiG-29 a Su-27. Lze postavit pouze jedno.' }
+        },
+        emergency: { 
+          name: { ua: 'Аварійка', en: 'Emergency', kz: 'Авариялық', pl: 'Pogotowie', cs: 'Pohotovost' },
+          feature: { ua: "Відкриває можливість відремонтувати стратегічні об'єкти. Дозволено збудувати лише один.", en: 'Unlocks ability to repair strategic objects. Only one can be built.', kz: 'Стратегиялық нысандарды жөндеу мүмкіндігін ашады. Тек біреуін салуға болады.', pl: 'Odblokowuje możliwość naprawy obiektów strategicznych. Można zbudować tylko jedno.', cs: 'Odemyká možnost opravy strategických objektů. Lze postavit pouze jedno.' }
+        }
+      };
+      
+      // Infrastructure
+      const infraContainer = document.getElementById('infrastructureCards');
+      infraContainer.innerHTML = `
+        <div class="building-card">
+          <div class="building-header">
+            <div class="building-img"><img src="assets/tet.png" alt="${buildings.tes.name[lang]}"></div>
+            <div class="building-title"><h3>${buildings.tes.name[lang]}</h3></div>
+          </div>
+          <div class="building-desc">
+            <strong><i class="fas fa-bolt" style="color: #FFEB3B;"></i> ${labels.produces[lang]}</strong> ${buildings.tes.produces[lang]}<br>
+            <strong><i class="fas fa-clock" style="color: #FF9800;"></i> ${labels.interval[lang]}</strong> ${buildings.tes.interval[lang]}
+          </div>
+        </div>
+        
+        <div class="building-card">
+          <div class="building-header">
+            <div class="building-img"><img src="assets/gas.png" alt="${buildings.gas.name[lang]}"></div>
+            <div class="building-title"><h3>${buildings.gas.name[lang]}</h3></div>
+          </div>
+          <div class="building-desc">
+            <strong><i class="fas fa-gas-pump" style="color: #795548;"></i> ${labels.produces[lang]}</strong> ${buildings.gas.produces[lang]}<br>
+            <strong><i class="fas fa-clock" style="color: #FF9800;"></i> ${labels.interval[lang]}</strong> ${buildings.gas.interval[lang]}
+          </div>
+        </div>
+        
+        <div class="building-card">
+          <div class="building-header">
+            <div class="building-img"><img src="assets/zawod.png" alt="${buildings.factory.name[lang]}"></div>
+            <div class="building-title"><h3>${buildings.factory.name[lang]}</h3></div>
+          </div>
+          <div class="building-desc">
+            <strong><i class="fas fa-cubes" style="color: #FF5722;"></i> ${labels.produces[lang]}</strong> ${buildings.factory.produces[lang]}<br>
+            <strong><i class="fas fa-clock" style="color: #FF9800;"></i> ${labels.interval[lang]}</strong> ${buildings.factory.interval[lang]}
+          </div>
+        </div>
+      `;
+      
+      // Buildings
+      const buildContainer = document.getElementById('buildingCards');
+      
+      // Get Аеродром from PPO_CONFIG
+      const aerodrom = PPO_CONFIG['Аеродром'];
+      
+      buildContainer.innerHTML = `
+        <div class="building-card">
+          <div class="building-header">
+            <div class="building-img"><img src="${aerodrom ? aerodrom.img : 'assets/aeroport.png'}" alt="${buildings.aerodrom.name[lang]}"></div>
+            <div class="building-title"><h3>${buildings.aerodrom.name[lang]}</h3></div>
+          </div>
+          <div class="building-desc">
+            <strong><i class="fas fa-coins" style="color: #FFD700;"></i> ${labels.cost[lang]}</strong> ${aerodrom ? aerodrom.price : 3000}<br>
+            <strong><i class="fas fa-clock" style="color: #FF9800;"></i> ${labels.buildTime[lang]}</strong> ${buildings.aerodrom.buildTime[lang]}<br>
+            <strong><i class="fas fa-star" style="color: #FFD700;"></i> ${labels.feature[lang]}</strong> ${buildings.aerodrom.feature[lang]}
+          </div>
+        </div>
+        
+        <div class="building-card">
+          <div class="building-header">
+            <div class="building-img"><img src="assets/avariika.png" alt="${buildings.emergency.name[lang]}"></div>
+            <div class="building-title"><h3>${buildings.emergency.name[lang]}</h3></div>
+          </div>
+          <div class="building-desc">
+            <strong><i class="fas fa-coins" style="color: #FFD700;"></i> ${labels.cost[lang]}</strong> 1500<br>
+            <strong><i class="fas fa-star" style="color: #FFD700;"></i> ${labels.feature[lang]}</strong> ${buildings.emergency.feature[lang]}
+          </div>
+        </div>
+      `;
+    }
+    
+    // ========================================
+    // INIT
+    // ========================================
+    function renderIntro() {
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'ua';
+      
+      const introTexts = {
+        p1: {
+          ua: '<span class="highlight">Ви - командир</span>, і від Ваших рішень залежить доля країни. На Ваші плечі лягає оборона від навали ворожих <span class="highlight">Шахедів</span>, <span class="highlight">Важких Дронів</span>, <span class="highlight">Ракет</span> та <span class="highlight">Калібрів</span>. Вони атакують безперервно, націлені на критичну інфраструктуру.',
+          en: '<span class="highlight">You are the commander</span>, and the fate of the country depends on your decisions. You must defend against waves of enemy <span class="highlight">Shaheds</span>, <span class="highlight">Heavy Drones</span>, <span class="highlight">Rockets</span> and <span class="highlight">Kalibrs</span>. They attack continuously, targeting critical infrastructure.',
+          kz: '<span class="highlight">Сіз - қолбасшысыз</span>, және елдің тағдыры сіздің шешімдеріңізге байланысты. <span class="highlight">Шахедтер</span>, <span class="highlight">Ауыр дрондар</span>, <span class="highlight">Зымырандар</span> және <span class="highlight">Калибрлер</span> толқындарынан қорғану сіздің иығыңызда.',
+          pl: '<span class="highlight">Jesteś dowódcą</span>, a los kraju zależy od Twoich decyzji. Musisz bronić się przed falami wrogich <span class="highlight">Shahedów</span>, <span class="highlight">Ciężkich dronów</span>, <span class="highlight">Rakiet</span> i <span class="highlight">Kalibrów</span>. Atakują nieprzerwanie, celując w krytyczną infrastrukturę.',
+          cs: '<span class="highlight">Jste velitel</span> a osud země závisí na vašich rozhodnutích. Musíte bránit proti vlnám nepřátelských <span class="highlight">Shahedů</span>, <span class="highlight">Těžkých dronů</span>, <span class="highlight">Raket</span> a <span class="highlight">Kalibrů</span>. Útočí nepřetržitě a cílí na kritickou infrastrukturu.'
+        },
+        p2: {
+          ua: 'У вашому арсеналі - різні <span class="highlight">системи ППО</span>, здатні перехоплювати загрози з повітря. Ви можете купувати та модернізувати їх, щоб створити гнучку й ефективну оборону. Кожен вибір - це можливість зупинити ворога або пропустити удар.',
+          en: 'Your arsenal includes various <span class="highlight">air defense systems</span> capable of intercepting aerial threats. You can buy and upgrade them to create flexible and effective defense. Every choice is an opportunity to stop the enemy or miss a hit.',
+          kz: 'Сіздің арсеналыңызда әуе қауіптерін ұстауға қабілетті әртүрлі <span class="highlight">ӘШҚҚ жүйелері</span> бар. Икемді және тиімді қорғаныс құру үшін оларды сатып алып, жаңарта аласыз.',
+          pl: 'Twój arsenał zawiera różne <span class="highlight">systemy OPL</span> zdolne do przechwytywania zagrożeń powietrznych. Możesz je kupować i ulepszać, aby stworzyć elastyczną i skuteczną obronę. Każdy wybór to szansa na zatrzymanie wroga lub przeoczenie uderzenia.',
+          cs: 'Váš arzenál zahrnuje různé <span class="highlight">systémy PVO</span> schopné zachycovat vzdušné hrozby. Můžete je kupovat a vylepšovat pro vytvoření flexibilní a účinné obrany. Každá volba je příležitostí zastavit nepřítele nebo minout úder.'
+        },
+        p3: {
+          ua: '<span class="highlight">Карбованці</span>, зароблені за знищення Дронів та Ракет, потрібно витрачати з розумом: інвестуйте у вдосконалення вже існуючих систем ППО чи купуйте нові. Але пам\'ятайте - ресурсів завжди обмаль, а загроза стає сильнішою з кожною секундою.',
+          en: '<span class="highlight">Coins</span> earned for destroying Drones and Rockets must be spent wisely: invest in upgrading existing air defense systems or buy new ones. But remember - resources are always scarce, and the threat grows stronger every second.',
+          kz: 'Дрондар мен зымырандарды жою үшін табылған <span class="highlight">тиындарды</span> ақылмен жұмсау керек. Бірақ есте сақтаңыз - ресурстар әрқашан жетіспейді.',
+          pl: '<span class="highlight">Monety</span> zdobyte za niszczenie dronów i rakiet należy wydawać mądrze: inwestuj w ulepszanie istniejących systemów OPL lub kupuj nowe. Pamiętaj jednak - zasobów zawsze brakuje, a zagrożenie rośnie z każdą sekundą.',
+          cs: '<span class="highlight">Mince</span> získané za ničení dronů a raket je třeba utrácet moudře: investujte do vylepšování stávajících systémů PVO nebo kupujte nové. Pamatujte však - zdrojů je vždy málo a hrozba každou sekundou sílí.'
+        },
+        p4: {
+          ua: 'Захистіть усі <span class="highlight">6 стратегічних об\'єктів</span>, які з\'являються у різних областях України. Їх знищення означатиме поразку, а ваша місія - зробити так, щоб цього не сталося.',
+          en: 'Protect all <span class="highlight">6 strategic objects</span> that appear in different regions of Ukraine. Their destruction means defeat, and your mission is to prevent that from happening.',
+          kz: 'Украинаның әртүрлі аймақтарында пайда болатын барлық <span class="highlight">6 стратегиялық нысанды</span> қорғаңыз. Олардың жойылуы жеңіліс дегенді білдіреді.',
+          pl: 'Chroń wszystkie <span class="highlight">6 obiektów strategicznych</span>, które pojawiają się w różnych regionach Ukrainy. Ich zniszczenie oznacza porażkę, a Twoją misją jest temu zapobiec.',
+          cs: 'Chraňte všech <span class="highlight">6 strategických objektů</span>, které se objevují v různých oblastech Ukrajiny. Jejich zničení znamená porážku a vaším úkolem je tomu zabránit.'
+        }
+      };
+      
+      const tips = {
+        t1: { ua: 'Почніть з <span class="highlight">3500 Карбованців</span>', en: 'Start with <span class="highlight">3500 Coins</span>', kz: '<span class="highlight">3500 тиынмен</span> бастаңыз', pl: 'Zacznij z <span class="highlight">3500 monet</span>', cs: 'Začněte s <span class="highlight">3500 mincemi</span>' },
+        t2: { ua: 'Ціна ППО зростає з кожною покупкою на <span class="highlight">20%</span>', en: 'ADS price increases by <span class="highlight">20%</span> with each purchase', kz: 'ӘШҚҚ бағасы әр сатып алу сайын <span class="highlight">20%</span>-ға артады', pl: 'Cena OPL wzrasta o <span class="highlight">20%</span> przy każdym zakupie', cs: 'Cena PVO se zvyšuje o <span class="highlight">20%</span> s každým nákupem' },
+        t3: { ua: 'Покращуйте системи ППО до <span class="highlight">10 рівня</span>', en: 'Upgrade ADS systems up to <span class="highlight">level 10</span>', kz: 'ӘШҚҚ жүйелерін <span class="highlight">10 деңгейге</span> дейін жаңартыңыз', pl: 'Ulepszaj systemy OPL do <span class="highlight">poziomu 10</span>', cs: 'Vylepšujte systémy PVO až na <span class="highlight">úroveň 10</span>' },
+        t4: { ua: 'Продавайте непотрібне ППО за <span class="highlight">75%</span> від вартості', en: 'Sell unnecessary ADS for <span class="highlight">75%</span> of the cost', kz: 'Қажетсіз ӘШҚҚ-ны құнының <span class="highlight">75%</span>-ына сатыңыз', pl: 'Sprzedawaj niepotrzebne OPL za <span class="highlight">75%</span> ceny', cs: 'Prodávejte nepotřebné PVO za <span class="highlight">75%</span> ceny' }
+      };
+      
+      const introContainer = document.getElementById('introText');
+      if (introContainer) {
+        introContainer.innerHTML = `
+          <p>${introTexts.p1[lang]}</p>
+          <p>${introTexts.p2[lang]}</p>
+          <p>${introTexts.p3[lang]}</p>
+          <p>${introTexts.p4[lang]}</p>
+        `;
+      }
+      
+      const tipsContainer = document.getElementById('tipsList');
+      if (tipsContainer) {
+        tipsContainer.innerHTML = `
+          <li>${tips.t1[lang]}</li>
+          <li>${tips.t2[lang]}</li>
+          <li>${tips.t3[lang]}</li>
+          <li>${tips.t4[lang]}</li>
+        `;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      renderIntro();
+      renderPPOCards();
+      renderEnemyCards();
+      renderBuildings();
+      
+      // Оновлюємо переклади при зміні мови
+      if (typeof updateAllTranslations === 'function') {
+        const originalUpdate = window.updateAllTranslations;
+        window.updateAllTranslations = function() {
+          originalUpdate();
+          renderIntro();
+          renderPPOCards();
+          renderEnemyCards();
+          renderBuildings();
+        };
+      }
+    });
+  </script>
+  <script src="language-updater.js?v=70"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ea36a8b923a94718bd9d04cba6a7184c","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
